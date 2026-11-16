@@ -8,9 +8,7 @@ import sys
 import time
 from pathlib import Path
 
-import paramiko
-
-from vps_remote import _load_creds
+from vps_remote import _connect
 
 
 def _stream_remote_command(
@@ -82,17 +80,7 @@ def main() -> None:
         help="Wall-clock limit for the remote script (seconds)",
     )
     args = parser.parse_args()
-    creds = _load_creds()
-    client = paramiko.SSHClient()
-    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    client.connect(
-        creds["HOST"],
-        username=creds["USER"],
-        password=creds["PASS"],
-        timeout=30,
-        allow_agent=False,
-        look_for_keys=False,
-    )
+    client = _connect()
     remote_path = f"/tmp/{args.script.name}"
     script_bytes = args.script.read_bytes()
     try:
