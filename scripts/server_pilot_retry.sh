@@ -106,18 +106,24 @@ timeout "$D_COMPOSE" $COMPOSE --profile celery-linkedin run -d --name "$PILOT_CO
   -e ALLOW_COLLECTION_TARGET_INDEX_MIGRATION=true \
   worker-linkedin
 
-log "STEP wait_pilot_worker_ping"
-ping_ok=0
-for i in $(seq 1 24); do
-  if timeout "$D_CELERY_PING" docker exec "$PILOT_CONTAINER" celery -A app.workers.celery_app inspect ping 2>/dev/null | grep -q pong; then
-    log "STEP pilot_ping ok poll=$i"
-    ping_ok=1
+log "STEP wait_pilot_worker_ready"
+ready_ok=0
+for i in $(seq 1 60); do
+  if docker logs "$PILOT_CONTAINER" 2>&1 | grep -qE "linkedin-worker@[^ ]+ ready\.'"; then
+    log "STEP pilot_worker_ready poll=$i"
+    ready_ok=1
     break
   fi
-  sleep 5
+  if ! docker ps --format '{{.Names}}' | grep -qx "$PILOT_CONTAINER"; then
+    log "ERROR pilot_container_not_running poll=$i"
+    docker logs "$PILOT_CONTAINER" 2>&1 | tail -30 >&2 || true
+    exit 11
+  fi
+  sleep 3
 done
-if [ "$ping_ok" -ne 1 ]; then
-  log "ERROR pilot_ping_timeout"
+if [ "$ready_ok" -ne 1 ]; then
+  log "ERROR pilot_worker_ready_timeout"
+  docker logs "$PILOT_CONTAINER" 2>&1 | tail -40 >&2 || true
   exit 11
 fi
 
