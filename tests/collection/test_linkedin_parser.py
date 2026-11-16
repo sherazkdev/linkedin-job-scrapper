@@ -141,6 +141,14 @@ def test_parse_slug_job_url() -> None:
     assert cards[0]["source_job_id"] == "5551001"
 
 
+def test_parse_scaffold_layout_job_cards() -> None:
+    html = (FIXTURES / "search_page_scaffold_layout.html").read_text(encoding="utf-8")
+    cards = parse_search_job_cards(html, search_country_code="PK")
+    assert len(cards) == 1
+    assert cards[0]["source_job_id"] == "9203001"
+    assert "ERP" in cards[0]["title"]
+
+
 def test_spa_shell_raises_unsupported_not_empty_list() -> None:
     with pytest.raises(LinkedInCollectionError) as err:
         parse_search_job_cards("<html><body><div id='app'></div></body></html>", search_country_code="PK")

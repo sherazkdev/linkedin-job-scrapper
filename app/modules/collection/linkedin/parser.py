@@ -23,6 +23,8 @@ def _html_looks_like_job_search_results(lowered_html: str) -> bool:
     return "/jobs/view/" in lowered_html and (
         "jobs-search-results__list-item" in lowered_html
         or "job-search-card" in lowered_html
+        or "job-card-container" in lowered_html
+        or "scaffold-layout__list-container" in lowered_html
         or "base-search-card__title" in lowered_html
     )
 
@@ -50,7 +52,9 @@ def parse_search_job_cards(html: str, *, search_country_code: str) -> list[dict[
     soup = BeautifulSoup(html, "html.parser")
     cards = soup.select("li.jobs-search-results__list-item")
     if not cards:
-        cards = soup.select("div.job-search-card, div.base-card")
+        cards = soup.select(
+            "div.job-search-card, div.job-card-container, article.job-card-container, div.base-card"
+        )
     if not cards:
         return _finalize_search_cards(soup, items=[], search_country_code=search_country_code)
 
@@ -110,6 +114,10 @@ def search_page_diagnostics(html: str) -> dict[str, int | bool]:
     return {
         "list_items": len(soup.select("li.jobs-search-results__list-item")),
         "job_search_cards": len(soup.select("div.job-search-card")),
+        "job_card_containers": len(
+            soup.select("div.job-card-container, article.job-card-container")
+        ),
+        "scaffold_items": len(soup.select("ul.scaffold-layout__list-container li")),
         "base_cards": len(soup.select("div.base-card")),
         "job_view_links": len(soup.select('a[href*="/jobs/view/"]')),
         "genuine_empty": _is_genuine_empty_results(soup),

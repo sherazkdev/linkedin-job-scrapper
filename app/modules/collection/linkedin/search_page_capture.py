@@ -4,8 +4,9 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import time
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 from urllib.parse import parse_qs, quote, urlencode, urlparse, urlunparse
 
 from app.modules.collection.linkedin.errors import LinkedInCollectionError, LinkedInFailureState
@@ -22,8 +23,25 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 SEARCH_RESULTS_SELECTOR = (
-    'a[href*="/jobs/view/"], li.jobs-search-results__list-item, div.job-search-card'
+    'a[href*="/jobs/view/"], li.jobs-search-results__list-item, div.job-search-card, '
+    "div.job-card-container, article.job-card-container, "
+    "div.base-card[data-entity-urn*='jobPosting']"
 )
+
+_JOB_LIST_HYDRATION_JS = """() => {
+  const body = document.body;
+  if (!body) return false;
+  const lower = (body.innerText || "").toLowerCase();
+  if (lower.includes("no matching jobs") || lower.includes("no results found")) {
+    return true;
+  }
+  if (document.querySelectorAll('a[href*="/jobs/view/"]').length > 0) return true;
+  const markers = document.querySelectorAll(
+    "li.jobs-search-results__list-item, div.job-search-card, div.job-card-container, "
+    + "article.job-card-container, ul.scaffold-layout__list-container li"
+  );
+  return markers.length > 0;
+}"""
 
 # After selector timeout, probe the tab before spending title/content budgets.
 _PAGE_PROBE_MAX_MS = 2_000
@@ -87,6 +105,7 @@ class SearchPageCapture:
     title_timed_out: bool
     page_unresponsive: bool = False
     unresponsive_reason: str | None = None
+    dom_indicators: dict[str, Any] | None = None
 
     @property
     def timed_out_selector(self) -> str | None:
@@ -118,6 +137,58 @@ def _unresponsive_probe_ms(operation_timeout_ms: int) -> int:
     return min(_PAGE_PROBE_MAX_MS, tenth)
 
 
+async def _read_dom_indicators(page: Page) -> dict[str, Any]:
+    """Sanitized in-page counters (no cookies, no body text)."""
+    try:
+        raw = await page.evaluate(
+            """() => {
+            const body = document.body;
+            const text = body ? body.innerText : "";
+            const lower = text.toLowerCase();
+            return {
+              job_view_links: document.querySelectorAll('a[href*="/jobs/view/"]').length,
+              list_items: document.querySelectorAll("li.jobs-search-results__list-item").length,
+              job_cards: document.querySelectorAll(
+                "div.job-search-card, div.job-card-container, article.job-card-container"
+              ).length,
+              scaffold_items: document.querySelectorAll(
+                "ul.scaffold-layout__list-container li"
+              ).length,
+              ready_state: document.readyState,
+              genuine_empty: lower.includes("no matching jobs") || lower.includes("no results found"),
+              page_title_len: (document.title || "").length,
+              body_text_len: text.length,
+            };
+          }"""
+        )
+        if isinstance(raw, dict):
+            return raw
+    except Exception as exc:
+        logger.debug("dom indicators failed error=%s", exc.__class__.__name__)
+        return {"error": exc.__class__.__name__}
+    return {}
+
+
+async def _wait_for_job_list_hydration(page: Page, *, budget_ms: int) -> bool:
+    if budget_ms <= 0:
+        return False
+    try:
+        await page.wait_for_function(_JOB_LIST_HYDRATION_JS, timeout=budget_ms)
+        return True
+    except Exception:
+        pass
+    deadline = time.monotonic() + (budget_ms / 1000)
+    while time.monotonic() < deadline:
+        try:
+            ready = await page.evaluate(_JOB_LIST_HYDRATION_JS)
+            if ready is True:
+                return True
+        except Exception:
+            pass
+        await asyncio.sleep(0.5)
+    return False
+
+
 async def capture_search_page_html(
     page: Page,
     url: str,
@@ -143,6 +214,13 @@ async def capture_search_page_html(
         ) from exc
     nav_timer.finish(event="nav_done")
 
+    dom_timer = log_phase_start(logger, "search_dom_load", timeout_ms=min(navigation_timeout_ms, 15_000))
+    try:
+        await page.wait_for_load_state("domcontentloaded", timeout=min(navigation_timeout_ms, 15_000))
+        dom_timer.finish(event="domcontentloaded")
+    except Exception:
+        dom_timer.finish(event="domcontentloaded_timeout")
+
     selector_timed_out = False
     sel_timer = log_phase_start(logger, "search_wait_selector", timeout_ms=selector_timeout_ms)
     try:
@@ -152,7 +230,32 @@ async def capture_search_page_html(
         selector_timed_out = True
         sel_timer.finish(event="selector_timeout")
 
+    hydration_budget = selector_timeout_ms if selector_timed_out else 0
+    if hydration_budget > 0:
+        hyd_timer = log_phase_start(logger, "search_hydration", budget_ms=hydration_budget)
+        hydrated = await _wait_for_job_list_hydration(page, budget_ms=hydration_budget)
+        indicators = await _read_dom_indicators(page)
+        hyd_timer.finish(event="hydrated" if hydrated else "hydration_timeout", indicators=indicators)
+        logger.info(
+            "linkedin_collect phase=search_dom_snapshot indicators=%s url=%s",
+            {k: indicators.get(k) for k in (
+                "job_view_links",
+                "list_items",
+                "job_cards",
+                "scaffold_items",
+                "genuine_empty",
+                "ready_state",
+                "body_text_len",
+            )}
+            if isinstance(indicators, dict)
+            else {},
+            safe_url,
+        )
+        if hydrated:
+            selector_timed_out = False
+
     page_url = page.url
+    dom_indicators = await _read_dom_indicators(page)
 
     if selector_timed_out:
         probe_ms = _unresponsive_probe_ms(operation_timeout_ms)
@@ -170,6 +273,7 @@ async def capture_search_page_html(
                 title_timed_out=True,
                 page_unresponsive=True,
                 unresponsive_reason="js_probe_after_selector_timeout",
+                dom_indicators=await _read_dom_indicators(page),
             )
 
     title_timed_out = False
@@ -202,6 +306,7 @@ async def capture_search_page_html(
         selector_timed_out=selector_timed_out,
         content_timed_out=content_timed_out,
         title_timed_out=title_timed_out,
+        dom_indicators=dom_indicators,
     )
 
 

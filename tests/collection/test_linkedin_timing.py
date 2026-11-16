@@ -74,8 +74,20 @@ async def test_capture_search_skips_title_content_when_unresponsive_after_select
     page = MagicMock()
     page.url = "https://www.linkedin.com/jobs/search/?keywords=x"
     page.goto = AsyncMock()
+    page.wait_for_load_state = AsyncMock()
+    page.wait_for_function = AsyncMock(side_effect=TimeoutError())
     page.wait_for_selector = AsyncMock(side_effect=TimeoutError())
-    page.evaluate = AsyncMock(side_effect=slow_eval)
+
+    async def evaluate(script, *args, **kwargs):
+        if script == "() => document.readyState":
+            return await slow_eval()
+        if "jobs/view" in script:
+            return False
+        if "job_view_links" in script:
+            return {}
+        return False
+
+    page.evaluate = AsyncMock(side_effect=evaluate)
     page.title = AsyncMock()
     page.content = AsyncMock()
 
@@ -92,7 +104,7 @@ async def test_capture_search_skips_title_content_when_unresponsive_after_select
     assert capture.page_unresponsive is True
     assert capture.unresponsive_reason == "js_probe_after_selector_timeout"
     assert capture.html == ""
-    assert elapsed < 5
+    assert elapsed < 8
     page.title.assert_not_called()
     page.content.assert_not_called()
 
@@ -102,8 +114,20 @@ async def test_capture_search_continues_snapshot_when_selector_timeout_but_page_
     page = MagicMock()
     page.url = "https://www.linkedin.com/jobs/search/?keywords=x"
     page.goto = AsyncMock()
+    page.wait_for_load_state = AsyncMock()
+    page.wait_for_function = AsyncMock(side_effect=TimeoutError())
     page.wait_for_selector = AsyncMock(side_effect=TimeoutError())
-    page.evaluate = AsyncMock(return_value="interactive")
+
+    async def evaluate(script, *args, **kwargs):
+        if "document.readyState" in script:
+            return "interactive"
+        if "jobs/view" in script:
+            return False
+        if "job_view_links" in script:
+            return {"job_view_links": 0, "genuine_empty": False, "body_text_len": 100}
+        return False
+
+    page.evaluate = AsyncMock(side_effect=evaluate)
     page.title = AsyncMock(return_value="Jobs")
     page.content = AsyncMock(return_value="<html><body>ok</body></html>")
 
@@ -120,3 +144,44 @@ async def test_capture_search_continues_snapshot_when_selector_timeout_but_page_
     assert "ok" in capture.html
     page.title.assert_called_once()
     page.content.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_capture_search_hydration_restores_after_selector_timeout() -> None:
+    page = MagicMock()
+    page.url = "https://www.linkedin.com/jobs/search/?keywords=erp"
+    page.goto = AsyncMock()
+    page.wait_for_load_state = AsyncMock()
+    page.wait_for_selector = AsyncMock(side_effect=TimeoutError())
+
+    async def evaluate(script, *args, **kwargs):
+        if "job_view_links" in script:
+            return {
+                "job_view_links": 2,
+                "list_items": 0,
+                "job_cards": 1,
+                "genuine_empty": False,
+                "ready_state": "complete",
+                "body_text_len": 1200,
+            }
+        if "jobs/view" in script:
+            return True
+        return "interactive"
+
+    page.wait_for_function = AsyncMock()
+    page.evaluate = AsyncMock(side_effect=evaluate)
+    page.title = AsyncMock(return_value="Jobs search")
+    page.content = AsyncMock(return_value="<html><a href='/jobs/view/1'>x</a></body></html>")
+
+    capture = await capture_search_page_html(
+        page,
+        "https://www.linkedin.com/jobs/search/?keywords=erp",
+        navigation_timeout_ms=5_000,
+        selector_timeout_ms=1_000,
+        operation_timeout_ms=5_000,
+    )
+
+    assert capture.page_unresponsive is False
+    assert capture.selector_timed_out is False
+    assert capture.dom_indicators is not None
+    assert capture.dom_indicators.get("job_view_links") == 2

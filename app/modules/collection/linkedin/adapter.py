@@ -210,7 +210,20 @@ class LinkedInJobSourceAdapter(JobSourceAdapter):
                     retryable=False,
                 )
             if capture.selector_timed_out:
-                logger.warning("Search results selector not seen before parse; continuing")
+                logger.warning(
+                    "Search results selector not seen before parse; continuing dom_indicators=%s",
+                    capture.dom_indicators,
+                )
+            elif capture.dom_indicators:
+                logger.info(
+                    "Search capture dom_indicators=%s",
+                    {k: capture.dom_indicators.get(k) for k in (
+                        "job_view_links",
+                        "list_items",
+                        "job_cards",
+                        "genuine_empty",
+                    )},
+                )
             if capture.content_timed_out:
                 raise LinkedInCollectionError(
                     LinkedInFailureState.NAVIGATION_TIMEOUT,
