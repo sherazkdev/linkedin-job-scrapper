@@ -4,6 +4,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 from datetime import UTC, datetime
 
 import pytest
+from playwright.async_api import Error as PlaywrightError
 
 from app.core.config import Settings
 from app.modules.collection.linkedin.adapter import LinkedInJobSourceAdapter
@@ -21,6 +22,7 @@ async def test_detail_unsupported_skips_card_and_continues() -> None:
         <h4 class="base-search-card__subtitle">Acme</h4>
       </a>
       <span class="job-search-card__location">Islamabad, Pakistan</span>
+      <time datetime="2026-11-16T08:00:00Z">2 hours ago</time>
     </li>
     <li class="jobs-search-results__list-item">
       <a class="base-card__full-link" href="/jobs/view/9002">
@@ -28,6 +30,7 @@ async def test_detail_unsupported_skips_card_and_continues() -> None:
         <h4 class="base-search-card__subtitle">Beta Co</h4>
       </a>
       <span class="job-search-card__location">Islamabad, Pakistan</span>
+      <time datetime="2026-11-16T08:00:00Z">2 hours ago</time>
     </li>
     </body></html>
     """
@@ -152,3 +155,93 @@ async def test_auth_block_on_detail_still_skips_without_crashing_batch() -> None
                 checkpoint=None,
             )
     assert err.value.state == LinkedInFailureState.AUTHENTICATION_REQUIRED
+
+
+@pytest.mark.asyncio
+async def test_playwright_detail_error_skips_card_without_aborting_batch() -> None:
+    html_search = """
+    <html><body>
+    <li class="jobs-search-results__list-item">
+      <a class="base-card__full-link" href="/jobs/view/9001">
+        <h3 class="base-search-card__title">Software Engineer</h3>
+        <h4 class="base-search-card__subtitle">Acme</h4>
+      </a>
+      <time datetime="2026-11-16T08:00:00Z">2 hours ago</time>
+    </li>
+    <li class="jobs-search-results__list-item">
+      <a class="base-card__full-link" href="/jobs/view/9002">
+        <h3 class="base-search-card__title">Software Engineer</h3>
+        <h4 class="base-search-card__subtitle">Beta Co</h4>
+      </a>
+      <time datetime="2026-11-16T08:00:00Z">2 hours ago</time>
+    </li>
+    </body></html>
+    """
+    detail_good = """
+    <html><body><div class="jobs-description__content">Ship features.</div>
+    <time datetime="2026-11-16T08:00:00Z">1 hour ago</time></body></html>
+    """
+    settings = Settings(
+        ALLOW_LIVE_LINKEDIN_COLLECTION=True,
+        LINKEDIN_NAVIGATION_TIMEOUT_MS=5000,
+        LINKEDIN_SELECTOR_TIMEOUT_MS=5000,
+        LINKEDIN_PAGE_OPERATION_TIMEOUT_MS=5000,
+        LINKEDIN_BROWSER_SHUTDOWN_GRACE_MS=1000,
+    )
+    browser = MagicMock()
+    browser.start = AsyncMock()
+    browser.shutdown = AsyncMock()
+    capture_calls = {"n": 0}
+
+    browser.new_page = AsyncMock(return_value=MagicMock())
+
+    async def capture_detail(*_args, **_kwargs):
+        capture_calls["n"] += 1
+        if capture_calls["n"] == 1:
+            raise PlaywrightError("Protocol error (Network.getResponseBody)")
+        return MagicMock(html=detail_good, content_timed_out=False)
+
+    adapter = LinkedInJobSourceAdapter(
+        settings=settings,
+        browser=browser,
+        live_enabled=True,
+        filter_past_24_hours=True,
+    )
+    adapter._session = MagicMock()
+    adapter._session.require_session = MagicMock()
+
+    with (
+        patch(
+            "app.modules.collection.linkedin.adapter.capture_search_page_html",
+            new=AsyncMock(
+                return_value=MagicMock(
+                    html=html_search,
+                    page_url="https://www.linkedin.com/jobs/search/",
+                    page_title="Jobs",
+                    selector_timed_out=False,
+                    content_timed_out=False,
+                    title_timed_out=False,
+                    page_unresponsive=False,
+                    dom_indicators={"job_view_links": 2},
+                )
+            ),
+        ),
+        patch(
+            "app.modules.collection.linkedin.adapter.capture_job_detail_html",
+            new=AsyncMock(side_effect=capture_detail),
+        ),
+        patch(
+            "app.modules.collection.linkedin.adapter.close_page_bounded",
+            new=AsyncMock(),
+        ),
+    ):
+        result = await adapter.fetch_jobs(
+            country_code="GB",
+            keyword="software engineer",
+            limit=1,
+            checkpoint=None,
+        )
+
+    assert result.metrics["rejected_detail_error"] == 1
+    assert len(result.jobs) == 1
+    assert result.jobs[0].source_job_id == "9002"

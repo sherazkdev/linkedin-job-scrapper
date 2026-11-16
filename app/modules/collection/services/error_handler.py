@@ -7,6 +7,11 @@ from pydantic import ValidationError
 from app.modules.collection.linkedin.errors import LinkedInCollectionError
 from app.modules.collection.models.enums import CollectionErrorCategory
 
+try:
+    from playwright.async_api import Error as PlaywrightError
+except ImportError:  # pragma: no cover
+    PlaywrightError = None  # type: ignore[misc, assignment]
+
 logger = logging.getLogger(__name__)
 
 
@@ -17,8 +22,12 @@ class CollectionErrorHandler:
             return CollectionErrorCategory.VALIDATION
         if isinstance(exc, LinkedInCollectionError):
             return CollectionErrorCategory.ADAPTER
+        if PlaywrightError is not None and isinstance(exc, PlaywrightError):
+            return CollectionErrorCategory.ADAPTER
         name = exc.__class__.__name__.lower()
         if "timeout" in name or "connection" in name:
+            return CollectionErrorCategory.ADAPTER
+        if name == "error" and "playwright" in exc.__class__.__module__.lower():
             return CollectionErrorCategory.ADAPTER
         if "duplicatekey" in name or "mongo" in name or "database" in name:
             return CollectionErrorCategory.DATABASE
@@ -37,14 +46,23 @@ class CollectionErrorHandler:
         category = self.categorize(exc)
         if isinstance(exc, LinkedInCollectionError):
             message = f"linkedin:{exc.state.value}"
+        elif PlaywrightError is not None and isinstance(exc, PlaywrightError):
+            snippet = str(exc).replace("\n", " ")[:160]
+            message = f"playwright:{snippet or exc.__class__.__name__}"
+        elif category == CollectionErrorCategory.UNKNOWN:
+            snippet = str(exc).replace("\n", " ")[:160]
+            message = f"{category.value}: {exc.__class__.__name__}:{snippet}"
         else:
             message = f"{category.value}: {exc.__class__.__name__}"
         logger.warning(
-            "Collection error category=%s type=%s",
+            "Collection error category=%s type=%s message=%s",
             category.value,
             exc.__class__.__name__,
+            message,
             extra={"context": context or {}},
         )
-        if logger.isEnabledFor(logging.DEBUG):
+        if category == CollectionErrorCategory.UNKNOWN:
+            logger.warning("Collection error traceback:\n%s", traceback.format_exc())
+        elif logger.isEnabledFor(logging.DEBUG):
             logger.debug("Traceback: %s", traceback.format_exc())
         return message

@@ -39,6 +39,8 @@ def test_linkedin_adapter_timeout_estimate_exceeds_default_collection_timeout() 
         COLLECTION_ADAPTER_TIMEOUT_SECONDS=60,
         ALLOW_LIVE_LINKEDIN_COLLECTION=True,
         LINKEDIN_MAX_LIVE_JOBS_PER_RUN=5,
+        LINKEDIN_MAX_SEARCH_PAGES_PER_RUN=5,
+        LINKEDIN_MAX_DETAIL_OPENS_PER_RUN=40,
     )
     budget = _linkedin_live_adapter_timeout_seconds(settings)
     assert budget > 60

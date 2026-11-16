@@ -102,6 +102,10 @@ class Settings(BaseSettings):
         default=5,
         alias="LINKEDIN_MAX_SEARCH_PAGES_PER_RUN",
     )
+    linkedin_max_detail_opens_per_run: int = Field(
+        default=40,
+        alias="LINKEDIN_MAX_DETAIL_OPENS_PER_RUN",
+    )
 
     allow_live_public_board_collection: bool = Field(
         default=False,

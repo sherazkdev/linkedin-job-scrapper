@@ -39,8 +39,21 @@ from app.modules.collection.linkedin.recency import (
 from app.modules.collection.linkedin.session import LinkedInSessionStore
 from app.modules.collection.models.raw_job import RawJobRecord
 from app.modules.jobs.models.job import JobSource
+from playwright.async_api import Error as PlaywrightError
 
 logger = logging.getLogger(__name__)
+
+_FATAL_PLAYWRIGHT_MARKERS = (
+    "has been closed",
+    "target crashed",
+    "browser has been closed",
+    "connection closed",
+)
+
+
+def _is_fatal_playwright_error(exc: PlaywrightError) -> bool:
+    msg = str(exc).lower()
+    return any(marker in msg for marker in _FATAL_PLAYWRIGHT_MARKERS)
 
 
 class LinkedInJobSourceAdapter(JobSourceAdapter):
@@ -191,12 +204,16 @@ class LinkedInJobSourceAdapter(JobSourceAdapter):
             "rejected_location_mismatch": 0,
             "rejected_keyword_mismatch": 0,
             "rejected_detail_error": 0,
+            "rejected_keyword_serp": 0,
             "rejection_diagnostics": [],
             "filter_past_24_hours": self._filter_past_24h,
             "search_location": location,
             "search_pages_fetched": 0,
             "search_cards_seen": 0,
+            "detail_opens": 0,
+            "detail_open_cap_reached": False,
         }
+        max_detail_opens = max(1, int(self._settings.linkedin_max_detail_opens_per_run))
         now = datetime.now(UTC)
         current_page = page_index
         pages_fetched = 0
@@ -246,7 +263,10 @@ class LinkedInJobSourceAdapter(JobSourceAdapter):
                 close_grace_ms=close_grace_ms,
                 now=now,
                 metrics=metrics,
+                max_detail_opens=max_detail_opens,
             )
+            if metrics.get("detail_open_cap_reached"):
+                break
             if cards_on_last_page < LINKEDIN_SEARCH_PAGE_SIZE:
                 break
             current_page += 1
@@ -329,6 +349,18 @@ class LinkedInJobSourceAdapter(JobSourceAdapter):
             html = capture.html
         except LinkedInCollectionError:
             raise
+        except PlaywrightError as exc:
+            if _is_fatal_playwright_error(exc):
+                raise LinkedInCollectionError(
+                    LinkedInFailureState.PAGE_UNRESPONSIVE,
+                    f"LinkedIn search browser failure: {exc}",
+                    retryable=False,
+                ) from exc
+            raise LinkedInCollectionError(
+                LinkedInFailureState.NAVIGATION_TIMEOUT,
+                f"LinkedIn search navigation failed: {exc}",
+                retryable=False,
+            ) from exc
         except Exception as exc:
             raise LinkedInCollectionError(
                 LinkedInFailureState.NAVIGATION_TIMEOUT,
@@ -380,14 +412,55 @@ class LinkedInJobSourceAdapter(JobSourceAdapter):
         close_grace_ms: int,
         now: datetime,
         metrics: dict[str, Any],
+        max_detail_opens: int,
     ) -> None:
         for card in cards:
             if len(jobs) >= limit:
                 break
+            if int(metrics.get("detail_opens", 0)) >= max_detail_opens:
+                metrics["detail_open_cap_reached"] = True
+                logger.info(
+                    "LinkedIn detail open cap reached cap=%s collected=%s",
+                    max_detail_opens,
+                    len(jobs),
+                )
+                break
             job_id = str(card["source_job_id"])
             if job_id in processed_ids:
                 continue
+            card_title = card.get("title")
+            if not title_matches_keyword(card_title, keyword):
+                metrics["rejected_keyword_serp"] += 1
+                metrics["rejected_keyword_mismatch"] += 1
+                metrics["rejection_diagnostics"].append(
+                    build_recency_rejection_diagnostic(
+                        source_job_id=job_id,
+                        title=card_title,
+                        posting_label=card.get("posted_text"),
+                        posted_at=None,
+                        now=now,
+                        reason="keyword_mismatch_serp",
+                    )
+                )
+                continue
+            if search_location and not job_matches_search_location(
+                card.get("location_text"),
+                location,
+            ):
+                metrics["rejected_location_mismatch"] += 1
+                metrics["rejection_diagnostics"].append(
+                    build_recency_rejection_diagnostic(
+                        source_job_id=job_id,
+                        title=card_title,
+                        posting_label=card.get("posted_text"),
+                        posted_at=None,
+                        now=now,
+                        reason="location_mismatch_serp",
+                    )
+                )
+                continue
             try:
+                metrics["detail_opens"] = int(metrics.get("detail_opens", 0)) + 1
                 detail_page = await self._browser.new_page()
                 try:
                     detail_capture = await capture_job_detail_html(
@@ -421,25 +494,31 @@ class LinkedInJobSourceAdapter(JobSourceAdapter):
                     exc.state.value,
                 )
                 continue
-            filter_timer = log_phase_start(logger, "detail_recency_location", job_id=job_id)
-            card_location = card.get("location_text")
-            if search_location and not job_matches_search_location(
-                card_location or raw.location_text,
-                location,
-            ):
-                filter_timer.finish(outcome="rejected_location_mismatch")
-                metrics["rejected_location_mismatch"] += 1
+            except PlaywrightError as exc:
+                if _is_fatal_playwright_error(exc):
+                    raise LinkedInCollectionError(
+                        LinkedInFailureState.PAGE_UNRESPONSIVE,
+                        f"LinkedIn detail browser failure: {exc}",
+                        retryable=False,
+                    ) from exc
+                metrics["rejected_detail_error"] += 1
                 metrics["rejection_diagnostics"].append(
                     build_recency_rejection_diagnostic(
                         source_job_id=job_id,
                         title=card.get("title"),
-                        posting_label=card.get("posted_text") or raw.posting_time_text,
-                        posted_at=raw.posted_at,
+                        posting_label=card.get("posted_text"),
+                        posted_at=None,
                         now=now,
-                        reason="location_mismatch",
+                        reason="detail_playwright_error",
                     )
                 )
+                logger.warning(
+                    "LinkedIn detail skip job_id=%s playwright=%s",
+                    job_id,
+                    exc,
+                )
                 continue
+            filter_timer = log_phase_start(logger, "detail_recency_location", job_id=job_id)
             job_title = card.get("title") or raw.title
             if not title_matches_keyword(job_title, keyword):
                 filter_timer.finish(outcome="rejected_keyword_mismatch")
