@@ -273,6 +273,7 @@ class LinkedInJobSourceAdapter(JobSourceAdapter):
             "rejected_unknown_posting": 0,
             "rejected_location_mismatch": 0,
             "rejected_keyword_mismatch": 0,
+            "rejected_detail_error": 0,
             "rejection_diagnostics": [],
             "filter_past_24_hours": self._filter_past_24h,
             "search_location": location,
@@ -284,21 +285,40 @@ class LinkedInJobSourceAdapter(JobSourceAdapter):
             job_id = str(card["source_job_id"])
             if job_id in processed_ids:
                 continue
-            detail_page = await self._browser.new_page()
             try:
-                detail_capture = await capture_job_detail_html(
-                    detail_page,
-                    card["job_url"],
-                    job_id=job_id,
-                    navigation_timeout_ms=nav_ms,
-                    operation_timeout_ms=op_ms,
+                detail_page = await self._browser.new_page()
+                try:
+                    detail_capture = await capture_job_detail_html(
+                        detail_page,
+                        card["job_url"],
+                        job_id=job_id,
+                        navigation_timeout_ms=nav_ms,
+                        operation_timeout_ms=op_ms,
+                    )
+                    detail_html = detail_capture.html
+                finally:
+                    await close_page_bounded(detail_page, grace_ms=close_grace_ms)
+                parse_timer = log_phase_start(logger, "detail_posting_parse", job_id=job_id)
+                raw = parse_job_detail_html(detail_html, card=card, strict_posting_time=False)
+                parse_timer.finish()
+            except LinkedInCollectionError as exc:
+                metrics["rejected_detail_error"] += 1
+                metrics["rejection_diagnostics"].append(
+                    build_recency_rejection_diagnostic(
+                        source_job_id=job_id,
+                        title=card.get("title"),
+                        posting_label=card.get("posted_text"),
+                        posted_at=None,
+                        now=now,
+                        reason=f"detail_{exc.state.value}",
+                    )
                 )
-                detail_html = detail_capture.html
-            finally:
-                await close_page_bounded(detail_page, grace_ms=close_grace_ms)
-            parse_timer = log_phase_start(logger, "detail_posting_parse", job_id=job_id)
-            raw = parse_job_detail_html(detail_html, card=card, strict_posting_time=False)
-            parse_timer.finish()
+                logger.warning(
+                    "LinkedIn detail skip job_id=%s state=%s",
+                    job_id,
+                    exc.state.value,
+                )
+                continue
             filter_timer = log_phase_start(logger, "detail_recency_location", job_id=job_id)
             if search_location and not job_matches_search_location(
                 raw.location_text or card.get("location_text"),

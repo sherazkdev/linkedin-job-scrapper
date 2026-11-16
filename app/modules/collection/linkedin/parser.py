@@ -89,10 +89,7 @@ def parse_search_job_cards(html: str, *, search_country_code: str) -> list[dict[
         )
         time_el = card.select_one("time[datetime], time")
         if title_el is None or company_el is None:
-            raise LinkedInCollectionError(
-                LinkedInFailureState.UNSUPPORTED_PAGE_STRUCTURE,
-                "Search card missing required title/company selectors",
-            )
+            continue
         items.append(
             {
                 "source_job_id": job_id,
