@@ -65,6 +65,8 @@ async def test_detail_unsupported_skips_card_and_continues() -> None:
         live_enabled=True,
         filter_past_24_hours=True,
     )
+    adapter._session = MagicMock()
+    adapter._session.require_session = MagicMock()
 
     with (
         patch(
@@ -73,9 +75,11 @@ async def test_detail_unsupported_skips_card_and_continues() -> None:
                 return_value=MagicMock(
                     html=html_search,
                     page_url="https://www.linkedin.com/jobs/search/",
+                    page_title="Jobs",
                     selector_timed_out=False,
                     content_timed_out=False,
                     title_timed_out=False,
+                    page_unresponsive=False,
                     dom_indicators={"job_view_links": 2},
                 )
             ),
@@ -105,11 +109,20 @@ async def test_detail_unsupported_skips_card_and_continues() -> None:
 @pytest.mark.asyncio
 async def test_auth_block_on_detail_still_skips_without_crashing_batch() -> None:
     """Individual detail auth errors are skipped; search-level auth still fails fast."""
-    settings = Settings(ALLOW_LIVE_LINKEDIN_COLLECTION=True)
+    settings = Settings(
+        ALLOW_LIVE_LINKEDIN_COLLECTION=True,
+        LINKEDIN_NAVIGATION_TIMEOUT_MS=5000,
+        LINKEDIN_SELECTOR_TIMEOUT_MS=5000,
+        LINKEDIN_PAGE_OPERATION_TIMEOUT_MS=5000,
+        LINKEDIN_BROWSER_SHUTDOWN_GRACE_MS=1000,
+    )
     browser = MagicMock()
     browser.start = AsyncMock()
+    browser.new_page = AsyncMock(return_value=MagicMock())
     browser.shutdown = AsyncMock()
     adapter = LinkedInJobSourceAdapter(settings=settings, browser=browser, live_enabled=True)
+    adapter._session = MagicMock()
+    adapter._session.require_session = MagicMock()
     auth_html = "<html><body>sign in to linkedin</body></html>"
     with patch(
         "app.modules.collection.linkedin.adapter.capture_search_page_html",
@@ -117,10 +130,16 @@ async def test_auth_block_on_detail_still_skips_without_crashing_batch() -> None
             return_value=MagicMock(
                 html=auth_html,
                 page_url="https://www.linkedin.com/login",
+                page_title="Login",
                 selector_timed_out=False,
                 content_timed_out=False,
                 title_timed_out=False,
+                page_unresponsive=False,
             )
+        ),
+        patch(
+            "app.modules.collection.linkedin.adapter.close_page_bounded",
+            new=AsyncMock(),
         ),
     ):
         with pytest.raises(LinkedInCollectionError) as err:
