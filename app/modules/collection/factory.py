@@ -21,13 +21,16 @@ MARKET_SEARCH_SOURCES = frozenset({JobSource.ADZUNA})
 
 
 def _linkedin_live_adapter_timeout_seconds(settings: Settings) -> int:
+    from app.modules.collection.linkedin.pagination import LINKEDIN_SEARCH_PAGE_SIZE
+
     nav_s = settings.linkedin_navigation_timeout_ms / 1000
     sel_s = settings.linkedin_selector_timeout_ms / 1000
     op_s = settings.linkedin_page_operation_timeout_ms / 1000
     search_budget = nav_s + sel_s + (op_s * 2) + 15
     detail_budget = nav_s + op_s + 5
-    job_cap = max(1, settings.linkedin_max_live_jobs_per_run)
-    estimated = int(search_budget + (detail_budget * job_cap) + 30)
+    max_pages = max(1, settings.linkedin_max_search_pages_per_run)
+    max_details = max_pages * LINKEDIN_SEARCH_PAGE_SIZE
+    estimated = int(search_budget * max_pages + (detail_budget * max_details) + 30)
     return max(settings.collection_adapter_timeout_seconds, estimated)
 
 
