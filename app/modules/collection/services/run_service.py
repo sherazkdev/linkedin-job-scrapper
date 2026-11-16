@@ -64,11 +64,13 @@ class CollectionRunService:
         source: JobSource,
         country_code: str,
         keyword: str,
+        search_location: str | None = None,
     ) -> dict[str, Any] | None:
         return await self._repository.get_active_for_target(
             source=source,
             country_code=country_code,
             keyword=keyword,
+            search_location=search_location,
         )
 
     async def cancel_active_run(

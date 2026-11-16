@@ -117,6 +117,52 @@ async def test_orphaned_running_run_cleared_on_collect(integration_db: None) -> 
 
 
 @pytest.mark.asyncio
+async def test_running_run_guard_scoped_by_search_location(integration_db: None) -> None:
+    async with open_database("global_jobs_test") as database:
+        runs = RunRepository(database)
+        run_service = CollectionRunService(runs)
+        targets = TargetRepository(database)
+        await targets.upsert_target(
+            source=JobSource.LINKEDIN,
+            country_code="PK",
+            keyword="junior erp consultant",
+            search_location="islamabad, pakistan",
+            enabled=True,
+        )
+        await targets.upsert_target(
+            source=JobSource.LINKEDIN,
+            country_code="PK",
+            keyword="junior erp consultant",
+            search_location="",
+            enabled=True,
+        )
+        isb_run = await run_service.start(
+            source=JobSource.LINKEDIN,
+            country_code="PK",
+            keyword="junior erp consultant",
+            dry_run=False,
+            search_location="islamabad, pakistan",
+        )
+        assert isb_run.run_id
+        country_active = await run_service.get_running(
+            source=JobSource.LINKEDIN,
+            country_code="PK",
+            keyword="junior erp consultant",
+            search_location=None,
+        )
+        assert country_active is None
+        isb_active = await run_service.get_running(
+            source=JobSource.LINKEDIN,
+            country_code="PK",
+            keyword="junior erp consultant",
+            search_location="islamabad, pakistan",
+        )
+        assert isb_active is not None
+        assert isb_active["run_id"] == isb_run.run_id
+        await run_service.cancel_active_run(isb_run.run_id, error_summary="test_cleanup")
+
+
+@pytest.mark.asyncio
 async def test_cancellation_releases_lock_and_marks_run_cancelled(integration_db: None) -> None:
     settings = get_settings()
     async with open_database("global_jobs_test") as database:

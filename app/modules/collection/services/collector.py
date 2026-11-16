@@ -104,11 +104,19 @@ class JobCollector:
             source=source,
             country_code=country_code,
             keyword=keyword,
+            search_location=search_location,
         )
         if active is not None:
             raise CollectionLockError("Another collection run is already active for this target")
 
         await self._targets.upsert_target(
+            source=source,
+            country_code=country_code,
+            keyword=keyword,
+            search_location=search_location,
+        )
+
+        await self._targets.release_stale_lock(
             source=source,
             country_code=country_code,
             keyword=keyword,
@@ -208,6 +216,7 @@ class JobCollector:
             source=source,
             country_code=country_code,
             keyword=keyword,
+            search_location=search_location,
         )
         if active is None:
             return False

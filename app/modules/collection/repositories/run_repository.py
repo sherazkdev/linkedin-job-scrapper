@@ -7,6 +7,9 @@ from pymongo.asynchronous.database import AsyncDatabase
 from app.database.collection_indexes import COLLECTION_RUNS
 from app.modules.collection.models.enums import CollectionRunStatus
 from app.modules.collection.models.run import CollectionRun
+from app.modules.collection.repositories.checkpoint_repository import (
+    normalize_search_location_key,
+)
 from app.modules.jobs.models.job import JobSource
 
 
@@ -52,15 +55,23 @@ class RunRepository:
         source: JobSource,
         country_code: str,
         keyword: str,
+        search_location: str | None = None,
     ) -> dict[str, Any] | None:
-        return await self._collection.find_one(
-            {
-                "source": source.value,
-                "country_code": country_code.upper(),
-                "keyword": keyword.strip().lower(),
-                "status": CollectionRunStatus.RUNNING.value,
-            }
-        )
+        loc_key = normalize_search_location_key(search_location)
+        query: dict[str, Any] = {
+            "source": source.value,
+            "country_code": country_code.upper(),
+            "keyword": keyword.strip().lower(),
+            "status": CollectionRunStatus.RUNNING.value,
+        }
+        if loc_key:
+            query["search_location"] = loc_key
+        else:
+            query["$or"] = [
+                {"search_location": ""},
+                {"search_location": {"$exists": False}},
+            ]
+        return await self._collection.find_one(query)
 
     async def cancel_if_running(
         self,

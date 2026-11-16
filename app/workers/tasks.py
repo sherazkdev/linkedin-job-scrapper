@@ -78,9 +78,12 @@ def run_collection_task(
         )
         return summary
     except CollectionLockError as exc:
-        logger.warning("Collection lock busy country=%s keyword=%s", country_code, keyword)
-        if self.request.retries < settings.celery_task_max_retries:
-            raise self.retry(exc=exc, countdown=30 + random.randint(0, 15)) from exc
+        logger.warning(
+            "Collection lock busy country=%s keyword=%s location=%s — no Celery retry",
+            country_code,
+            keyword,
+            search_location,
+        )
         raise
     except LinkedInCollectionError as exc:
         logger.error(
