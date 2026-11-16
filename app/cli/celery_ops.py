@@ -4,6 +4,7 @@ import argparse
 import json
 import logging
 import sys
+from uuid import uuid4
 
 from app.core.config import get_settings
 from app.core.logging import configure_logging
@@ -21,6 +22,15 @@ def _parse_args() -> argparse.Namespace:
     inspect = sub.add_parser("inspect", help="Raw inspect snapshot (internal)")
     inspect.add_argument("action", choices=["active", "reserved", "scheduled", "stats"])
     sub.add_parser("dispatch-once", help="Run dispatcher once (fixture-eligible targets)")
+    pilot = sub.add_parser(
+        "pilot-dispatch-once",
+        help="Enqueue exactly one collection task with a unique task_id (live pilots)",
+    )
+    pilot.add_argument("--source", default="linkedin")
+    pilot.add_argument("--country-code", default="PK")
+    pilot.add_argument("--keyword", default="junior erp consultant")
+    pilot.add_argument("--search-location", default="islamabad, pakistan")
+    pilot.add_argument("--max-jobs", type=int, default=1)
     return parser.parse_args()
 
 
@@ -89,6 +99,40 @@ def main() -> None:
 
         summary = dispatch_eligible_sync()
         print(json.dumps(summary, default=str))
+        raise SystemExit(0)
+
+    if args.command == "pilot-dispatch-once":
+        from app.workers.tasks import run_collection_task
+
+        suffix = uuid4().hex[:12]
+        task_id = (
+            f"pilot-{args.source}-{args.country_code}-{args.keyword.replace(' ', '_')}"
+            f"-{suffix}"
+        )
+        run_collection_task.apply_async(
+            kwargs={
+                "source": args.source,
+                "country_code": args.country_code,
+                "keyword": args.keyword,
+                "max_jobs": args.max_jobs,
+                "search_location": args.search_location,
+            },
+            queue=settings.celery_task_default_queue,
+            task_id=task_id,
+        )
+        print(
+            json.dumps(
+                {
+                    "task_id": task_id,
+                    "source": args.source,
+                    "country_code": args.country_code,
+                    "keyword": args.keyword,
+                    "search_location": args.search_location,
+                    "max_jobs": args.max_jobs,
+                    "queue": settings.celery_task_default_queue,
+                }
+            )
+        )
         raise SystemExit(0)
 
     raise SystemExit(2)
