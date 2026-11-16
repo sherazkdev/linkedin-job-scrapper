@@ -1,0 +1,56 @@
+# VPS host overlay — deploy at /var/www/linkedin-job-scrapper with an isolated Compose project.
+#
+# Usage (base stack: API + Mongo + Redis only; Beat and workers are profile-gated in compose.yaml):
+#   docker compose -f compose.yaml -f compose.contabo-vps.yaml -p linkedin-scraper up -d
+#
+# Pilot overlay (adds pilot DB name, worker limits; still no live collection by default):
+#   docker compose -f compose.yaml -f compose.contabo-vps.yaml -f compose.contabo-pilot.yaml -p linkedin-scraper \
+#     --profile celery-linkedin up -d mongodb redis api worker-linkedin
+#
+# Overrides global-jobs-* container and volume names so this stack does not clash with other VPS apps
+# or a second copy of compose.yaml using default names.
+
+name: linkedin-scraper
+
+services:
+  api:
+    container_name: linkedin-scraper-api
+    ports:
+      - "127.0.0.1:${LINKEDIN_SCRAPER_API_PORT:-18095}:8000"
+
+  api-test:
+    container_name: linkedin-scraper-api-test
+    ports:
+      - "127.0.0.1:${LINKEDIN_SCRAPER_API_TEST_PORT:-18096}:8000"
+
+  mongodb:
+    container_name: linkedin-scraper-mongodb
+
+  redis:
+    container_name: linkedin-scraper-redis
+
+  worker-linkedin:
+    container_name: linkedin-scraper-worker-linkedin
+
+  worker:
+    container_name: linkedin-scraper-worker
+
+  beat:
+    container_name: linkedin-scraper-beat
+
+  collector:
+    container_name: linkedin-scraper-collector
+
+networks:
+  internal:
+    name: linkedin_scraper_internal
+
+volumes:
+  mongodb_data:
+    name: linkedin_scraper_mongodb_data
+  redis_data:
+    name: linkedin_scraper_redis_data
+  linkedin_auth:
+    name: linkedin_scraper_linkedin_auth
+  celerybeat_data:
+    name: linkedin_scraper_celerybeat_data

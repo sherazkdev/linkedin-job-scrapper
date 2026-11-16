@@ -1,0 +1,22 @@
+# Overlay for Contabo isolated pilot — does not enable live collection by itself.
+# Usage:
+#   docker compose -f compose.yaml -f compose.contabo-pilot.yaml -p linkedin-pilot ...
+#
+# Use a fresh project name and volumes; do not attach production Mongo/Redis volumes.
+
+services:
+  worker-linkedin:
+    profiles:
+      - celery-linkedin
+    mem_limit: 2g
+    memswap_limit: 3g
+    pids_limit: 512
+    oom_score_adj: 500
+    restart: "no"
+    environment:
+      CELERY_WORKER_MONGO_DB_NAME: global_jobs_pilot
+      ALLOW_COLLECTION_PRODUCTION_DB: "false"
+      ALLOW_LIVE_LINKEDIN_COLLECTION: "false"
+      CELERY_ALLOW_LINKEDIN_TASKS: "false"
+      CELERY_DISPATCH_MAX_PER_TICK: "1"
+      CELERY_DISPATCH_SOURCE_ALLOWLIST: linkedin

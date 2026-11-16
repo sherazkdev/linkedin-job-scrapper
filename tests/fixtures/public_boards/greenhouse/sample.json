@@ -1,0 +1,25 @@
+{
+  "company_name": "Sample Public Co",
+  "jobs_payload": {
+    "jobs": [
+      {
+        "id": 4011001,
+        "title": "Backend Engineer",
+        "location": {"name": "Berlin, Germany"},
+        "absolute_url": "https://boards.greenhouse.io/sample/jobs/4011001",
+        "first_published": "2025-10-01T12:00:00Z",
+        "updated_at": "2025-10-15T08:30:00-04:00",
+        "content": "<p>Build APIs and data pipelines.</p>"
+      },
+      {
+        "id": 4011002,
+        "title": "Sales Representative",
+        "location": {"name": "Remote"},
+        "absolute_url": "https://boards.greenhouse.io/sample/jobs/4011002",
+        "first_published": "2025-09-01T12:00:00Z",
+        "updated_at": "2025-09-01T12:00:00Z",
+        "content": ""
+      }
+    ]
+  }
+}

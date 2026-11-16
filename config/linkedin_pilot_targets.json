@@ -1,0 +1,21 @@
+{
+  "description": "Pilot LinkedIn collection_targets (disabled by default). Enable individual rows in Mongo or via pilot_targets CLI.",
+  "targets": [
+    {
+      "country_code": "PK",
+      "keyword": "junior erp consultant",
+      "search_location": "Islamabad, Pakistan",
+      "enabled": false,
+      "priority": 200,
+      "max_jobs_per_run": 1
+    },
+    {
+      "country_code": "PK",
+      "keyword": "software engineer",
+      "search_location": "",
+      "enabled": false,
+      "priority": 100,
+      "max_jobs_per_run": 2
+    }
+  ]
+}

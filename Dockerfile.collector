@@ -1,0 +1,36 @@
+# On-demand LinkedIn/browser collector (Playwright Chromium). API image remains separate.
+FROM python:3.13-slim-bookworm
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+
+WORKDIR /app
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        ca-certificates \
+        curl \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN groupadd --gid 1000 browseruser \
+    && useradd --uid 1000 --gid browseruser --shell /bin/bash --create-home browseruser
+
+COPY requirements.txt requirements-collector.txt ./
+RUN pip install --upgrade pip \
+    && pip install -r requirements-collector.txt
+
+ENV PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS=true
+RUN playwright install chromium --with-deps \
+    && chown -R browseruser:browseruser /ms-playwright
+
+COPY app/ ./app/
+
+RUN mkdir -p /data/linkedin && chown -R browseruser:browseruser /app /data/linkedin
+
+USER browseruser
+
+STOPSIGNAL SIGTERM
+
+CMD ["python", "-m", "app.cli.browser_smoke"]

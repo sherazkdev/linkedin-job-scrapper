@@ -1,0 +1,27 @@
+{
+  "company_name": "Ashby Sample",
+  "board_payload": {
+    "apiVersion": "1",
+    "jobs": [
+      {
+        "id": "ashby-job-uuid-1",
+        "title": "Data Engineer",
+        "location": "London, United Kingdom",
+        "descriptionPlain": "Warehouse and streaming pipelines.",
+        "applyUrl": "https://jobs.ashbyhq.com/sample/ashby-job-uuid-1/application",
+        "publishedAt": "2025-08-20T10:00:00.000Z",
+        "isListed": true,
+        "workplaceType": "OnSite"
+      },
+      {
+        "id": "ashby-job-uuid-unlisted",
+        "title": "Hidden Role",
+        "location": "Remote",
+        "descriptionPlain": "Should not be collected",
+        "applyUrl": "https://jobs.ashbyhq.com/sample/hidden",
+        "publishedAt": "2025-08-01T10:00:00.000Z",
+        "isListed": false
+      }
+    ]
+  }
+}

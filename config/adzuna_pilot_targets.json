@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "purpose": "Controlled multi-country pilot design (not scheduled; operator approval required).",
+  "provider": "adzuna",
+  "targets": [
+    {
+      "country_code": "US",
+      "keyword": "Software Engineer",
+      "adzuna_supported": true,
+      "adzuna_slug": "us"
+    },
+    {
+      "country_code": "DE",
+      "keyword": "Data Analyst",
+      "adzuna_supported": true,
+      "adzuna_slug": "de"
+    },
+    {
+      "country_code": "PK",
+      "keyword": "Software Engineer",
+      "adzuna_supported": false,
+      "awaiting_provider": "jooble"
+    },
+    {
+      "country_code": "AE",
+      "keyword": "Procurement Officer",
+      "adzuna_supported": false,
+      "awaiting_provider": "careerjet"
+    }
+  ]
+}

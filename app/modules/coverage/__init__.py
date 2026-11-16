@@ -1,0 +1,1 @@
+"""Canonical global coverage manifest (40×50) independent of collection schedulers."""

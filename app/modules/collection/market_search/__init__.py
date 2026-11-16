@@ -1,0 +1,1 @@
+"""Market-search provider parsers (offline-first)."""

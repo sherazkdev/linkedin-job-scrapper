@@ -1,0 +1,8269 @@
+{
+  "schema_version": 1,
+  "purpose": "Canonical requested country-keyword targets for source coverage auditing and permissioned integration. Not proof of job availability or access authorization.",
+  "original_filename": "scraper(1).py",
+  "counts": {
+    "legacy_entries": 1998,
+    "legacy_unique_pairs": 1995,
+    "countries": 40,
+    "keywords": 50,
+    "canonical_target_pairs": 2000,
+    "missing_legacy_pairs": 5,
+    "duplicate_legacy_pairs": 3
+  },
+  "countries": [
+    {
+      "name": "Australia",
+      "country_code": "AU"
+    },
+    {
+      "name": "Bahrain",
+      "country_code": "BH"
+    },
+    {
+      "name": "Canada",
+      "country_code": "CA"
+    },
+    {
+      "name": "China",
+      "country_code": "CN"
+    },
+    {
+      "name": "Czech Republic",
+      "country_code": "CZ"
+    },
+    {
+      "name": "Denmark",
+      "country_code": "DK"
+    },
+    {
+      "name": "Egypt",
+      "country_code": "EG"
+    },
+    {
+      "name": "Finland",
+      "country_code": "FI"
+    },
+    {
+      "name": "France",
+      "country_code": "FR"
+    },
+    {
+      "name": "Germany",
+      "country_code": "DE"
+    },
+    {
+      "name": "Hong Kong",
+      "country_code": "HK"
+    },
+    {
+      "name": "India",
+      "country_code": "IN"
+    },
+    {
+      "name": "Indonesia",
+      "country_code": "ID"
+    },
+    {
+      "name": "Ireland",
+      "country_code": "IE"
+    },
+    {
+      "name": "Italy",
+      "country_code": "IT"
+    },
+    {
+      "name": "Japan",
+      "country_code": "JP"
+    },
+    {
+      "name": "Kuwait",
+      "country_code": "KW"
+    },
+    {
+      "name": "Malaysia",
+      "country_code": "MY"
+    },
+    {
+      "name": "Netherlands",
+      "country_code": "NL"
+    },
+    {
+      "name": "New Zealand",
+      "country_code": "NZ"
+    },
+    {
+      "name": "Nigeria",
+      "country_code": "NG"
+    },
+    {
+      "name": "Norway",
+      "country_code": "NO"
+    },
+    {
+      "name": "Oman",
+      "country_code": "OM"
+    },
+    {
+      "name": "Pakistan",
+      "country_code": "PK"
+    },
+    {
+      "name": "Philippines",
+      "country_code": "PH"
+    },
+    {
+      "name": "Poland",
+      "country_code": "PL"
+    },
+    {
+      "name": "Qatar",
+      "country_code": "QA"
+    },
+    {
+      "name": "Saudi Arabia",
+      "country_code": "SA"
+    },
+    {
+      "name": "Singapore",
+      "country_code": "SG"
+    },
+    {
+      "name": "South Africa",
+      "country_code": "ZA"
+    },
+    {
+      "name": "South Korea",
+      "country_code": "KR"
+    },
+    {
+      "name": "Spain",
+      "country_code": "ES"
+    },
+    {
+      "name": "Sweden",
+      "country_code": "SE"
+    },
+    {
+      "name": "Switzerland",
+      "country_code": "CH"
+    },
+    {
+      "name": "Thailand",
+      "country_code": "TH"
+    },
+    {
+      "name": "Turkey",
+      "country_code": "TR"
+    },
+    {
+      "name": "United Arab Emirates",
+      "country_code": "AE"
+    },
+    {
+      "name": "United Kingdom",
+      "country_code": "GB"
+    },
+    {
+      "name": "United States",
+      "country_code": "US"
+    },
+    {
+      "name": "Vietnam",
+      "country_code": "VN"
+    }
+  ],
+  "keywords": [
+    "AI Engineer",
+    "Accountant",
+    "Admin Assistant",
+    "Automation Engineer",
+    "Backend Developer",
+    "Call Center Agent",
+    "Cashier",
+    "Cloud Engineer",
+    "Content Writer",
+    "Customer Service Representative",
+    "Cyber Security Analyst",
+    "Data Analyst",
+    "Data Scientist",
+    "Database Administrator",
+    "DevOps Engineer",
+    "Driver",
+    "Event Coordinator",
+    "Frontend Developer",
+    "Full Stack Developer",
+    "Game Developer",
+    "Graphic Designer",
+    "HR Manager",
+    "Hotel Front Desk Officer",
+    "Housekeeping Supervisor",
+    "IT Manager",
+    "IT Project Manager",
+    "IT Support Specialist",
+    "Machine Learning Engineer",
+    "Marketing Manager",
+    "Mobile App Developer",
+    "Network Engineer",
+    "Office Administrator",
+    "Office Support Staff",
+    "Operations Manager",
+    "Procurement Officer",
+    "Product Manager (IT)",
+    "QA Engineer",
+    "Real Estate Agent",
+    "Receptionist",
+    "Restaurant Manager",
+    "Sales Executive",
+    "Sales Manager",
+    "Scrum Master",
+    "Security Guard",
+    "Social Media Manager",
+    "Software Engineer",
+    "Store Manager",
+    "System Administrator",
+    "UI/UX Designer",
+    "Web Developer"
+  ],
+  "missing_from_legacy": [
+    {
+      "country": "Czech Republic",
+      "keyword": "QA Engineer"
+    },
+    {
+      "country": "Singapore",
+      "keyword": "Sales Executive"
+    },
+    {
+      "country": "United Arab Emirates",
+      "keyword": "Procurement Officer"
+    },
+    {
+      "country": "United States",
+      "keyword": "Data Scientist"
+    },
+    {
+      "country": "Vietnam",
+      "keyword": "Real Estate Agent"
+    }
+  ],
+  "duplicate_legacy_pairs": [
+    {
+      "country": "Australia",
+      "keyword": "IT Project Manager",
+      "count": 2
+    },
+    {
+      "country": "South Africa",
+      "keyword": "Marketing Manager",
+      "count": 2
+    },
+    {
+      "country": "Finland",
+      "keyword": "Real Estate Agent",
+      "count": 2
+    }
+  ],
+  "targets": [
+    {
+      "country_code": "AU",
+      "keyword": "AI Engineer"
+    },
+    {
+      "country_code": "AU",
+      "keyword": "Accountant"
+    },
+    {
+      "country_code": "AU",
+      "keyword": "Admin Assistant"
+    },
+    {
+      "country_code": "AU",
+      "keyword": "Automation Engineer"
+    },
+    {
+      "country_code": "AU",
+      "keyword": "Backend Developer"
+    },
+    {
+      "country_code": "AU",
+      "keyword": "Call Center Agent"
+    },
+    {
+      "country_code": "AU",
+      "keyword": "Cashier"
+    },
+    {
+      "country_code": "AU",
+      "keyword": "Cloud Engineer"
+    },
+    {
+      "country_code": "AU",
+      "keyword": "Content Writer"
+    },
+    {
+      "country_code": "AU",
+      "keyword": "Customer Service Representative"
+    },
+    {
+      "country_code": "AU",
+      "keyword": "Cyber Security Analyst"
+    },
+    {
+      "country_code": "AU",
+      "keyword": "Data Analyst"
+    },
+    {
+      "country_code": "AU",
+      "keyword": "Data Scientist"
+    },
+    {
+      "country_code": "AU",
+      "keyword": "Database Administrator"
+    },
+    {
+      "country_code": "AU",
+      "keyword": "DevOps Engineer"
+    },
+    {
+      "country_code": "AU",
+      "keyword": "Driver"
+    },
+    {
+      "country_code": "AU",
+      "keyword": "Event Coordinator"
+    },
+    {
+      "country_code": "AU",
+      "keyword": "Frontend Developer"
+    },
+    {
+      "country_code": "AU",
+      "keyword": "Full Stack Developer"
+    },
+    {
+      "country_code": "AU",
+      "keyword": "Game Developer"
+    },
+    {
+      "country_code": "AU",
+      "keyword": "Graphic Designer"
+    },
+    {
+      "country_code": "AU",
+      "keyword": "HR Manager"
+    },
+    {
+      "country_code": "AU",
+      "keyword": "Hotel Front Desk Officer"
+    },
+    {
+      "country_code": "AU",
+      "keyword": "Housekeeping Supervisor"
+    },
+    {
+      "country_code": "AU",
+      "keyword": "IT Manager"
+    },
+    {
+      "country_code": "AU",
+      "keyword": "IT Project Manager"
+    },
+    {
+      "country_code": "AU",
+      "keyword": "IT Support Specialist"
+    },
+    {
+      "country_code": "AU",
+      "keyword": "Machine Learning Engineer"
+    },
+    {
+      "country_code": "AU",
+      "keyword": "Marketing Manager"
+    },
+    {
+      "country_code": "AU",
+      "keyword": "Mobile App Developer"
+    },
+    {
+      "country_code": "AU",
+      "keyword": "Network Engineer"
+    },
+    {
+      "country_code": "AU",
+      "keyword": "Office Administrator"
+    },
+    {
+      "country_code": "AU",
+      "keyword": "Office Support Staff"
+    },
+    {
+      "country_code": "AU",
+      "keyword": "Operations Manager"
+    },
+    {
+      "country_code": "AU",
+      "keyword": "Procurement Officer"
+    },
+    {
+      "country_code": "AU",
+      "keyword": "Product Manager (IT)"
+    },
+    {
+      "country_code": "AU",
+      "keyword": "QA Engineer"
+    },
+    {
+      "country_code": "AU",
+      "keyword": "Real Estate Agent"
+    },
+    {
+      "country_code": "AU",
+      "keyword": "Receptionist"
+    },
+    {
+      "country_code": "AU",
+      "keyword": "Restaurant Manager"
+    },
+    {
+      "country_code": "AU",
+      "keyword": "Sales Executive"
+    },
+    {
+      "country_code": "AU",
+      "keyword": "Sales Manager"
+    },
+    {
+      "country_code": "AU",
+      "keyword": "Scrum Master"
+    },
+    {
+      "country_code": "AU",
+      "keyword": "Security Guard"
+    },
+    {
+      "country_code": "AU",
+      "keyword": "Social Media Manager"
+    },
+    {
+      "country_code": "AU",
+      "keyword": "Software Engineer"
+    },
+    {
+      "country_code": "AU",
+      "keyword": "Store Manager"
+    },
+    {
+      "country_code": "AU",
+      "keyword": "System Administrator"
+    },
+    {
+      "country_code": "AU",
+      "keyword": "UI/UX Designer"
+    },
+    {
+      "country_code": "AU",
+      "keyword": "Web Developer"
+    },
+    {
+      "country_code": "BH",
+      "keyword": "AI Engineer"
+    },
+    {
+      "country_code": "BH",
+      "keyword": "Accountant"
+    },
+    {
+      "country_code": "BH",
+      "keyword": "Admin Assistant"
+    },
+    {
+      "country_code": "BH",
+      "keyword": "Automation Engineer"
+    },
+    {
+      "country_code": "BH",
+      "keyword": "Backend Developer"
+    },
+    {
+      "country_code": "BH",
+      "keyword": "Call Center Agent"
+    },
+    {
+      "country_code": "BH",
+      "keyword": "Cashier"
+    },
+    {
+      "country_code": "BH",
+      "keyword": "Cloud Engineer"
+    },
+    {
+      "country_code": "BH",
+      "keyword": "Content Writer"
+    },
+    {
+      "country_code": "BH",
+      "keyword": "Customer Service Representative"
+    },
+    {
+      "country_code": "BH",
+      "keyword": "Cyber Security Analyst"
+    },
+    {
+      "country_code": "BH",
+      "keyword": "Data Analyst"
+    },
+    {
+      "country_code": "BH",
+      "keyword": "Data Scientist"
+    },
+    {
+      "country_code": "BH",
+      "keyword": "Database Administrator"
+    },
+    {
+      "country_code": "BH",
+      "keyword": "DevOps Engineer"
+    },
+    {
+      "country_code": "BH",
+      "keyword": "Driver"
+    },
+    {
+      "country_code": "BH",
+      "keyword": "Event Coordinator"
+    },
+    {
+      "country_code": "BH",
+      "keyword": "Frontend Developer"
+    },
+    {
+      "country_code": "BH",
+      "keyword": "Full Stack Developer"
+    },
+    {
+      "country_code": "BH",
+      "keyword": "Game Developer"
+    },
+    {
+      "country_code": "BH",
+      "keyword": "Graphic Designer"
+    },
+    {
+      "country_code": "BH",
+      "keyword": "HR Manager"
+    },
+    {
+      "country_code": "BH",
+      "keyword": "Hotel Front Desk Officer"
+    },
+    {
+      "country_code": "BH",
+      "keyword": "Housekeeping Supervisor"
+    },
+    {
+      "country_code": "BH",
+      "keyword": "IT Manager"
+    },
+    {
+      "country_code": "BH",
+      "keyword": "IT Project Manager"
+    },
+    {
+      "country_code": "BH",
+      "keyword": "IT Support Specialist"
+    },
+    {
+      "country_code": "BH",
+      "keyword": "Machine Learning Engineer"
+    },
+    {
+      "country_code": "BH",
+      "keyword": "Marketing Manager"
+    },
+    {
+      "country_code": "BH",
+      "keyword": "Mobile App Developer"
+    },
+    {
+      "country_code": "BH",
+      "keyword": "Network Engineer"
+    },
+    {
+      "country_code": "BH",
+      "keyword": "Office Administrator"
+    },
+    {
+      "country_code": "BH",
+      "keyword": "Office Support Staff"
+    },
+    {
+      "country_code": "BH",
+      "keyword": "Operations Manager"
+    },
+    {
+      "country_code": "BH",
+      "keyword": "Procurement Officer"
+    },
+    {
+      "country_code": "BH",
+      "keyword": "Product Manager (IT)"
+    },
+    {
+      "country_code": "BH",
+      "keyword": "QA Engineer"
+    },
+    {
+      "country_code": "BH",
+      "keyword": "Real Estate Agent"
+    },
+    {
+      "country_code": "BH",
+      "keyword": "Receptionist"
+    },
+    {
+      "country_code": "BH",
+      "keyword": "Restaurant Manager"
+    },
+    {
+      "country_code": "BH",
+      "keyword": "Sales Executive"
+    },
+    {
+      "country_code": "BH",
+      "keyword": "Sales Manager"
+    },
+    {
+      "country_code": "BH",
+      "keyword": "Scrum Master"
+    },
+    {
+      "country_code": "BH",
+      "keyword": "Security Guard"
+    },
+    {
+      "country_code": "BH",
+      "keyword": "Social Media Manager"
+    },
+    {
+      "country_code": "BH",
+      "keyword": "Software Engineer"
+    },
+    {
+      "country_code": "BH",
+      "keyword": "Store Manager"
+    },
+    {
+      "country_code": "BH",
+      "keyword": "System Administrator"
+    },
+    {
+      "country_code": "BH",
+      "keyword": "UI/UX Designer"
+    },
+    {
+      "country_code": "BH",
+      "keyword": "Web Developer"
+    },
+    {
+      "country_code": "CA",
+      "keyword": "AI Engineer"
+    },
+    {
+      "country_code": "CA",
+      "keyword": "Accountant"
+    },
+    {
+      "country_code": "CA",
+      "keyword": "Admin Assistant"
+    },
+    {
+      "country_code": "CA",
+      "keyword": "Automation Engineer"
+    },
+    {
+      "country_code": "CA",
+      "keyword": "Backend Developer"
+    },
+    {
+      "country_code": "CA",
+      "keyword": "Call Center Agent"
+    },
+    {
+      "country_code": "CA",
+      "keyword": "Cashier"
+    },
+    {
+      "country_code": "CA",
+      "keyword": "Cloud Engineer"
+    },
+    {
+      "country_code": "CA",
+      "keyword": "Content Writer"
+    },
+    {
+      "country_code": "CA",
+      "keyword": "Customer Service Representative"
+    },
+    {
+      "country_code": "CA",
+      "keyword": "Cyber Security Analyst"
+    },
+    {
+      "country_code": "CA",
+      "keyword": "Data Analyst"
+    },
+    {
+      "country_code": "CA",
+      "keyword": "Data Scientist"
+    },
+    {
+      "country_code": "CA",
+      "keyword": "Database Administrator"
+    },
+    {
+      "country_code": "CA",
+      "keyword": "DevOps Engineer"
+    },
+    {
+      "country_code": "CA",
+      "keyword": "Driver"
+    },
+    {
+      "country_code": "CA",
+      "keyword": "Event Coordinator"
+    },
+    {
+      "country_code": "CA",
+      "keyword": "Frontend Developer"
+    },
+    {
+      "country_code": "CA",
+      "keyword": "Full Stack Developer"
+    },
+    {
+      "country_code": "CA",
+      "keyword": "Game Developer"
+    },
+    {
+      "country_code": "CA",
+      "keyword": "Graphic Designer"
+    },
+    {
+      "country_code": "CA",
+      "keyword": "HR Manager"
+    },
+    {
+      "country_code": "CA",
+      "keyword": "Hotel Front Desk Officer"
+    },
+    {
+      "country_code": "CA",
+      "keyword": "Housekeeping Supervisor"
+    },
+    {
+      "country_code": "CA",
+      "keyword": "IT Manager"
+    },
+    {
+      "country_code": "CA",
+      "keyword": "IT Project Manager"
+    },
+    {
+      "country_code": "CA",
+      "keyword": "IT Support Specialist"
+    },
+    {
+      "country_code": "CA",
+      "keyword": "Machine Learning Engineer"
+    },
+    {
+      "country_code": "CA",
+      "keyword": "Marketing Manager"
+    },
+    {
+      "country_code": "CA",
+      "keyword": "Mobile App Developer"
+    },
+    {
+      "country_code": "CA",
+      "keyword": "Network Engineer"
+    },
+    {
+      "country_code": "CA",
+      "keyword": "Office Administrator"
+    },
+    {
+      "country_code": "CA",
+      "keyword": "Office Support Staff"
+    },
+    {
+      "country_code": "CA",
+      "keyword": "Operations Manager"
+    },
+    {
+      "country_code": "CA",
+      "keyword": "Procurement Officer"
+    },
+    {
+      "country_code": "CA",
+      "keyword": "Product Manager (IT)"
+    },
+    {
+      "country_code": "CA",
+      "keyword": "QA Engineer"
+    },
+    {
+      "country_code": "CA",
+      "keyword": "Real Estate Agent"
+    },
+    {
+      "country_code": "CA",
+      "keyword": "Receptionist"
+    },
+    {
+      "country_code": "CA",
+      "keyword": "Restaurant Manager"
+    },
+    {
+      "country_code": "CA",
+      "keyword": "Sales Executive"
+    },
+    {
+      "country_code": "CA",
+      "keyword": "Sales Manager"
+    },
+    {
+      "country_code": "CA",
+      "keyword": "Scrum Master"
+    },
+    {
+      "country_code": "CA",
+      "keyword": "Security Guard"
+    },
+    {
+      "country_code": "CA",
+      "keyword": "Social Media Manager"
+    },
+    {
+      "country_code": "CA",
+      "keyword": "Software Engineer"
+    },
+    {
+      "country_code": "CA",
+      "keyword": "Store Manager"
+    },
+    {
+      "country_code": "CA",
+      "keyword": "System Administrator"
+    },
+    {
+      "country_code": "CA",
+      "keyword": "UI/UX Designer"
+    },
+    {
+      "country_code": "CA",
+      "keyword": "Web Developer"
+    },
+    {
+      "country_code": "CN",
+      "keyword": "AI Engineer"
+    },
+    {
+      "country_code": "CN",
+      "keyword": "Accountant"
+    },
+    {
+      "country_code": "CN",
+      "keyword": "Admin Assistant"
+    },
+    {
+      "country_code": "CN",
+      "keyword": "Automation Engineer"
+    },
+    {
+      "country_code": "CN",
+      "keyword": "Backend Developer"
+    },
+    {
+      "country_code": "CN",
+      "keyword": "Call Center Agent"
+    },
+    {
+      "country_code": "CN",
+      "keyword": "Cashier"
+    },
+    {
+      "country_code": "CN",
+      "keyword": "Cloud Engineer"
+    },
+    {
+      "country_code": "CN",
+      "keyword": "Content Writer"
+    },
+    {
+      "country_code": "CN",
+      "keyword": "Customer Service Representative"
+    },
+    {
+      "country_code": "CN",
+      "keyword": "Cyber Security Analyst"
+    },
+    {
+      "country_code": "CN",
+      "keyword": "Data Analyst"
+    },
+    {
+      "country_code": "CN",
+      "keyword": "Data Scientist"
+    },
+    {
+      "country_code": "CN",
+      "keyword": "Database Administrator"
+    },
+    {
+      "country_code": "CN",
+      "keyword": "DevOps Engineer"
+    },
+    {
+      "country_code": "CN",
+      "keyword": "Driver"
+    },
+    {
+      "country_code": "CN",
+      "keyword": "Event Coordinator"
+    },
+    {
+      "country_code": "CN",
+      "keyword": "Frontend Developer"
+    },
+    {
+      "country_code": "CN",
+      "keyword": "Full Stack Developer"
+    },
+    {
+      "country_code": "CN",
+      "keyword": "Game Developer"
+    },
+    {
+      "country_code": "CN",
+      "keyword": "Graphic Designer"
+    },
+    {
+      "country_code": "CN",
+      "keyword": "HR Manager"
+    },
+    {
+      "country_code": "CN",
+      "keyword": "Hotel Front Desk Officer"
+    },
+    {
+      "country_code": "CN",
+      "keyword": "Housekeeping Supervisor"
+    },
+    {
+      "country_code": "CN",
+      "keyword": "IT Manager"
+    },
+    {
+      "country_code": "CN",
+      "keyword": "IT Project Manager"
+    },
+    {
+      "country_code": "CN",
+      "keyword": "IT Support Specialist"
+    },
+    {
+      "country_code": "CN",
+      "keyword": "Machine Learning Engineer"
+    },
+    {
+      "country_code": "CN",
+      "keyword": "Marketing Manager"
+    },
+    {
+      "country_code": "CN",
+      "keyword": "Mobile App Developer"
+    },
+    {
+      "country_code": "CN",
+      "keyword": "Network Engineer"
+    },
+    {
+      "country_code": "CN",
+      "keyword": "Office Administrator"
+    },
+    {
+      "country_code": "CN",
+      "keyword": "Office Support Staff"
+    },
+    {
+      "country_code": "CN",
+      "keyword": "Operations Manager"
+    },
+    {
+      "country_code": "CN",
+      "keyword": "Procurement Officer"
+    },
+    {
+      "country_code": "CN",
+      "keyword": "Product Manager (IT)"
+    },
+    {
+      "country_code": "CN",
+      "keyword": "QA Engineer"
+    },
+    {
+      "country_code": "CN",
+      "keyword": "Real Estate Agent"
+    },
+    {
+      "country_code": "CN",
+      "keyword": "Receptionist"
+    },
+    {
+      "country_code": "CN",
+      "keyword": "Restaurant Manager"
+    },
+    {
+      "country_code": "CN",
+      "keyword": "Sales Executive"
+    },
+    {
+      "country_code": "CN",
+      "keyword": "Sales Manager"
+    },
+    {
+      "country_code": "CN",
+      "keyword": "Scrum Master"
+    },
+    {
+      "country_code": "CN",
+      "keyword": "Security Guard"
+    },
+    {
+      "country_code": "CN",
+      "keyword": "Social Media Manager"
+    },
+    {
+      "country_code": "CN",
+      "keyword": "Software Engineer"
+    },
+    {
+      "country_code": "CN",
+      "keyword": "Store Manager"
+    },
+    {
+      "country_code": "CN",
+      "keyword": "System Administrator"
+    },
+    {
+      "country_code": "CN",
+      "keyword": "UI/UX Designer"
+    },
+    {
+      "country_code": "CN",
+      "keyword": "Web Developer"
+    },
+    {
+      "country_code": "CZ",
+      "keyword": "AI Engineer"
+    },
+    {
+      "country_code": "CZ",
+      "keyword": "Accountant"
+    },
+    {
+      "country_code": "CZ",
+      "keyword": "Admin Assistant"
+    },
+    {
+      "country_code": "CZ",
+      "keyword": "Automation Engineer"
+    },
+    {
+      "country_code": "CZ",
+      "keyword": "Backend Developer"
+    },
+    {
+      "country_code": "CZ",
+      "keyword": "Call Center Agent"
+    },
+    {
+      "country_code": "CZ",
+      "keyword": "Cashier"
+    },
+    {
+      "country_code": "CZ",
+      "keyword": "Cloud Engineer"
+    },
+    {
+      "country_code": "CZ",
+      "keyword": "Content Writer"
+    },
+    {
+      "country_code": "CZ",
+      "keyword": "Customer Service Representative"
+    },
+    {
+      "country_code": "CZ",
+      "keyword": "Cyber Security Analyst"
+    },
+    {
+      "country_code": "CZ",
+      "keyword": "Data Analyst"
+    },
+    {
+      "country_code": "CZ",
+      "keyword": "Data Scientist"
+    },
+    {
+      "country_code": "CZ",
+      "keyword": "Database Administrator"
+    },
+    {
+      "country_code": "CZ",
+      "keyword": "DevOps Engineer"
+    },
+    {
+      "country_code": "CZ",
+      "keyword": "Driver"
+    },
+    {
+      "country_code": "CZ",
+      "keyword": "Event Coordinator"
+    },
+    {
+      "country_code": "CZ",
+      "keyword": "Frontend Developer"
+    },
+    {
+      "country_code": "CZ",
+      "keyword": "Full Stack Developer"
+    },
+    {
+      "country_code": "CZ",
+      "keyword": "Game Developer"
+    },
+    {
+      "country_code": "CZ",
+      "keyword": "Graphic Designer"
+    },
+    {
+      "country_code": "CZ",
+      "keyword": "HR Manager"
+    },
+    {
+      "country_code": "CZ",
+      "keyword": "Hotel Front Desk Officer"
+    },
+    {
+      "country_code": "CZ",
+      "keyword": "Housekeeping Supervisor"
+    },
+    {
+      "country_code": "CZ",
+      "keyword": "IT Manager"
+    },
+    {
+      "country_code": "CZ",
+      "keyword": "IT Project Manager"
+    },
+    {
+      "country_code": "CZ",
+      "keyword": "IT Support Specialist"
+    },
+    {
+      "country_code": "CZ",
+      "keyword": "Machine Learning Engineer"
+    },
+    {
+      "country_code": "CZ",
+      "keyword": "Marketing Manager"
+    },
+    {
+      "country_code": "CZ",
+      "keyword": "Mobile App Developer"
+    },
+    {
+      "country_code": "CZ",
+      "keyword": "Network Engineer"
+    },
+    {
+      "country_code": "CZ",
+      "keyword": "Office Administrator"
+    },
+    {
+      "country_code": "CZ",
+      "keyword": "Office Support Staff"
+    },
+    {
+      "country_code": "CZ",
+      "keyword": "Operations Manager"
+    },
+    {
+      "country_code": "CZ",
+      "keyword": "Procurement Officer"
+    },
+    {
+      "country_code": "CZ",
+      "keyword": "Product Manager (IT)"
+    },
+    {
+      "country_code": "CZ",
+      "keyword": "QA Engineer"
+    },
+    {
+      "country_code": "CZ",
+      "keyword": "Real Estate Agent"
+    },
+    {
+      "country_code": "CZ",
+      "keyword": "Receptionist"
+    },
+    {
+      "country_code": "CZ",
+      "keyword": "Restaurant Manager"
+    },
+    {
+      "country_code": "CZ",
+      "keyword": "Sales Executive"
+    },
+    {
+      "country_code": "CZ",
+      "keyword": "Sales Manager"
+    },
+    {
+      "country_code": "CZ",
+      "keyword": "Scrum Master"
+    },
+    {
+      "country_code": "CZ",
+      "keyword": "Security Guard"
+    },
+    {
+      "country_code": "CZ",
+      "keyword": "Social Media Manager"
+    },
+    {
+      "country_code": "CZ",
+      "keyword": "Software Engineer"
+    },
+    {
+      "country_code": "CZ",
+      "keyword": "Store Manager"
+    },
+    {
+      "country_code": "CZ",
+      "keyword": "System Administrator"
+    },
+    {
+      "country_code": "CZ",
+      "keyword": "UI/UX Designer"
+    },
+    {
+      "country_code": "CZ",
+      "keyword": "Web Developer"
+    },
+    {
+      "country_code": "DK",
+      "keyword": "AI Engineer"
+    },
+    {
+      "country_code": "DK",
+      "keyword": "Accountant"
+    },
+    {
+      "country_code": "DK",
+      "keyword": "Admin Assistant"
+    },
+    {
+      "country_code": "DK",
+      "keyword": "Automation Engineer"
+    },
+    {
+      "country_code": "DK",
+      "keyword": "Backend Developer"
+    },
+    {
+      "country_code": "DK",
+      "keyword": "Call Center Agent"
+    },
+    {
+      "country_code": "DK",
+      "keyword": "Cashier"
+    },
+    {
+      "country_code": "DK",
+      "keyword": "Cloud Engineer"
+    },
+    {
+      "country_code": "DK",
+      "keyword": "Content Writer"
+    },
+    {
+      "country_code": "DK",
+      "keyword": "Customer Service Representative"
+    },
+    {
+      "country_code": "DK",
+      "keyword": "Cyber Security Analyst"
+    },
+    {
+      "country_code": "DK",
+      "keyword": "Data Analyst"
+    },
+    {
+      "country_code": "DK",
+      "keyword": "Data Scientist"
+    },
+    {
+      "country_code": "DK",
+      "keyword": "Database Administrator"
+    },
+    {
+      "country_code": "DK",
+      "keyword": "DevOps Engineer"
+    },
+    {
+      "country_code": "DK",
+      "keyword": "Driver"
+    },
+    {
+      "country_code": "DK",
+      "keyword": "Event Coordinator"
+    },
+    {
+      "country_code": "DK",
+      "keyword": "Frontend Developer"
+    },
+    {
+      "country_code": "DK",
+      "keyword": "Full Stack Developer"
+    },
+    {
+      "country_code": "DK",
+      "keyword": "Game Developer"
+    },
+    {
+      "country_code": "DK",
+      "keyword": "Graphic Designer"
+    },
+    {
+      "country_code": "DK",
+      "keyword": "HR Manager"
+    },
+    {
+      "country_code": "DK",
+      "keyword": "Hotel Front Desk Officer"
+    },
+    {
+      "country_code": "DK",
+      "keyword": "Housekeeping Supervisor"
+    },
+    {
+      "country_code": "DK",
+      "keyword": "IT Manager"
+    },
+    {
+      "country_code": "DK",
+      "keyword": "IT Project Manager"
+    },
+    {
+      "country_code": "DK",
+      "keyword": "IT Support Specialist"
+    },
+    {
+      "country_code": "DK",
+      "keyword": "Machine Learning Engineer"
+    },
+    {
+      "country_code": "DK",
+      "keyword": "Marketing Manager"
+    },
+    {
+      "country_code": "DK",
+      "keyword": "Mobile App Developer"
+    },
+    {
+      "country_code": "DK",
+      "keyword": "Network Engineer"
+    },
+    {
+      "country_code": "DK",
+      "keyword": "Office Administrator"
+    },
+    {
+      "country_code": "DK",
+      "keyword": "Office Support Staff"
+    },
+    {
+      "country_code": "DK",
+      "keyword": "Operations Manager"
+    },
+    {
+      "country_code": "DK",
+      "keyword": "Procurement Officer"
+    },
+    {
+      "country_code": "DK",
+      "keyword": "Product Manager (IT)"
+    },
+    {
+      "country_code": "DK",
+      "keyword": "QA Engineer"
+    },
+    {
+      "country_code": "DK",
+      "keyword": "Real Estate Agent"
+    },
+    {
+      "country_code": "DK",
+      "keyword": "Receptionist"
+    },
+    {
+      "country_code": "DK",
+      "keyword": "Restaurant Manager"
+    },
+    {
+      "country_code": "DK",
+      "keyword": "Sales Executive"
+    },
+    {
+      "country_code": "DK",
+      "keyword": "Sales Manager"
+    },
+    {
+      "country_code": "DK",
+      "keyword": "Scrum Master"
+    },
+    {
+      "country_code": "DK",
+      "keyword": "Security Guard"
+    },
+    {
+      "country_code": "DK",
+      "keyword": "Social Media Manager"
+    },
+    {
+      "country_code": "DK",
+      "keyword": "Software Engineer"
+    },
+    {
+      "country_code": "DK",
+      "keyword": "Store Manager"
+    },
+    {
+      "country_code": "DK",
+      "keyword": "System Administrator"
+    },
+    {
+      "country_code": "DK",
+      "keyword": "UI/UX Designer"
+    },
+    {
+      "country_code": "DK",
+      "keyword": "Web Developer"
+    },
+    {
+      "country_code": "EG",
+      "keyword": "AI Engineer"
+    },
+    {
+      "country_code": "EG",
+      "keyword": "Accountant"
+    },
+    {
+      "country_code": "EG",
+      "keyword": "Admin Assistant"
+    },
+    {
+      "country_code": "EG",
+      "keyword": "Automation Engineer"
+    },
+    {
+      "country_code": "EG",
+      "keyword": "Backend Developer"
+    },
+    {
+      "country_code": "EG",
+      "keyword": "Call Center Agent"
+    },
+    {
+      "country_code": "EG",
+      "keyword": "Cashier"
+    },
+    {
+      "country_code": "EG",
+      "keyword": "Cloud Engineer"
+    },
+    {
+      "country_code": "EG",
+      "keyword": "Content Writer"
+    },
+    {
+      "country_code": "EG",
+      "keyword": "Customer Service Representative"
+    },
+    {
+      "country_code": "EG",
+      "keyword": "Cyber Security Analyst"
+    },
+    {
+      "country_code": "EG",
+      "keyword": "Data Analyst"
+    },
+    {
+      "country_code": "EG",
+      "keyword": "Data Scientist"
+    },
+    {
+      "country_code": "EG",
+      "keyword": "Database Administrator"
+    },
+    {
+      "country_code": "EG",
+      "keyword": "DevOps Engineer"
+    },
+    {
+      "country_code": "EG",
+      "keyword": "Driver"
+    },
+    {
+      "country_code": "EG",
+      "keyword": "Event Coordinator"
+    },
+    {
+      "country_code": "EG",
+      "keyword": "Frontend Developer"
+    },
+    {
+      "country_code": "EG",
+      "keyword": "Full Stack Developer"
+    },
+    {
+      "country_code": "EG",
+      "keyword": "Game Developer"
+    },
+    {
+      "country_code": "EG",
+      "keyword": "Graphic Designer"
+    },
+    {
+      "country_code": "EG",
+      "keyword": "HR Manager"
+    },
+    {
+      "country_code": "EG",
+      "keyword": "Hotel Front Desk Officer"
+    },
+    {
+      "country_code": "EG",
+      "keyword": "Housekeeping Supervisor"
+    },
+    {
+      "country_code": "EG",
+      "keyword": "IT Manager"
+    },
+    {
+      "country_code": "EG",
+      "keyword": "IT Project Manager"
+    },
+    {
+      "country_code": "EG",
+      "keyword": "IT Support Specialist"
+    },
+    {
+      "country_code": "EG",
+      "keyword": "Machine Learning Engineer"
+    },
+    {
+      "country_code": "EG",
+      "keyword": "Marketing Manager"
+    },
+    {
+      "country_code": "EG",
+      "keyword": "Mobile App Developer"
+    },
+    {
+      "country_code": "EG",
+      "keyword": "Network Engineer"
+    },
+    {
+      "country_code": "EG",
+      "keyword": "Office Administrator"
+    },
+    {
+      "country_code": "EG",
+      "keyword": "Office Support Staff"
+    },
+    {
+      "country_code": "EG",
+      "keyword": "Operations Manager"
+    },
+    {
+      "country_code": "EG",
+      "keyword": "Procurement Officer"
+    },
+    {
+      "country_code": "EG",
+      "keyword": "Product Manager (IT)"
+    },
+    {
+      "country_code": "EG",
+      "keyword": "QA Engineer"
+    },
+    {
+      "country_code": "EG",
+      "keyword": "Real Estate Agent"
+    },
+    {
+      "country_code": "EG",
+      "keyword": "Receptionist"
+    },
+    {
+      "country_code": "EG",
+      "keyword": "Restaurant Manager"
+    },
+    {
+      "country_code": "EG",
+      "keyword": "Sales Executive"
+    },
+    {
+      "country_code": "EG",
+      "keyword": "Sales Manager"
+    },
+    {
+      "country_code": "EG",
+      "keyword": "Scrum Master"
+    },
+    {
+      "country_code": "EG",
+      "keyword": "Security Guard"
+    },
+    {
+      "country_code": "EG",
+      "keyword": "Social Media Manager"
+    },
+    {
+      "country_code": "EG",
+      "keyword": "Software Engineer"
+    },
+    {
+      "country_code": "EG",
+      "keyword": "Store Manager"
+    },
+    {
+      "country_code": "EG",
+      "keyword": "System Administrator"
+    },
+    {
+      "country_code": "EG",
+      "keyword": "UI/UX Designer"
+    },
+    {
+      "country_code": "EG",
+      "keyword": "Web Developer"
+    },
+    {
+      "country_code": "FI",
+      "keyword": "AI Engineer"
+    },
+    {
+      "country_code": "FI",
+      "keyword": "Accountant"
+    },
+    {
+      "country_code": "FI",
+      "keyword": "Admin Assistant"
+    },
+    {
+      "country_code": "FI",
+      "keyword": "Automation Engineer"
+    },
+    {
+      "country_code": "FI",
+      "keyword": "Backend Developer"
+    },
+    {
+      "country_code": "FI",
+      "keyword": "Call Center Agent"
+    },
+    {
+      "country_code": "FI",
+      "keyword": "Cashier"
+    },
+    {
+      "country_code": "FI",
+      "keyword": "Cloud Engineer"
+    },
+    {
+      "country_code": "FI",
+      "keyword": "Content Writer"
+    },
+    {
+      "country_code": "FI",
+      "keyword": "Customer Service Representative"
+    },
+    {
+      "country_code": "FI",
+      "keyword": "Cyber Security Analyst"
+    },
+    {
+      "country_code": "FI",
+      "keyword": "Data Analyst"
+    },
+    {
+      "country_code": "FI",
+      "keyword": "Data Scientist"
+    },
+    {
+      "country_code": "FI",
+      "keyword": "Database Administrator"
+    },
+    {
+      "country_code": "FI",
+      "keyword": "DevOps Engineer"
+    },
+    {
+      "country_code": "FI",
+      "keyword": "Driver"
+    },
+    {
+      "country_code": "FI",
+      "keyword": "Event Coordinator"
+    },
+    {
+      "country_code": "FI",
+      "keyword": "Frontend Developer"
+    },
+    {
+      "country_code": "FI",
+      "keyword": "Full Stack Developer"
+    },
+    {
+      "country_code": "FI",
+      "keyword": "Game Developer"
+    },
+    {
+      "country_code": "FI",
+      "keyword": "Graphic Designer"
+    },
+    {
+      "country_code": "FI",
+      "keyword": "HR Manager"
+    },
+    {
+      "country_code": "FI",
+      "keyword": "Hotel Front Desk Officer"
+    },
+    {
+      "country_code": "FI",
+      "keyword": "Housekeeping Supervisor"
+    },
+    {
+      "country_code": "FI",
+      "keyword": "IT Manager"
+    },
+    {
+      "country_code": "FI",
+      "keyword": "IT Project Manager"
+    },
+    {
+      "country_code": "FI",
+      "keyword": "IT Support Specialist"
+    },
+    {
+      "country_code": "FI",
+      "keyword": "Machine Learning Engineer"
+    },
+    {
+      "country_code": "FI",
+      "keyword": "Marketing Manager"
+    },
+    {
+      "country_code": "FI",
+      "keyword": "Mobile App Developer"
+    },
+    {
+      "country_code": "FI",
+      "keyword": "Network Engineer"
+    },
+    {
+      "country_code": "FI",
+      "keyword": "Office Administrator"
+    },
+    {
+      "country_code": "FI",
+      "keyword": "Office Support Staff"
+    },
+    {
+      "country_code": "FI",
+      "keyword": "Operations Manager"
+    },
+    {
+      "country_code": "FI",
+      "keyword": "Procurement Officer"
+    },
+    {
+      "country_code": "FI",
+      "keyword": "Product Manager (IT)"
+    },
+    {
+      "country_code": "FI",
+      "keyword": "QA Engineer"
+    },
+    {
+      "country_code": "FI",
+      "keyword": "Real Estate Agent"
+    },
+    {
+      "country_code": "FI",
+      "keyword": "Receptionist"
+    },
+    {
+      "country_code": "FI",
+      "keyword": "Restaurant Manager"
+    },
+    {
+      "country_code": "FI",
+      "keyword": "Sales Executive"
+    },
+    {
+      "country_code": "FI",
+      "keyword": "Sales Manager"
+    },
+    {
+      "country_code": "FI",
+      "keyword": "Scrum Master"
+    },
+    {
+      "country_code": "FI",
+      "keyword": "Security Guard"
+    },
+    {
+      "country_code": "FI",
+      "keyword": "Social Media Manager"
+    },
+    {
+      "country_code": "FI",
+      "keyword": "Software Engineer"
+    },
+    {
+      "country_code": "FI",
+      "keyword": "Store Manager"
+    },
+    {
+      "country_code": "FI",
+      "keyword": "System Administrator"
+    },
+    {
+      "country_code": "FI",
+      "keyword": "UI/UX Designer"
+    },
+    {
+      "country_code": "FI",
+      "keyword": "Web Developer"
+    },
+    {
+      "country_code": "FR",
+      "keyword": "AI Engineer"
+    },
+    {
+      "country_code": "FR",
+      "keyword": "Accountant"
+    },
+    {
+      "country_code": "FR",
+      "keyword": "Admin Assistant"
+    },
+    {
+      "country_code": "FR",
+      "keyword": "Automation Engineer"
+    },
+    {
+      "country_code": "FR",
+      "keyword": "Backend Developer"
+    },
+    {
+      "country_code": "FR",
+      "keyword": "Call Center Agent"
+    },
+    {
+      "country_code": "FR",
+      "keyword": "Cashier"
+    },
+    {
+      "country_code": "FR",
+      "keyword": "Cloud Engineer"
+    },
+    {
+      "country_code": "FR",
+      "keyword": "Content Writer"
+    },
+    {
+      "country_code": "FR",
+      "keyword": "Customer Service Representative"
+    },
+    {
+      "country_code": "FR",
+      "keyword": "Cyber Security Analyst"
+    },
+    {
+      "country_code": "FR",
+      "keyword": "Data Analyst"
+    },
+    {
+      "country_code": "FR",
+      "keyword": "Data Scientist"
+    },
+    {
+      "country_code": "FR",
+      "keyword": "Database Administrator"
+    },
+    {
+      "country_code": "FR",
+      "keyword": "DevOps Engineer"
+    },
+    {
+      "country_code": "FR",
+      "keyword": "Driver"
+    },
+    {
+      "country_code": "FR",
+      "keyword": "Event Coordinator"
+    },
+    {
+      "country_code": "FR",
+      "keyword": "Frontend Developer"
+    },
+    {
+      "country_code": "FR",
+      "keyword": "Full Stack Developer"
+    },
+    {
+      "country_code": "FR",
+      "keyword": "Game Developer"
+    },
+    {
+      "country_code": "FR",
+      "keyword": "Graphic Designer"
+    },
+    {
+      "country_code": "FR",
+      "keyword": "HR Manager"
+    },
+    {
+      "country_code": "FR",
+      "keyword": "Hotel Front Desk Officer"
+    },
+    {
+      "country_code": "FR",
+      "keyword": "Housekeeping Supervisor"
+    },
+    {
+      "country_code": "FR",
+      "keyword": "IT Manager"
+    },
+    {
+      "country_code": "FR",
+      "keyword": "IT Project Manager"
+    },
+    {
+      "country_code": "FR",
+      "keyword": "IT Support Specialist"
+    },
+    {
+      "country_code": "FR",
+      "keyword": "Machine Learning Engineer"
+    },
+    {
+      "country_code": "FR",
+      "keyword": "Marketing Manager"
+    },
+    {
+      "country_code": "FR",
+      "keyword": "Mobile App Developer"
+    },
+    {
+      "country_code": "FR",
+      "keyword": "Network Engineer"
+    },
+    {
+      "country_code": "FR",
+      "keyword": "Office Administrator"
+    },
+    {
+      "country_code": "FR",
+      "keyword": "Office Support Staff"
+    },
+    {
+      "country_code": "FR",
+      "keyword": "Operations Manager"
+    },
+    {
+      "country_code": "FR",
+      "keyword": "Procurement Officer"
+    },
+    {
+      "country_code": "FR",
+      "keyword": "Product Manager (IT)"
+    },
+    {
+      "country_code": "FR",
+      "keyword": "QA Engineer"
+    },
+    {
+      "country_code": "FR",
+      "keyword": "Real Estate Agent"
+    },
+    {
+      "country_code": "FR",
+      "keyword": "Receptionist"
+    },
+    {
+      "country_code": "FR",
+      "keyword": "Restaurant Manager"
+    },
+    {
+      "country_code": "FR",
+      "keyword": "Sales Executive"
+    },
+    {
+      "country_code": "FR",
+      "keyword": "Sales Manager"
+    },
+    {
+      "country_code": "FR",
+      "keyword": "Scrum Master"
+    },
+    {
+      "country_code": "FR",
+      "keyword": "Security Guard"
+    },
+    {
+      "country_code": "FR",
+      "keyword": "Social Media Manager"
+    },
+    {
+      "country_code": "FR",
+      "keyword": "Software Engineer"
+    },
+    {
+      "country_code": "FR",
+      "keyword": "Store Manager"
+    },
+    {
+      "country_code": "FR",
+      "keyword": "System Administrator"
+    },
+    {
+      "country_code": "FR",
+      "keyword": "UI/UX Designer"
+    },
+    {
+      "country_code": "FR",
+      "keyword": "Web Developer"
+    },
+    {
+      "country_code": "DE",
+      "keyword": "AI Engineer"
+    },
+    {
+      "country_code": "DE",
+      "keyword": "Accountant"
+    },
+    {
+      "country_code": "DE",
+      "keyword": "Admin Assistant"
+    },
+    {
+      "country_code": "DE",
+      "keyword": "Automation Engineer"
+    },
+    {
+      "country_code": "DE",
+      "keyword": "Backend Developer"
+    },
+    {
+      "country_code": "DE",
+      "keyword": "Call Center Agent"
+    },
+    {
+      "country_code": "DE",
+      "keyword": "Cashier"
+    },
+    {
+      "country_code": "DE",
+      "keyword": "Cloud Engineer"
+    },
+    {
+      "country_code": "DE",
+      "keyword": "Content Writer"
+    },
+    {
+      "country_code": "DE",
+      "keyword": "Customer Service Representative"
+    },
+    {
+      "country_code": "DE",
+      "keyword": "Cyber Security Analyst"
+    },
+    {
+      "country_code": "DE",
+      "keyword": "Data Analyst"
+    },
+    {
+      "country_code": "DE",
+      "keyword": "Data Scientist"
+    },
+    {
+      "country_code": "DE",
+      "keyword": "Database Administrator"
+    },
+    {
+      "country_code": "DE",
+      "keyword": "DevOps Engineer"
+    },
+    {
+      "country_code": "DE",
+      "keyword": "Driver"
+    },
+    {
+      "country_code": "DE",
+      "keyword": "Event Coordinator"
+    },
+    {
+      "country_code": "DE",
+      "keyword": "Frontend Developer"
+    },
+    {
+      "country_code": "DE",
+      "keyword": "Full Stack Developer"
+    },
+    {
+      "country_code": "DE",
+      "keyword": "Game Developer"
+    },
+    {
+      "country_code": "DE",
+      "keyword": "Graphic Designer"
+    },
+    {
+      "country_code": "DE",
+      "keyword": "HR Manager"
+    },
+    {
+      "country_code": "DE",
+      "keyword": "Hotel Front Desk Officer"
+    },
+    {
+      "country_code": "DE",
+      "keyword": "Housekeeping Supervisor"
+    },
+    {
+      "country_code": "DE",
+      "keyword": "IT Manager"
+    },
+    {
+      "country_code": "DE",
+      "keyword": "IT Project Manager"
+    },
+    {
+      "country_code": "DE",
+      "keyword": "IT Support Specialist"
+    },
+    {
+      "country_code": "DE",
+      "keyword": "Machine Learning Engineer"
+    },
+    {
+      "country_code": "DE",
+      "keyword": "Marketing Manager"
+    },
+    {
+      "country_code": "DE",
+      "keyword": "Mobile App Developer"
+    },
+    {
+      "country_code": "DE",
+      "keyword": "Network Engineer"
+    },
+    {
+      "country_code": "DE",
+      "keyword": "Office Administrator"
+    },
+    {
+      "country_code": "DE",
+      "keyword": "Office Support Staff"
+    },
+    {
+      "country_code": "DE",
+      "keyword": "Operations Manager"
+    },
+    {
+      "country_code": "DE",
+      "keyword": "Procurement Officer"
+    },
+    {
+      "country_code": "DE",
+      "keyword": "Product Manager (IT)"
+    },
+    {
+      "country_code": "DE",
+      "keyword": "QA Engineer"
+    },
+    {
+      "country_code": "DE",
+      "keyword": "Real Estate Agent"
+    },
+    {
+      "country_code": "DE",
+      "keyword": "Receptionist"
+    },
+    {
+      "country_code": "DE",
+      "keyword": "Restaurant Manager"
+    },
+    {
+      "country_code": "DE",
+      "keyword": "Sales Executive"
+    },
+    {
+      "country_code": "DE",
+      "keyword": "Sales Manager"
+    },
+    {
+      "country_code": "DE",
+      "keyword": "Scrum Master"
+    },
+    {
+      "country_code": "DE",
+      "keyword": "Security Guard"
+    },
+    {
+      "country_code": "DE",
+      "keyword": "Social Media Manager"
+    },
+    {
+      "country_code": "DE",
+      "keyword": "Software Engineer"
+    },
+    {
+      "country_code": "DE",
+      "keyword": "Store Manager"
+    },
+    {
+      "country_code": "DE",
+      "keyword": "System Administrator"
+    },
+    {
+      "country_code": "DE",
+      "keyword": "UI/UX Designer"
+    },
+    {
+      "country_code": "DE",
+      "keyword": "Web Developer"
+    },
+    {
+      "country_code": "HK",
+      "keyword": "AI Engineer"
+    },
+    {
+      "country_code": "HK",
+      "keyword": "Accountant"
+    },
+    {
+      "country_code": "HK",
+      "keyword": "Admin Assistant"
+    },
+    {
+      "country_code": "HK",
+      "keyword": "Automation Engineer"
+    },
+    {
+      "country_code": "HK",
+      "keyword": "Backend Developer"
+    },
+    {
+      "country_code": "HK",
+      "keyword": "Call Center Agent"
+    },
+    {
+      "country_code": "HK",
+      "keyword": "Cashier"
+    },
+    {
+      "country_code": "HK",
+      "keyword": "Cloud Engineer"
+    },
+    {
+      "country_code": "HK",
+      "keyword": "Content Writer"
+    },
+    {
+      "country_code": "HK",
+      "keyword": "Customer Service Representative"
+    },
+    {
+      "country_code": "HK",
+      "keyword": "Cyber Security Analyst"
+    },
+    {
+      "country_code": "HK",
+      "keyword": "Data Analyst"
+    },
+    {
+      "country_code": "HK",
+      "keyword": "Data Scientist"
+    },
+    {
+      "country_code": "HK",
+      "keyword": "Database Administrator"
+    },
+    {
+      "country_code": "HK",
+      "keyword": "DevOps Engineer"
+    },
+    {
+      "country_code": "HK",
+      "keyword": "Driver"
+    },
+    {
+      "country_code": "HK",
+      "keyword": "Event Coordinator"
+    },
+    {
+      "country_code": "HK",
+      "keyword": "Frontend Developer"
+    },
+    {
+      "country_code": "HK",
+      "keyword": "Full Stack Developer"
+    },
+    {
+      "country_code": "HK",
+      "keyword": "Game Developer"
+    },
+    {
+      "country_code": "HK",
+      "keyword": "Graphic Designer"
+    },
+    {
+      "country_code": "HK",
+      "keyword": "HR Manager"
+    },
+    {
+      "country_code": "HK",
+      "keyword": "Hotel Front Desk Officer"
+    },
+    {
+      "country_code": "HK",
+      "keyword": "Housekeeping Supervisor"
+    },
+    {
+      "country_code": "HK",
+      "keyword": "IT Manager"
+    },
+    {
+      "country_code": "HK",
+      "keyword": "IT Project Manager"
+    },
+    {
+      "country_code": "HK",
+      "keyword": "IT Support Specialist"
+    },
+    {
+      "country_code": "HK",
+      "keyword": "Machine Learning Engineer"
+    },
+    {
+      "country_code": "HK",
+      "keyword": "Marketing Manager"
+    },
+    {
+      "country_code": "HK",
+      "keyword": "Mobile App Developer"
+    },
+    {
+      "country_code": "HK",
+      "keyword": "Network Engineer"
+    },
+    {
+      "country_code": "HK",
+      "keyword": "Office Administrator"
+    },
+    {
+      "country_code": "HK",
+      "keyword": "Office Support Staff"
+    },
+    {
+      "country_code": "HK",
+      "keyword": "Operations Manager"
+    },
+    {
+      "country_code": "HK",
+      "keyword": "Procurement Officer"
+    },
+    {
+      "country_code": "HK",
+      "keyword": "Product Manager (IT)"
+    },
+    {
+      "country_code": "HK",
+      "keyword": "QA Engineer"
+    },
+    {
+      "country_code": "HK",
+      "keyword": "Real Estate Agent"
+    },
+    {
+      "country_code": "HK",
+      "keyword": "Receptionist"
+    },
+    {
+      "country_code": "HK",
+      "keyword": "Restaurant Manager"
+    },
+    {
+      "country_code": "HK",
+      "keyword": "Sales Executive"
+    },
+    {
+      "country_code": "HK",
+      "keyword": "Sales Manager"
+    },
+    {
+      "country_code": "HK",
+      "keyword": "Scrum Master"
+    },
+    {
+      "country_code": "HK",
+      "keyword": "Security Guard"
+    },
+    {
+      "country_code": "HK",
+      "keyword": "Social Media Manager"
+    },
+    {
+      "country_code": "HK",
+      "keyword": "Software Engineer"
+    },
+    {
+      "country_code": "HK",
+      "keyword": "Store Manager"
+    },
+    {
+      "country_code": "HK",
+      "keyword": "System Administrator"
+    },
+    {
+      "country_code": "HK",
+      "keyword": "UI/UX Designer"
+    },
+    {
+      "country_code": "HK",
+      "keyword": "Web Developer"
+    },
+    {
+      "country_code": "IN",
+      "keyword": "AI Engineer"
+    },
+    {
+      "country_code": "IN",
+      "keyword": "Accountant"
+    },
+    {
+      "country_code": "IN",
+      "keyword": "Admin Assistant"
+    },
+    {
+      "country_code": "IN",
+      "keyword": "Automation Engineer"
+    },
+    {
+      "country_code": "IN",
+      "keyword": "Backend Developer"
+    },
+    {
+      "country_code": "IN",
+      "keyword": "Call Center Agent"
+    },
+    {
+      "country_code": "IN",
+      "keyword": "Cashier"
+    },
+    {
+      "country_code": "IN",
+      "keyword": "Cloud Engineer"
+    },
+    {
+      "country_code": "IN",
+      "keyword": "Content Writer"
+    },
+    {
+      "country_code": "IN",
+      "keyword": "Customer Service Representative"
+    },
+    {
+      "country_code": "IN",
+      "keyword": "Cyber Security Analyst"
+    },
+    {
+      "country_code": "IN",
+      "keyword": "Data Analyst"
+    },
+    {
+      "country_code": "IN",
+      "keyword": "Data Scientist"
+    },
+    {
+      "country_code": "IN",
+      "keyword": "Database Administrator"
+    },
+    {
+      "country_code": "IN",
+      "keyword": "DevOps Engineer"
+    },
+    {
+      "country_code": "IN",
+      "keyword": "Driver"
+    },
+    {
+      "country_code": "IN",
+      "keyword": "Event Coordinator"
+    },
+    {
+      "country_code": "IN",
+      "keyword": "Frontend Developer"
+    },
+    {
+      "country_code": "IN",
+      "keyword": "Full Stack Developer"
+    },
+    {
+      "country_code": "IN",
+      "keyword": "Game Developer"
+    },
+    {
+      "country_code": "IN",
+      "keyword": "Graphic Designer"
+    },
+    {
+      "country_code": "IN",
+      "keyword": "HR Manager"
+    },
+    {
+      "country_code": "IN",
+      "keyword": "Hotel Front Desk Officer"
+    },
+    {
+      "country_code": "IN",
+      "keyword": "Housekeeping Supervisor"
+    },
+    {
+      "country_code": "IN",
+      "keyword": "IT Manager"
+    },
+    {
+      "country_code": "IN",
+      "keyword": "IT Project Manager"
+    },
+    {
+      "country_code": "IN",
+      "keyword": "IT Support Specialist"
+    },
+    {
+      "country_code": "IN",
+      "keyword": "Machine Learning Engineer"
+    },
+    {
+      "country_code": "IN",
+      "keyword": "Marketing Manager"
+    },
+    {
+      "country_code": "IN",
+      "keyword": "Mobile App Developer"
+    },
+    {
+      "country_code": "IN",
+      "keyword": "Network Engineer"
+    },
+    {
+      "country_code": "IN",
+      "keyword": "Office Administrator"
+    },
+    {
+      "country_code": "IN",
+      "keyword": "Office Support Staff"
+    },
+    {
+      "country_code": "IN",
+      "keyword": "Operations Manager"
+    },
+    {
+      "country_code": "IN",
+      "keyword": "Procurement Officer"
+    },
+    {
+      "country_code": "IN",
+      "keyword": "Product Manager (IT)"
+    },
+    {
+      "country_code": "IN",
+      "keyword": "QA Engineer"
+    },
+    {
+      "country_code": "IN",
+      "keyword": "Real Estate Agent"
+    },
+    {
+      "country_code": "IN",
+      "keyword": "Receptionist"
+    },
+    {
+      "country_code": "IN",
+      "keyword": "Restaurant Manager"
+    },
+    {
+      "country_code": "IN",
+      "keyword": "Sales Executive"
+    },
+    {
+      "country_code": "IN",
+      "keyword": "Sales Manager"
+    },
+    {
+      "country_code": "IN",
+      "keyword": "Scrum Master"
+    },
+    {
+      "country_code": "IN",
+      "keyword": "Security Guard"
+    },
+    {
+      "country_code": "IN",
+      "keyword": "Social Media Manager"
+    },
+    {
+      "country_code": "IN",
+      "keyword": "Software Engineer"
+    },
+    {
+      "country_code": "IN",
+      "keyword": "Store Manager"
+    },
+    {
+      "country_code": "IN",
+      "keyword": "System Administrator"
+    },
+    {
+      "country_code": "IN",
+      "keyword": "UI/UX Designer"
+    },
+    {
+      "country_code": "IN",
+      "keyword": "Web Developer"
+    },
+    {
+      "country_code": "ID",
+      "keyword": "AI Engineer"
+    },
+    {
+      "country_code": "ID",
+      "keyword": "Accountant"
+    },
+    {
+      "country_code": "ID",
+      "keyword": "Admin Assistant"
+    },
+    {
+      "country_code": "ID",
+      "keyword": "Automation Engineer"
+    },
+    {
+      "country_code": "ID",
+      "keyword": "Backend Developer"
+    },
+    {
+      "country_code": "ID",
+      "keyword": "Call Center Agent"
+    },
+    {
+      "country_code": "ID",
+      "keyword": "Cashier"
+    },
+    {
+      "country_code": "ID",
+      "keyword": "Cloud Engineer"
+    },
+    {
+      "country_code": "ID",
+      "keyword": "Content Writer"
+    },
+    {
+      "country_code": "ID",
+      "keyword": "Customer Service Representative"
+    },
+    {
+      "country_code": "ID",
+      "keyword": "Cyber Security Analyst"
+    },
+    {
+      "country_code": "ID",
+      "keyword": "Data Analyst"
+    },
+    {
+      "country_code": "ID",
+      "keyword": "Data Scientist"
+    },
+    {
+      "country_code": "ID",
+      "keyword": "Database Administrator"
+    },
+    {
+      "country_code": "ID",
+      "keyword": "DevOps Engineer"
+    },
+    {
+      "country_code": "ID",
+      "keyword": "Driver"
+    },
+    {
+      "country_code": "ID",
+      "keyword": "Event Coordinator"
+    },
+    {
+      "country_code": "ID",
+      "keyword": "Frontend Developer"
+    },
+    {
+      "country_code": "ID",
+      "keyword": "Full Stack Developer"
+    },
+    {
+      "country_code": "ID",
+      "keyword": "Game Developer"
+    },
+    {
+      "country_code": "ID",
+      "keyword": "Graphic Designer"
+    },
+    {
+      "country_code": "ID",
+      "keyword": "HR Manager"
+    },
+    {
+      "country_code": "ID",
+      "keyword": "Hotel Front Desk Officer"
+    },
+    {
+      "country_code": "ID",
+      "keyword": "Housekeeping Supervisor"
+    },
+    {
+      "country_code": "ID",
+      "keyword": "IT Manager"
+    },
+    {
+      "country_code": "ID",
+      "keyword": "IT Project Manager"
+    },
+    {
+      "country_code": "ID",
+      "keyword": "IT Support Specialist"
+    },
+    {
+      "country_code": "ID",
+      "keyword": "Machine Learning Engineer"
+    },
+    {
+      "country_code": "ID",
+      "keyword": "Marketing Manager"
+    },
+    {
+      "country_code": "ID",
+      "keyword": "Mobile App Developer"
+    },
+    {
+      "country_code": "ID",
+      "keyword": "Network Engineer"
+    },
+    {
+      "country_code": "ID",
+      "keyword": "Office Administrator"
+    },
+    {
+      "country_code": "ID",
+      "keyword": "Office Support Staff"
+    },
+    {
+      "country_code": "ID",
+      "keyword": "Operations Manager"
+    },
+    {
+      "country_code": "ID",
+      "keyword": "Procurement Officer"
+    },
+    {
+      "country_code": "ID",
+      "keyword": "Product Manager (IT)"
+    },
+    {
+      "country_code": "ID",
+      "keyword": "QA Engineer"
+    },
+    {
+      "country_code": "ID",
+      "keyword": "Real Estate Agent"
+    },
+    {
+      "country_code": "ID",
+      "keyword": "Receptionist"
+    },
+    {
+      "country_code": "ID",
+      "keyword": "Restaurant Manager"
+    },
+    {
+      "country_code": "ID",
+      "keyword": "Sales Executive"
+    },
+    {
+      "country_code": "ID",
+      "keyword": "Sales Manager"
+    },
+    {
+      "country_code": "ID",
+      "keyword": "Scrum Master"
+    },
+    {
+      "country_code": "ID",
+      "keyword": "Security Guard"
+    },
+    {
+      "country_code": "ID",
+      "keyword": "Social Media Manager"
+    },
+    {
+      "country_code": "ID",
+      "keyword": "Software Engineer"
+    },
+    {
+      "country_code": "ID",
+      "keyword": "Store Manager"
+    },
+    {
+      "country_code": "ID",
+      "keyword": "System Administrator"
+    },
+    {
+      "country_code": "ID",
+      "keyword": "UI/UX Designer"
+    },
+    {
+      "country_code": "ID",
+      "keyword": "Web Developer"
+    },
+    {
+      "country_code": "IE",
+      "keyword": "AI Engineer"
+    },
+    {
+      "country_code": "IE",
+      "keyword": "Accountant"
+    },
+    {
+      "country_code": "IE",
+      "keyword": "Admin Assistant"
+    },
+    {
+      "country_code": "IE",
+      "keyword": "Automation Engineer"
+    },
+    {
+      "country_code": "IE",
+      "keyword": "Backend Developer"
+    },
+    {
+      "country_code": "IE",
+      "keyword": "Call Center Agent"
+    },
+    {
+      "country_code": "IE",
+      "keyword": "Cashier"
+    },
+    {
+      "country_code": "IE",
+      "keyword": "Cloud Engineer"
+    },
+    {
+      "country_code": "IE",
+      "keyword": "Content Writer"
+    },
+    {
+      "country_code": "IE",
+      "keyword": "Customer Service Representative"
+    },
+    {
+      "country_code": "IE",
+      "keyword": "Cyber Security Analyst"
+    },
+    {
+      "country_code": "IE",
+      "keyword": "Data Analyst"
+    },
+    {
+      "country_code": "IE",
+      "keyword": "Data Scientist"
+    },
+    {
+      "country_code": "IE",
+      "keyword": "Database Administrator"
+    },
+    {
+      "country_code": "IE",
+      "keyword": "DevOps Engineer"
+    },
+    {
+      "country_code": "IE",
+      "keyword": "Driver"
+    },
+    {
+      "country_code": "IE",
+      "keyword": "Event Coordinator"
+    },
+    {
+      "country_code": "IE",
+      "keyword": "Frontend Developer"
+    },
+    {
+      "country_code": "IE",
+      "keyword": "Full Stack Developer"
+    },
+    {
+      "country_code": "IE",
+      "keyword": "Game Developer"
+    },
+    {
+      "country_code": "IE",
+      "keyword": "Graphic Designer"
+    },
+    {
+      "country_code": "IE",
+      "keyword": "HR Manager"
+    },
+    {
+      "country_code": "IE",
+      "keyword": "Hotel Front Desk Officer"
+    },
+    {
+      "country_code": "IE",
+      "keyword": "Housekeeping Supervisor"
+    },
+    {
+      "country_code": "IE",
+      "keyword": "IT Manager"
+    },
+    {
+      "country_code": "IE",
+      "keyword": "IT Project Manager"
+    },
+    {
+      "country_code": "IE",
+      "keyword": "IT Support Specialist"
+    },
+    {
+      "country_code": "IE",
+      "keyword": "Machine Learning Engineer"
+    },
+    {
+      "country_code": "IE",
+      "keyword": "Marketing Manager"
+    },
+    {
+      "country_code": "IE",
+      "keyword": "Mobile App Developer"
+    },
+    {
+      "country_code": "IE",
+      "keyword": "Network Engineer"
+    },
+    {
+      "country_code": "IE",
+      "keyword": "Office Administrator"
+    },
+    {
+      "country_code": "IE",
+      "keyword": "Office Support Staff"
+    },
+    {
+      "country_code": "IE",
+      "keyword": "Operations Manager"
+    },
+    {
+      "country_code": "IE",
+      "keyword": "Procurement Officer"
+    },
+    {
+      "country_code": "IE",
+      "keyword": "Product Manager (IT)"
+    },
+    {
+      "country_code": "IE",
+      "keyword": "QA Engineer"
+    },
+    {
+      "country_code": "IE",
+      "keyword": "Real Estate Agent"
+    },
+    {
+      "country_code": "IE",
+      "keyword": "Receptionist"
+    },
+    {
+      "country_code": "IE",
+      "keyword": "Restaurant Manager"
+    },
+    {
+      "country_code": "IE",
+      "keyword": "Sales Executive"
+    },
+    {
+      "country_code": "IE",
+      "keyword": "Sales Manager"
+    },
+    {
+      "country_code": "IE",
+      "keyword": "Scrum Master"
+    },
+    {
+      "country_code": "IE",
+      "keyword": "Security Guard"
+    },
+    {
+      "country_code": "IE",
+      "keyword": "Social Media Manager"
+    },
+    {
+      "country_code": "IE",
+      "keyword": "Software Engineer"
+    },
+    {
+      "country_code": "IE",
+      "keyword": "Store Manager"
+    },
+    {
+      "country_code": "IE",
+      "keyword": "System Administrator"
+    },
+    {
+      "country_code": "IE",
+      "keyword": "UI/UX Designer"
+    },
+    {
+      "country_code": "IE",
+      "keyword": "Web Developer"
+    },
+    {
+      "country_code": "IT",
+      "keyword": "AI Engineer"
+    },
+    {
+      "country_code": "IT",
+      "keyword": "Accountant"
+    },
+    {
+      "country_code": "IT",
+      "keyword": "Admin Assistant"
+    },
+    {
+      "country_code": "IT",
+      "keyword": "Automation Engineer"
+    },
+    {
+      "country_code": "IT",
+      "keyword": "Backend Developer"
+    },
+    {
+      "country_code": "IT",
+      "keyword": "Call Center Agent"
+    },
+    {
+      "country_code": "IT",
+      "keyword": "Cashier"
+    },
+    {
+      "country_code": "IT",
+      "keyword": "Cloud Engineer"
+    },
+    {
+      "country_code": "IT",
+      "keyword": "Content Writer"
+    },
+    {
+      "country_code": "IT",
+      "keyword": "Customer Service Representative"
+    },
+    {
+      "country_code": "IT",
+      "keyword": "Cyber Security Analyst"
+    },
+    {
+      "country_code": "IT",
+      "keyword": "Data Analyst"
+    },
+    {
+      "country_code": "IT",
+      "keyword": "Data Scientist"
+    },
+    {
+      "country_code": "IT",
+      "keyword": "Database Administrator"
+    },
+    {
+      "country_code": "IT",
+      "keyword": "DevOps Engineer"
+    },
+    {
+      "country_code": "IT",
+      "keyword": "Driver"
+    },
+    {
+      "country_code": "IT",
+      "keyword": "Event Coordinator"
+    },
+    {
+      "country_code": "IT",
+      "keyword": "Frontend Developer"
+    },
+    {
+      "country_code": "IT",
+      "keyword": "Full Stack Developer"
+    },
+    {
+      "country_code": "IT",
+      "keyword": "Game Developer"
+    },
+    {
+      "country_code": "IT",
+      "keyword": "Graphic Designer"
+    },
+    {
+      "country_code": "IT",
+      "keyword": "HR Manager"
+    },
+    {
+      "country_code": "IT",
+      "keyword": "Hotel Front Desk Officer"
+    },
+    {
+      "country_code": "IT",
+      "keyword": "Housekeeping Supervisor"
+    },
+    {
+      "country_code": "IT",
+      "keyword": "IT Manager"
+    },
+    {
+      "country_code": "IT",
+      "keyword": "IT Project Manager"
+    },
+    {
+      "country_code": "IT",
+      "keyword": "IT Support Specialist"
+    },
+    {
+      "country_code": "IT",
+      "keyword": "Machine Learning Engineer"
+    },
+    {
+      "country_code": "IT",
+      "keyword": "Marketing Manager"
+    },
+    {
+      "country_code": "IT",
+      "keyword": "Mobile App Developer"
+    },
+    {
+      "country_code": "IT",
+      "keyword": "Network Engineer"
+    },
+    {
+      "country_code": "IT",
+      "keyword": "Office Administrator"
+    },
+    {
+      "country_code": "IT",
+      "keyword": "Office Support Staff"
+    },
+    {
+      "country_code": "IT",
+      "keyword": "Operations Manager"
+    },
+    {
+      "country_code": "IT",
+      "keyword": "Procurement Officer"
+    },
+    {
+      "country_code": "IT",
+      "keyword": "Product Manager (IT)"
+    },
+    {
+      "country_code": "IT",
+      "keyword": "QA Engineer"
+    },
+    {
+      "country_code": "IT",
+      "keyword": "Real Estate Agent"
+    },
+    {
+      "country_code": "IT",
+      "keyword": "Receptionist"
+    },
+    {
+      "country_code": "IT",
+      "keyword": "Restaurant Manager"
+    },
+    {
+      "country_code": "IT",
+      "keyword": "Sales Executive"
+    },
+    {
+      "country_code": "IT",
+      "keyword": "Sales Manager"
+    },
+    {
+      "country_code": "IT",
+      "keyword": "Scrum Master"
+    },
+    {
+      "country_code": "IT",
+      "keyword": "Security Guard"
+    },
+    {
+      "country_code": "IT",
+      "keyword": "Social Media Manager"
+    },
+    {
+      "country_code": "IT",
+      "keyword": "Software Engineer"
+    },
+    {
+      "country_code": "IT",
+      "keyword": "Store Manager"
+    },
+    {
+      "country_code": "IT",
+      "keyword": "System Administrator"
+    },
+    {
+      "country_code": "IT",
+      "keyword": "UI/UX Designer"
+    },
+    {
+      "country_code": "IT",
+      "keyword": "Web Developer"
+    },
+    {
+      "country_code": "JP",
+      "keyword": "AI Engineer"
+    },
+    {
+      "country_code": "JP",
+      "keyword": "Accountant"
+    },
+    {
+      "country_code": "JP",
+      "keyword": "Admin Assistant"
+    },
+    {
+      "country_code": "JP",
+      "keyword": "Automation Engineer"
+    },
+    {
+      "country_code": "JP",
+      "keyword": "Backend Developer"
+    },
+    {
+      "country_code": "JP",
+      "keyword": "Call Center Agent"
+    },
+    {
+      "country_code": "JP",
+      "keyword": "Cashier"
+    },
+    {
+      "country_code": "JP",
+      "keyword": "Cloud Engineer"
+    },
+    {
+      "country_code": "JP",
+      "keyword": "Content Writer"
+    },
+    {
+      "country_code": "JP",
+      "keyword": "Customer Service Representative"
+    },
+    {
+      "country_code": "JP",
+      "keyword": "Cyber Security Analyst"
+    },
+    {
+      "country_code": "JP",
+      "keyword": "Data Analyst"
+    },
+    {
+      "country_code": "JP",
+      "keyword": "Data Scientist"
+    },
+    {
+      "country_code": "JP",
+      "keyword": "Database Administrator"
+    },
+    {
+      "country_code": "JP",
+      "keyword": "DevOps Engineer"
+    },
+    {
+      "country_code": "JP",
+      "keyword": "Driver"
+    },
+    {
+      "country_code": "JP",
+      "keyword": "Event Coordinator"
+    },
+    {
+      "country_code": "JP",
+      "keyword": "Frontend Developer"
+    },
+    {
+      "country_code": "JP",
+      "keyword": "Full Stack Developer"
+    },
+    {
+      "country_code": "JP",
+      "keyword": "Game Developer"
+    },
+    {
+      "country_code": "JP",
+      "keyword": "Graphic Designer"
+    },
+    {
+      "country_code": "JP",
+      "keyword": "HR Manager"
+    },
+    {
+      "country_code": "JP",
+      "keyword": "Hotel Front Desk Officer"
+    },
+    {
+      "country_code": "JP",
+      "keyword": "Housekeeping Supervisor"
+    },
+    {
+      "country_code": "JP",
+      "keyword": "IT Manager"
+    },
+    {
+      "country_code": "JP",
+      "keyword": "IT Project Manager"
+    },
+    {
+      "country_code": "JP",
+      "keyword": "IT Support Specialist"
+    },
+    {
+      "country_code": "JP",
+      "keyword": "Machine Learning Engineer"
+    },
+    {
+      "country_code": "JP",
+      "keyword": "Marketing Manager"
+    },
+    {
+      "country_code": "JP",
+      "keyword": "Mobile App Developer"
+    },
+    {
+      "country_code": "JP",
+      "keyword": "Network Engineer"
+    },
+    {
+      "country_code": "JP",
+      "keyword": "Office Administrator"
+    },
+    {
+      "country_code": "JP",
+      "keyword": "Office Support Staff"
+    },
+    {
+      "country_code": "JP",
+      "keyword": "Operations Manager"
+    },
+    {
+      "country_code": "JP",
+      "keyword": "Procurement Officer"
+    },
+    {
+      "country_code": "JP",
+      "keyword": "Product Manager (IT)"
+    },
+    {
+      "country_code": "JP",
+      "keyword": "QA Engineer"
+    },
+    {
+      "country_code": "JP",
+      "keyword": "Real Estate Agent"
+    },
+    {
+      "country_code": "JP",
+      "keyword": "Receptionist"
+    },
+    {
+      "country_code": "JP",
+      "keyword": "Restaurant Manager"
+    },
+    {
+      "country_code": "JP",
+      "keyword": "Sales Executive"
+    },
+    {
+      "country_code": "JP",
+      "keyword": "Sales Manager"
+    },
+    {
+      "country_code": "JP",
+      "keyword": "Scrum Master"
+    },
+    {
+      "country_code": "JP",
+      "keyword": "Security Guard"
+    },
+    {
+      "country_code": "JP",
+      "keyword": "Social Media Manager"
+    },
+    {
+      "country_code": "JP",
+      "keyword": "Software Engineer"
+    },
+    {
+      "country_code": "JP",
+      "keyword": "Store Manager"
+    },
+    {
+      "country_code": "JP",
+      "keyword": "System Administrator"
+    },
+    {
+      "country_code": "JP",
+      "keyword": "UI/UX Designer"
+    },
+    {
+      "country_code": "JP",
+      "keyword": "Web Developer"
+    },
+    {
+      "country_code": "KW",
+      "keyword": "AI Engineer"
+    },
+    {
+      "country_code": "KW",
+      "keyword": "Accountant"
+    },
+    {
+      "country_code": "KW",
+      "keyword": "Admin Assistant"
+    },
+    {
+      "country_code": "KW",
+      "keyword": "Automation Engineer"
+    },
+    {
+      "country_code": "KW",
+      "keyword": "Backend Developer"
+    },
+    {
+      "country_code": "KW",
+      "keyword": "Call Center Agent"
+    },
+    {
+      "country_code": "KW",
+      "keyword": "Cashier"
+    },
+    {
+      "country_code": "KW",
+      "keyword": "Cloud Engineer"
+    },
+    {
+      "country_code": "KW",
+      "keyword": "Content Writer"
+    },
+    {
+      "country_code": "KW",
+      "keyword": "Customer Service Representative"
+    },
+    {
+      "country_code": "KW",
+      "keyword": "Cyber Security Analyst"
+    },
+    {
+      "country_code": "KW",
+      "keyword": "Data Analyst"
+    },
+    {
+      "country_code": "KW",
+      "keyword": "Data Scientist"
+    },
+    {
+      "country_code": "KW",
+      "keyword": "Database Administrator"
+    },
+    {
+      "country_code": "KW",
+      "keyword": "DevOps Engineer"
+    },
+    {
+      "country_code": "KW",
+      "keyword": "Driver"
+    },
+    {
+      "country_code": "KW",
+      "keyword": "Event Coordinator"
+    },
+    {
+      "country_code": "KW",
+      "keyword": "Frontend Developer"
+    },
+    {
+      "country_code": "KW",
+      "keyword": "Full Stack Developer"
+    },
+    {
+      "country_code": "KW",
+      "keyword": "Game Developer"
+    },
+    {
+      "country_code": "KW",
+      "keyword": "Graphic Designer"
+    },
+    {
+      "country_code": "KW",
+      "keyword": "HR Manager"
+    },
+    {
+      "country_code": "KW",
+      "keyword": "Hotel Front Desk Officer"
+    },
+    {
+      "country_code": "KW",
+      "keyword": "Housekeeping Supervisor"
+    },
+    {
+      "country_code": "KW",
+      "keyword": "IT Manager"
+    },
+    {
+      "country_code": "KW",
+      "keyword": "IT Project Manager"
+    },
+    {
+      "country_code": "KW",
+      "keyword": "IT Support Specialist"
+    },
+    {
+      "country_code": "KW",
+      "keyword": "Machine Learning Engineer"
+    },
+    {
+      "country_code": "KW",
+      "keyword": "Marketing Manager"
+    },
+    {
+      "country_code": "KW",
+      "keyword": "Mobile App Developer"
+    },
+    {
+      "country_code": "KW",
+      "keyword": "Network Engineer"
+    },
+    {
+      "country_code": "KW",
+      "keyword": "Office Administrator"
+    },
+    {
+      "country_code": "KW",
+      "keyword": "Office Support Staff"
+    },
+    {
+      "country_code": "KW",
+      "keyword": "Operations Manager"
+    },
+    {
+      "country_code": "KW",
+      "keyword": "Procurement Officer"
+    },
+    {
+      "country_code": "KW",
+      "keyword": "Product Manager (IT)"
+    },
+    {
+      "country_code": "KW",
+      "keyword": "QA Engineer"
+    },
+    {
+      "country_code": "KW",
+      "keyword": "Real Estate Agent"
+    },
+    {
+      "country_code": "KW",
+      "keyword": "Receptionist"
+    },
+    {
+      "country_code": "KW",
+      "keyword": "Restaurant Manager"
+    },
+    {
+      "country_code": "KW",
+      "keyword": "Sales Executive"
+    },
+    {
+      "country_code": "KW",
+      "keyword": "Sales Manager"
+    },
+    {
+      "country_code": "KW",
+      "keyword": "Scrum Master"
+    },
+    {
+      "country_code": "KW",
+      "keyword": "Security Guard"
+    },
+    {
+      "country_code": "KW",
+      "keyword": "Social Media Manager"
+    },
+    {
+      "country_code": "KW",
+      "keyword": "Software Engineer"
+    },
+    {
+      "country_code": "KW",
+      "keyword": "Store Manager"
+    },
+    {
+      "country_code": "KW",
+      "keyword": "System Administrator"
+    },
+    {
+      "country_code": "KW",
+      "keyword": "UI/UX Designer"
+    },
+    {
+      "country_code": "KW",
+      "keyword": "Web Developer"
+    },
+    {
+      "country_code": "MY",
+      "keyword": "AI Engineer"
+    },
+    {
+      "country_code": "MY",
+      "keyword": "Accountant"
+    },
+    {
+      "country_code": "MY",
+      "keyword": "Admin Assistant"
+    },
+    {
+      "country_code": "MY",
+      "keyword": "Automation Engineer"
+    },
+    {
+      "country_code": "MY",
+      "keyword": "Backend Developer"
+    },
+    {
+      "country_code": "MY",
+      "keyword": "Call Center Agent"
+    },
+    {
+      "country_code": "MY",
+      "keyword": "Cashier"
+    },
+    {
+      "country_code": "MY",
+      "keyword": "Cloud Engineer"
+    },
+    {
+      "country_code": "MY",
+      "keyword": "Content Writer"
+    },
+    {
+      "country_code": "MY",
+      "keyword": "Customer Service Representative"
+    },
+    {
+      "country_code": "MY",
+      "keyword": "Cyber Security Analyst"
+    },
+    {
+      "country_code": "MY",
+      "keyword": "Data Analyst"
+    },
+    {
+      "country_code": "MY",
+      "keyword": "Data Scientist"
+    },
+    {
+      "country_code": "MY",
+      "keyword": "Database Administrator"
+    },
+    {
+      "country_code": "MY",
+      "keyword": "DevOps Engineer"
+    },
+    {
+      "country_code": "MY",
+      "keyword": "Driver"
+    },
+    {
+      "country_code": "MY",
+      "keyword": "Event Coordinator"
+    },
+    {
+      "country_code": "MY",
+      "keyword": "Frontend Developer"
+    },
+    {
+      "country_code": "MY",
+      "keyword": "Full Stack Developer"
+    },
+    {
+      "country_code": "MY",
+      "keyword": "Game Developer"
+    },
+    {
+      "country_code": "MY",
+      "keyword": "Graphic Designer"
+    },
+    {
+      "country_code": "MY",
+      "keyword": "HR Manager"
+    },
+    {
+      "country_code": "MY",
+      "keyword": "Hotel Front Desk Officer"
+    },
+    {
+      "country_code": "MY",
+      "keyword": "Housekeeping Supervisor"
+    },
+    {
+      "country_code": "MY",
+      "keyword": "IT Manager"
+    },
+    {
+      "country_code": "MY",
+      "keyword": "IT Project Manager"
+    },
+    {
+      "country_code": "MY",
+      "keyword": "IT Support Specialist"
+    },
+    {
+      "country_code": "MY",
+      "keyword": "Machine Learning Engineer"
+    },
+    {
+      "country_code": "MY",
+      "keyword": "Marketing Manager"
+    },
+    {
+      "country_code": "MY",
+      "keyword": "Mobile App Developer"
+    },
+    {
+      "country_code": "MY",
+      "keyword": "Network Engineer"
+    },
+    {
+      "country_code": "MY",
+      "keyword": "Office Administrator"
+    },
+    {
+      "country_code": "MY",
+      "keyword": "Office Support Staff"
+    },
+    {
+      "country_code": "MY",
+      "keyword": "Operations Manager"
+    },
+    {
+      "country_code": "MY",
+      "keyword": "Procurement Officer"
+    },
+    {
+      "country_code": "MY",
+      "keyword": "Product Manager (IT)"
+    },
+    {
+      "country_code": "MY",
+      "keyword": "QA Engineer"
+    },
+    {
+      "country_code": "MY",
+      "keyword": "Real Estate Agent"
+    },
+    {
+      "country_code": "MY",
+      "keyword": "Receptionist"
+    },
+    {
+      "country_code": "MY",
+      "keyword": "Restaurant Manager"
+    },
+    {
+      "country_code": "MY",
+      "keyword": "Sales Executive"
+    },
+    {
+      "country_code": "MY",
+      "keyword": "Sales Manager"
+    },
+    {
+      "country_code": "MY",
+      "keyword": "Scrum Master"
+    },
+    {
+      "country_code": "MY",
+      "keyword": "Security Guard"
+    },
+    {
+      "country_code": "MY",
+      "keyword": "Social Media Manager"
+    },
+    {
+      "country_code": "MY",
+      "keyword": "Software Engineer"
+    },
+    {
+      "country_code": "MY",
+      "keyword": "Store Manager"
+    },
+    {
+      "country_code": "MY",
+      "keyword": "System Administrator"
+    },
+    {
+      "country_code": "MY",
+      "keyword": "UI/UX Designer"
+    },
+    {
+      "country_code": "MY",
+      "keyword": "Web Developer"
+    },
+    {
+      "country_code": "NL",
+      "keyword": "AI Engineer"
+    },
+    {
+      "country_code": "NL",
+      "keyword": "Accountant"
+    },
+    {
+      "country_code": "NL",
+      "keyword": "Admin Assistant"
+    },
+    {
+      "country_code": "NL",
+      "keyword": "Automation Engineer"
+    },
+    {
+      "country_code": "NL",
+      "keyword": "Backend Developer"
+    },
+    {
+      "country_code": "NL",
+      "keyword": "Call Center Agent"
+    },
+    {
+      "country_code": "NL",
+      "keyword": "Cashier"
+    },
+    {
+      "country_code": "NL",
+      "keyword": "Cloud Engineer"
+    },
+    {
+      "country_code": "NL",
+      "keyword": "Content Writer"
+    },
+    {
+      "country_code": "NL",
+      "keyword": "Customer Service Representative"
+    },
+    {
+      "country_code": "NL",
+      "keyword": "Cyber Security Analyst"
+    },
+    {
+      "country_code": "NL",
+      "keyword": "Data Analyst"
+    },
+    {
+      "country_code": "NL",
+      "keyword": "Data Scientist"
+    },
+    {
+      "country_code": "NL",
+      "keyword": "Database Administrator"
+    },
+    {
+      "country_code": "NL",
+      "keyword": "DevOps Engineer"
+    },
+    {
+      "country_code": "NL",
+      "keyword": "Driver"
+    },
+    {
+      "country_code": "NL",
+      "keyword": "Event Coordinator"
+    },
+    {
+      "country_code": "NL",
+      "keyword": "Frontend Developer"
+    },
+    {
+      "country_code": "NL",
+      "keyword": "Full Stack Developer"
+    },
+    {
+      "country_code": "NL",
+      "keyword": "Game Developer"
+    },
+    {
+      "country_code": "NL",
+      "keyword": "Graphic Designer"
+    },
+    {
+      "country_code": "NL",
+      "keyword": "HR Manager"
+    },
+    {
+      "country_code": "NL",
+      "keyword": "Hotel Front Desk Officer"
+    },
+    {
+      "country_code": "NL",
+      "keyword": "Housekeeping Supervisor"
+    },
+    {
+      "country_code": "NL",
+      "keyword": "IT Manager"
+    },
+    {
+      "country_code": "NL",
+      "keyword": "IT Project Manager"
+    },
+    {
+      "country_code": "NL",
+      "keyword": "IT Support Specialist"
+    },
+    {
+      "country_code": "NL",
+      "keyword": "Machine Learning Engineer"
+    },
+    {
+      "country_code": "NL",
+      "keyword": "Marketing Manager"
+    },
+    {
+      "country_code": "NL",
+      "keyword": "Mobile App Developer"
+    },
+    {
+      "country_code": "NL",
+      "keyword": "Network Engineer"
+    },
+    {
+      "country_code": "NL",
+      "keyword": "Office Administrator"
+    },
+    {
+      "country_code": "NL",
+      "keyword": "Office Support Staff"
+    },
+    {
+      "country_code": "NL",
+      "keyword": "Operations Manager"
+    },
+    {
+      "country_code": "NL",
+      "keyword": "Procurement Officer"
+    },
+    {
+      "country_code": "NL",
+      "keyword": "Product Manager (IT)"
+    },
+    {
+      "country_code": "NL",
+      "keyword": "QA Engineer"
+    },
+    {
+      "country_code": "NL",
+      "keyword": "Real Estate Agent"
+    },
+    {
+      "country_code": "NL",
+      "keyword": "Receptionist"
+    },
+    {
+      "country_code": "NL",
+      "keyword": "Restaurant Manager"
+    },
+    {
+      "country_code": "NL",
+      "keyword": "Sales Executive"
+    },
+    {
+      "country_code": "NL",
+      "keyword": "Sales Manager"
+    },
+    {
+      "country_code": "NL",
+      "keyword": "Scrum Master"
+    },
+    {
+      "country_code": "NL",
+      "keyword": "Security Guard"
+    },
+    {
+      "country_code": "NL",
+      "keyword": "Social Media Manager"
+    },
+    {
+      "country_code": "NL",
+      "keyword": "Software Engineer"
+    },
+    {
+      "country_code": "NL",
+      "keyword": "Store Manager"
+    },
+    {
+      "country_code": "NL",
+      "keyword": "System Administrator"
+    },
+    {
+      "country_code": "NL",
+      "keyword": "UI/UX Designer"
+    },
+    {
+      "country_code": "NL",
+      "keyword": "Web Developer"
+    },
+    {
+      "country_code": "NZ",
+      "keyword": "AI Engineer"
+    },
+    {
+      "country_code": "NZ",
+      "keyword": "Accountant"
+    },
+    {
+      "country_code": "NZ",
+      "keyword": "Admin Assistant"
+    },
+    {
+      "country_code": "NZ",
+      "keyword": "Automation Engineer"
+    },
+    {
+      "country_code": "NZ",
+      "keyword": "Backend Developer"
+    },
+    {
+      "country_code": "NZ",
+      "keyword": "Call Center Agent"
+    },
+    {
+      "country_code": "NZ",
+      "keyword": "Cashier"
+    },
+    {
+      "country_code": "NZ",
+      "keyword": "Cloud Engineer"
+    },
+    {
+      "country_code": "NZ",
+      "keyword": "Content Writer"
+    },
+    {
+      "country_code": "NZ",
+      "keyword": "Customer Service Representative"
+    },
+    {
+      "country_code": "NZ",
+      "keyword": "Cyber Security Analyst"
+    },
+    {
+      "country_code": "NZ",
+      "keyword": "Data Analyst"
+    },
+    {
+      "country_code": "NZ",
+      "keyword": "Data Scientist"
+    },
+    {
+      "country_code": "NZ",
+      "keyword": "Database Administrator"
+    },
+    {
+      "country_code": "NZ",
+      "keyword": "DevOps Engineer"
+    },
+    {
+      "country_code": "NZ",
+      "keyword": "Driver"
+    },
+    {
+      "country_code": "NZ",
+      "keyword": "Event Coordinator"
+    },
+    {
+      "country_code": "NZ",
+      "keyword": "Frontend Developer"
+    },
+    {
+      "country_code": "NZ",
+      "keyword": "Full Stack Developer"
+    },
+    {
+      "country_code": "NZ",
+      "keyword": "Game Developer"
+    },
+    {
+      "country_code": "NZ",
+      "keyword": "Graphic Designer"
+    },
+    {
+      "country_code": "NZ",
+      "keyword": "HR Manager"
+    },
+    {
+      "country_code": "NZ",
+      "keyword": "Hotel Front Desk Officer"
+    },
+    {
+      "country_code": "NZ",
+      "keyword": "Housekeeping Supervisor"
+    },
+    {
+      "country_code": "NZ",
+      "keyword": "IT Manager"
+    },
+    {
+      "country_code": "NZ",
+      "keyword": "IT Project Manager"
+    },
+    {
+      "country_code": "NZ",
+      "keyword": "IT Support Specialist"
+    },
+    {
+      "country_code": "NZ",
+      "keyword": "Machine Learning Engineer"
+    },
+    {
+      "country_code": "NZ",
+      "keyword": "Marketing Manager"
+    },
+    {
+      "country_code": "NZ",
+      "keyword": "Mobile App Developer"
+    },
+    {
+      "country_code": "NZ",
+      "keyword": "Network Engineer"
+    },
+    {
+      "country_code": "NZ",
+      "keyword": "Office Administrator"
+    },
+    {
+      "country_code": "NZ",
+      "keyword": "Office Support Staff"
+    },
+    {
+      "country_code": "NZ",
+      "keyword": "Operations Manager"
+    },
+    {
+      "country_code": "NZ",
+      "keyword": "Procurement Officer"
+    },
+    {
+      "country_code": "NZ",
+      "keyword": "Product Manager (IT)"
+    },
+    {
+      "country_code": "NZ",
+      "keyword": "QA Engineer"
+    },
+    {
+      "country_code": "NZ",
+      "keyword": "Real Estate Agent"
+    },
+    {
+      "country_code": "NZ",
+      "keyword": "Receptionist"
+    },
+    {
+      "country_code": "NZ",
+      "keyword": "Restaurant Manager"
+    },
+    {
+      "country_code": "NZ",
+      "keyword": "Sales Executive"
+    },
+    {
+      "country_code": "NZ",
+      "keyword": "Sales Manager"
+    },
+    {
+      "country_code": "NZ",
+      "keyword": "Scrum Master"
+    },
+    {
+      "country_code": "NZ",
+      "keyword": "Security Guard"
+    },
+    {
+      "country_code": "NZ",
+      "keyword": "Social Media Manager"
+    },
+    {
+      "country_code": "NZ",
+      "keyword": "Software Engineer"
+    },
+    {
+      "country_code": "NZ",
+      "keyword": "Store Manager"
+    },
+    {
+      "country_code": "NZ",
+      "keyword": "System Administrator"
+    },
+    {
+      "country_code": "NZ",
+      "keyword": "UI/UX Designer"
+    },
+    {
+      "country_code": "NZ",
+      "keyword": "Web Developer"
+    },
+    {
+      "country_code": "NG",
+      "keyword": "AI Engineer"
+    },
+    {
+      "country_code": "NG",
+      "keyword": "Accountant"
+    },
+    {
+      "country_code": "NG",
+      "keyword": "Admin Assistant"
+    },
+    {
+      "country_code": "NG",
+      "keyword": "Automation Engineer"
+    },
+    {
+      "country_code": "NG",
+      "keyword": "Backend Developer"
+    },
+    {
+      "country_code": "NG",
+      "keyword": "Call Center Agent"
+    },
+    {
+      "country_code": "NG",
+      "keyword": "Cashier"
+    },
+    {
+      "country_code": "NG",
+      "keyword": "Cloud Engineer"
+    },
+    {
+      "country_code": "NG",
+      "keyword": "Content Writer"
+    },
+    {
+      "country_code": "NG",
+      "keyword": "Customer Service Representative"
+    },
+    {
+      "country_code": "NG",
+      "keyword": "Cyber Security Analyst"
+    },
+    {
+      "country_code": "NG",
+      "keyword": "Data Analyst"
+    },
+    {
+      "country_code": "NG",
+      "keyword": "Data Scientist"
+    },
+    {
+      "country_code": "NG",
+      "keyword": "Database Administrator"
+    },
+    {
+      "country_code": "NG",
+      "keyword": "DevOps Engineer"
+    },
+    {
+      "country_code": "NG",
+      "keyword": "Driver"
+    },
+    {
+      "country_code": "NG",
+      "keyword": "Event Coordinator"
+    },
+    {
+      "country_code": "NG",
+      "keyword": "Frontend Developer"
+    },
+    {
+      "country_code": "NG",
+      "keyword": "Full Stack Developer"
+    },
+    {
+      "country_code": "NG",
+      "keyword": "Game Developer"
+    },
+    {
+      "country_code": "NG",
+      "keyword": "Graphic Designer"
+    },
+    {
+      "country_code": "NG",
+      "keyword": "HR Manager"
+    },
+    {
+      "country_code": "NG",
+      "keyword": "Hotel Front Desk Officer"
+    },
+    {
+      "country_code": "NG",
+      "keyword": "Housekeeping Supervisor"
+    },
+    {
+      "country_code": "NG",
+      "keyword": "IT Manager"
+    },
+    {
+      "country_code": "NG",
+      "keyword": "IT Project Manager"
+    },
+    {
+      "country_code": "NG",
+      "keyword": "IT Support Specialist"
+    },
+    {
+      "country_code": "NG",
+      "keyword": "Machine Learning Engineer"
+    },
+    {
+      "country_code": "NG",
+      "keyword": "Marketing Manager"
+    },
+    {
+      "country_code": "NG",
+      "keyword": "Mobile App Developer"
+    },
+    {
+      "country_code": "NG",
+      "keyword": "Network Engineer"
+    },
+    {
+      "country_code": "NG",
+      "keyword": "Office Administrator"
+    },
+    {
+      "country_code": "NG",
+      "keyword": "Office Support Staff"
+    },
+    {
+      "country_code": "NG",
+      "keyword": "Operations Manager"
+    },
+    {
+      "country_code": "NG",
+      "keyword": "Procurement Officer"
+    },
+    {
+      "country_code": "NG",
+      "keyword": "Product Manager (IT)"
+    },
+    {
+      "country_code": "NG",
+      "keyword": "QA Engineer"
+    },
+    {
+      "country_code": "NG",
+      "keyword": "Real Estate Agent"
+    },
+    {
+      "country_code": "NG",
+      "keyword": "Receptionist"
+    },
+    {
+      "country_code": "NG",
+      "keyword": "Restaurant Manager"
+    },
+    {
+      "country_code": "NG",
+      "keyword": "Sales Executive"
+    },
+    {
+      "country_code": "NG",
+      "keyword": "Sales Manager"
+    },
+    {
+      "country_code": "NG",
+      "keyword": "Scrum Master"
+    },
+    {
+      "country_code": "NG",
+      "keyword": "Security Guard"
+    },
+    {
+      "country_code": "NG",
+      "keyword": "Social Media Manager"
+    },
+    {
+      "country_code": "NG",
+      "keyword": "Software Engineer"
+    },
+    {
+      "country_code": "NG",
+      "keyword": "Store Manager"
+    },
+    {
+      "country_code": "NG",
+      "keyword": "System Administrator"
+    },
+    {
+      "country_code": "NG",
+      "keyword": "UI/UX Designer"
+    },
+    {
+      "country_code": "NG",
+      "keyword": "Web Developer"
+    },
+    {
+      "country_code": "NO",
+      "keyword": "AI Engineer"
+    },
+    {
+      "country_code": "NO",
+      "keyword": "Accountant"
+    },
+    {
+      "country_code": "NO",
+      "keyword": "Admin Assistant"
+    },
+    {
+      "country_code": "NO",
+      "keyword": "Automation Engineer"
+    },
+    {
+      "country_code": "NO",
+      "keyword": "Backend Developer"
+    },
+    {
+      "country_code": "NO",
+      "keyword": "Call Center Agent"
+    },
+    {
+      "country_code": "NO",
+      "keyword": "Cashier"
+    },
+    {
+      "country_code": "NO",
+      "keyword": "Cloud Engineer"
+    },
+    {
+      "country_code": "NO",
+      "keyword": "Content Writer"
+    },
+    {
+      "country_code": "NO",
+      "keyword": "Customer Service Representative"
+    },
+    {
+      "country_code": "NO",
+      "keyword": "Cyber Security Analyst"
+    },
+    {
+      "country_code": "NO",
+      "keyword": "Data Analyst"
+    },
+    {
+      "country_code": "NO",
+      "keyword": "Data Scientist"
+    },
+    {
+      "country_code": "NO",
+      "keyword": "Database Administrator"
+    },
+    {
+      "country_code": "NO",
+      "keyword": "DevOps Engineer"
+    },
+    {
+      "country_code": "NO",
+      "keyword": "Driver"
+    },
+    {
+      "country_code": "NO",
+      "keyword": "Event Coordinator"
+    },
+    {
+      "country_code": "NO",
+      "keyword": "Frontend Developer"
+    },
+    {
+      "country_code": "NO",
+      "keyword": "Full Stack Developer"
+    },
+    {
+      "country_code": "NO",
+      "keyword": "Game Developer"
+    },
+    {
+      "country_code": "NO",
+      "keyword": "Graphic Designer"
+    },
+    {
+      "country_code": "NO",
+      "keyword": "HR Manager"
+    },
+    {
+      "country_code": "NO",
+      "keyword": "Hotel Front Desk Officer"
+    },
+    {
+      "country_code": "NO",
+      "keyword": "Housekeeping Supervisor"
+    },
+    {
+      "country_code": "NO",
+      "keyword": "IT Manager"
+    },
+    {
+      "country_code": "NO",
+      "keyword": "IT Project Manager"
+    },
+    {
+      "country_code": "NO",
+      "keyword": "IT Support Specialist"
+    },
+    {
+      "country_code": "NO",
+      "keyword": "Machine Learning Engineer"
+    },
+    {
+      "country_code": "NO",
+      "keyword": "Marketing Manager"
+    },
+    {
+      "country_code": "NO",
+      "keyword": "Mobile App Developer"
+    },
+    {
+      "country_code": "NO",
+      "keyword": "Network Engineer"
+    },
+    {
+      "country_code": "NO",
+      "keyword": "Office Administrator"
+    },
+    {
+      "country_code": "NO",
+      "keyword": "Office Support Staff"
+    },
+    {
+      "country_code": "NO",
+      "keyword": "Operations Manager"
+    },
+    {
+      "country_code": "NO",
+      "keyword": "Procurement Officer"
+    },
+    {
+      "country_code": "NO",
+      "keyword": "Product Manager (IT)"
+    },
+    {
+      "country_code": "NO",
+      "keyword": "QA Engineer"
+    },
+    {
+      "country_code": "NO",
+      "keyword": "Real Estate Agent"
+    },
+    {
+      "country_code": "NO",
+      "keyword": "Receptionist"
+    },
+    {
+      "country_code": "NO",
+      "keyword": "Restaurant Manager"
+    },
+    {
+      "country_code": "NO",
+      "keyword": "Sales Executive"
+    },
+    {
+      "country_code": "NO",
+      "keyword": "Sales Manager"
+    },
+    {
+      "country_code": "NO",
+      "keyword": "Scrum Master"
+    },
+    {
+      "country_code": "NO",
+      "keyword": "Security Guard"
+    },
+    {
+      "country_code": "NO",
+      "keyword": "Social Media Manager"
+    },
+    {
+      "country_code": "NO",
+      "keyword": "Software Engineer"
+    },
+    {
+      "country_code": "NO",
+      "keyword": "Store Manager"
+    },
+    {
+      "country_code": "NO",
+      "keyword": "System Administrator"
+    },
+    {
+      "country_code": "NO",
+      "keyword": "UI/UX Designer"
+    },
+    {
+      "country_code": "NO",
+      "keyword": "Web Developer"
+    },
+    {
+      "country_code": "OM",
+      "keyword": "AI Engineer"
+    },
+    {
+      "country_code": "OM",
+      "keyword": "Accountant"
+    },
+    {
+      "country_code": "OM",
+      "keyword": "Admin Assistant"
+    },
+    {
+      "country_code": "OM",
+      "keyword": "Automation Engineer"
+    },
+    {
+      "country_code": "OM",
+      "keyword": "Backend Developer"
+    },
+    {
+      "country_code": "OM",
+      "keyword": "Call Center Agent"
+    },
+    {
+      "country_code": "OM",
+      "keyword": "Cashier"
+    },
+    {
+      "country_code": "OM",
+      "keyword": "Cloud Engineer"
+    },
+    {
+      "country_code": "OM",
+      "keyword": "Content Writer"
+    },
+    {
+      "country_code": "OM",
+      "keyword": "Customer Service Representative"
+    },
+    {
+      "country_code": "OM",
+      "keyword": "Cyber Security Analyst"
+    },
+    {
+      "country_code": "OM",
+      "keyword": "Data Analyst"
+    },
+    {
+      "country_code": "OM",
+      "keyword": "Data Scientist"
+    },
+    {
+      "country_code": "OM",
+      "keyword": "Database Administrator"
+    },
+    {
+      "country_code": "OM",
+      "keyword": "DevOps Engineer"
+    },
+    {
+      "country_code": "OM",
+      "keyword": "Driver"
+    },
+    {
+      "country_code": "OM",
+      "keyword": "Event Coordinator"
+    },
+    {
+      "country_code": "OM",
+      "keyword": "Frontend Developer"
+    },
+    {
+      "country_code": "OM",
+      "keyword": "Full Stack Developer"
+    },
+    {
+      "country_code": "OM",
+      "keyword": "Game Developer"
+    },
+    {
+      "country_code": "OM",
+      "keyword": "Graphic Designer"
+    },
+    {
+      "country_code": "OM",
+      "keyword": "HR Manager"
+    },
+    {
+      "country_code": "OM",
+      "keyword": "Hotel Front Desk Officer"
+    },
+    {
+      "country_code": "OM",
+      "keyword": "Housekeeping Supervisor"
+    },
+    {
+      "country_code": "OM",
+      "keyword": "IT Manager"
+    },
+    {
+      "country_code": "OM",
+      "keyword": "IT Project Manager"
+    },
+    {
+      "country_code": "OM",
+      "keyword": "IT Support Specialist"
+    },
+    {
+      "country_code": "OM",
+      "keyword": "Machine Learning Engineer"
+    },
+    {
+      "country_code": "OM",
+      "keyword": "Marketing Manager"
+    },
+    {
+      "country_code": "OM",
+      "keyword": "Mobile App Developer"
+    },
+    {
+      "country_code": "OM",
+      "keyword": "Network Engineer"
+    },
+    {
+      "country_code": "OM",
+      "keyword": "Office Administrator"
+    },
+    {
+      "country_code": "OM",
+      "keyword": "Office Support Staff"
+    },
+    {
+      "country_code": "OM",
+      "keyword": "Operations Manager"
+    },
+    {
+      "country_code": "OM",
+      "keyword": "Procurement Officer"
+    },
+    {
+      "country_code": "OM",
+      "keyword": "Product Manager (IT)"
+    },
+    {
+      "country_code": "OM",
+      "keyword": "QA Engineer"
+    },
+    {
+      "country_code": "OM",
+      "keyword": "Real Estate Agent"
+    },
+    {
+      "country_code": "OM",
+      "keyword": "Receptionist"
+    },
+    {
+      "country_code": "OM",
+      "keyword": "Restaurant Manager"
+    },
+    {
+      "country_code": "OM",
+      "keyword": "Sales Executive"
+    },
+    {
+      "country_code": "OM",
+      "keyword": "Sales Manager"
+    },
+    {
+      "country_code": "OM",
+      "keyword": "Scrum Master"
+    },
+    {
+      "country_code": "OM",
+      "keyword": "Security Guard"
+    },
+    {
+      "country_code": "OM",
+      "keyword": "Social Media Manager"
+    },
+    {
+      "country_code": "OM",
+      "keyword": "Software Engineer"
+    },
+    {
+      "country_code": "OM",
+      "keyword": "Store Manager"
+    },
+    {
+      "country_code": "OM",
+      "keyword": "System Administrator"
+    },
+    {
+      "country_code": "OM",
+      "keyword": "UI/UX Designer"
+    },
+    {
+      "country_code": "OM",
+      "keyword": "Web Developer"
+    },
+    {
+      "country_code": "PK",
+      "keyword": "AI Engineer"
+    },
+    {
+      "country_code": "PK",
+      "keyword": "Accountant"
+    },
+    {
+      "country_code": "PK",
+      "keyword": "Admin Assistant"
+    },
+    {
+      "country_code": "PK",
+      "keyword": "Automation Engineer"
+    },
+    {
+      "country_code": "PK",
+      "keyword": "Backend Developer"
+    },
+    {
+      "country_code": "PK",
+      "keyword": "Call Center Agent"
+    },
+    {
+      "country_code": "PK",
+      "keyword": "Cashier"
+    },
+    {
+      "country_code": "PK",
+      "keyword": "Cloud Engineer"
+    },
+    {
+      "country_code": "PK",
+      "keyword": "Content Writer"
+    },
+    {
+      "country_code": "PK",
+      "keyword": "Customer Service Representative"
+    },
+    {
+      "country_code": "PK",
+      "keyword": "Cyber Security Analyst"
+    },
+    {
+      "country_code": "PK",
+      "keyword": "Data Analyst"
+    },
+    {
+      "country_code": "PK",
+      "keyword": "Data Scientist"
+    },
+    {
+      "country_code": "PK",
+      "keyword": "Database Administrator"
+    },
+    {
+      "country_code": "PK",
+      "keyword": "DevOps Engineer"
+    },
+    {
+      "country_code": "PK",
+      "keyword": "Driver"
+    },
+    {
+      "country_code": "PK",
+      "keyword": "Event Coordinator"
+    },
+    {
+      "country_code": "PK",
+      "keyword": "Frontend Developer"
+    },
+    {
+      "country_code": "PK",
+      "keyword": "Full Stack Developer"
+    },
+    {
+      "country_code": "PK",
+      "keyword": "Game Developer"
+    },
+    {
+      "country_code": "PK",
+      "keyword": "Graphic Designer"
+    },
+    {
+      "country_code": "PK",
+      "keyword": "HR Manager"
+    },
+    {
+      "country_code": "PK",
+      "keyword": "Hotel Front Desk Officer"
+    },
+    {
+      "country_code": "PK",
+      "keyword": "Housekeeping Supervisor"
+    },
+    {
+      "country_code": "PK",
+      "keyword": "IT Manager"
+    },
+    {
+      "country_code": "PK",
+      "keyword": "IT Project Manager"
+    },
+    {
+      "country_code": "PK",
+      "keyword": "IT Support Specialist"
+    },
+    {
+      "country_code": "PK",
+      "keyword": "Machine Learning Engineer"
+    },
+    {
+      "country_code": "PK",
+      "keyword": "Marketing Manager"
+    },
+    {
+      "country_code": "PK",
+      "keyword": "Mobile App Developer"
+    },
+    {
+      "country_code": "PK",
+      "keyword": "Network Engineer"
+    },
+    {
+      "country_code": "PK",
+      "keyword": "Office Administrator"
+    },
+    {
+      "country_code": "PK",
+      "keyword": "Office Support Staff"
+    },
+    {
+      "country_code": "PK",
+      "keyword": "Operations Manager"
+    },
+    {
+      "country_code": "PK",
+      "keyword": "Procurement Officer"
+    },
+    {
+      "country_code": "PK",
+      "keyword": "Product Manager (IT)"
+    },
+    {
+      "country_code": "PK",
+      "keyword": "QA Engineer"
+    },
+    {
+      "country_code": "PK",
+      "keyword": "Real Estate Agent"
+    },
+    {
+      "country_code": "PK",
+      "keyword": "Receptionist"
+    },
+    {
+      "country_code": "PK",
+      "keyword": "Restaurant Manager"
+    },
+    {
+      "country_code": "PK",
+      "keyword": "Sales Executive"
+    },
+    {
+      "country_code": "PK",
+      "keyword": "Sales Manager"
+    },
+    {
+      "country_code": "PK",
+      "keyword": "Scrum Master"
+    },
+    {
+      "country_code": "PK",
+      "keyword": "Security Guard"
+    },
+    {
+      "country_code": "PK",
+      "keyword": "Social Media Manager"
+    },
+    {
+      "country_code": "PK",
+      "keyword": "Software Engineer"
+    },
+    {
+      "country_code": "PK",
+      "keyword": "Store Manager"
+    },
+    {
+      "country_code": "PK",
+      "keyword": "System Administrator"
+    },
+    {
+      "country_code": "PK",
+      "keyword": "UI/UX Designer"
+    },
+    {
+      "country_code": "PK",
+      "keyword": "Web Developer"
+    },
+    {
+      "country_code": "PH",
+      "keyword": "AI Engineer"
+    },
+    {
+      "country_code": "PH",
+      "keyword": "Accountant"
+    },
+    {
+      "country_code": "PH",
+      "keyword": "Admin Assistant"
+    },
+    {
+      "country_code": "PH",
+      "keyword": "Automation Engineer"
+    },
+    {
+      "country_code": "PH",
+      "keyword": "Backend Developer"
+    },
+    {
+      "country_code": "PH",
+      "keyword": "Call Center Agent"
+    },
+    {
+      "country_code": "PH",
+      "keyword": "Cashier"
+    },
+    {
+      "country_code": "PH",
+      "keyword": "Cloud Engineer"
+    },
+    {
+      "country_code": "PH",
+      "keyword": "Content Writer"
+    },
+    {
+      "country_code": "PH",
+      "keyword": "Customer Service Representative"
+    },
+    {
+      "country_code": "PH",
+      "keyword": "Cyber Security Analyst"
+    },
+    {
+      "country_code": "PH",
+      "keyword": "Data Analyst"
+    },
+    {
+      "country_code": "PH",
+      "keyword": "Data Scientist"
+    },
+    {
+      "country_code": "PH",
+      "keyword": "Database Administrator"
+    },
+    {
+      "country_code": "PH",
+      "keyword": "DevOps Engineer"
+    },
+    {
+      "country_code": "PH",
+      "keyword": "Driver"
+    },
+    {
+      "country_code": "PH",
+      "keyword": "Event Coordinator"
+    },
+    {
+      "country_code": "PH",
+      "keyword": "Frontend Developer"
+    },
+    {
+      "country_code": "PH",
+      "keyword": "Full Stack Developer"
+    },
+    {
+      "country_code": "PH",
+      "keyword": "Game Developer"
+    },
+    {
+      "country_code": "PH",
+      "keyword": "Graphic Designer"
+    },
+    {
+      "country_code": "PH",
+      "keyword": "HR Manager"
+    },
+    {
+      "country_code": "PH",
+      "keyword": "Hotel Front Desk Officer"
+    },
+    {
+      "country_code": "PH",
+      "keyword": "Housekeeping Supervisor"
+    },
+    {
+      "country_code": "PH",
+      "keyword": "IT Manager"
+    },
+    {
+      "country_code": "PH",
+      "keyword": "IT Project Manager"
+    },
+    {
+      "country_code": "PH",
+      "keyword": "IT Support Specialist"
+    },
+    {
+      "country_code": "PH",
+      "keyword": "Machine Learning Engineer"
+    },
+    {
+      "country_code": "PH",
+      "keyword": "Marketing Manager"
+    },
+    {
+      "country_code": "PH",
+      "keyword": "Mobile App Developer"
+    },
+    {
+      "country_code": "PH",
+      "keyword": "Network Engineer"
+    },
+    {
+      "country_code": "PH",
+      "keyword": "Office Administrator"
+    },
+    {
+      "country_code": "PH",
+      "keyword": "Office Support Staff"
+    },
+    {
+      "country_code": "PH",
+      "keyword": "Operations Manager"
+    },
+    {
+      "country_code": "PH",
+      "keyword": "Procurement Officer"
+    },
+    {
+      "country_code": "PH",
+      "keyword": "Product Manager (IT)"
+    },
+    {
+      "country_code": "PH",
+      "keyword": "QA Engineer"
+    },
+    {
+      "country_code": "PH",
+      "keyword": "Real Estate Agent"
+    },
+    {
+      "country_code": "PH",
+      "keyword": "Receptionist"
+    },
+    {
+      "country_code": "PH",
+      "keyword": "Restaurant Manager"
+    },
+    {
+      "country_code": "PH",
+      "keyword": "Sales Executive"
+    },
+    {
+      "country_code": "PH",
+      "keyword": "Sales Manager"
+    },
+    {
+      "country_code": "PH",
+      "keyword": "Scrum Master"
+    },
+    {
+      "country_code": "PH",
+      "keyword": "Security Guard"
+    },
+    {
+      "country_code": "PH",
+      "keyword": "Social Media Manager"
+    },
+    {
+      "country_code": "PH",
+      "keyword": "Software Engineer"
+    },
+    {
+      "country_code": "PH",
+      "keyword": "Store Manager"
+    },
+    {
+      "country_code": "PH",
+      "keyword": "System Administrator"
+    },
+    {
+      "country_code": "PH",
+      "keyword": "UI/UX Designer"
+    },
+    {
+      "country_code": "PH",
+      "keyword": "Web Developer"
+    },
+    {
+      "country_code": "PL",
+      "keyword": "AI Engineer"
+    },
+    {
+      "country_code": "PL",
+      "keyword": "Accountant"
+    },
+    {
+      "country_code": "PL",
+      "keyword": "Admin Assistant"
+    },
+    {
+      "country_code": "PL",
+      "keyword": "Automation Engineer"
+    },
+    {
+      "country_code": "PL",
+      "keyword": "Backend Developer"
+    },
+    {
+      "country_code": "PL",
+      "keyword": "Call Center Agent"
+    },
+    {
+      "country_code": "PL",
+      "keyword": "Cashier"
+    },
+    {
+      "country_code": "PL",
+      "keyword": "Cloud Engineer"
+    },
+    {
+      "country_code": "PL",
+      "keyword": "Content Writer"
+    },
+    {
+      "country_code": "PL",
+      "keyword": "Customer Service Representative"
+    },
+    {
+      "country_code": "PL",
+      "keyword": "Cyber Security Analyst"
+    },
+    {
+      "country_code": "PL",
+      "keyword": "Data Analyst"
+    },
+    {
+      "country_code": "PL",
+      "keyword": "Data Scientist"
+    },
+    {
+      "country_code": "PL",
+      "keyword": "Database Administrator"
+    },
+    {
+      "country_code": "PL",
+      "keyword": "DevOps Engineer"
+    },
+    {
+      "country_code": "PL",
+      "keyword": "Driver"
+    },
+    {
+      "country_code": "PL",
+      "keyword": "Event Coordinator"
+    },
+    {
+      "country_code": "PL",
+      "keyword": "Frontend Developer"
+    },
+    {
+      "country_code": "PL",
+      "keyword": "Full Stack Developer"
+    },
+    {
+      "country_code": "PL",
+      "keyword": "Game Developer"
+    },
+    {
+      "country_code": "PL",
+      "keyword": "Graphic Designer"
+    },
+    {
+      "country_code": "PL",
+      "keyword": "HR Manager"
+    },
+    {
+      "country_code": "PL",
+      "keyword": "Hotel Front Desk Officer"
+    },
+    {
+      "country_code": "PL",
+      "keyword": "Housekeeping Supervisor"
+    },
+    {
+      "country_code": "PL",
+      "keyword": "IT Manager"
+    },
+    {
+      "country_code": "PL",
+      "keyword": "IT Project Manager"
+    },
+    {
+      "country_code": "PL",
+      "keyword": "IT Support Specialist"
+    },
+    {
+      "country_code": "PL",
+      "keyword": "Machine Learning Engineer"
+    },
+    {
+      "country_code": "PL",
+      "keyword": "Marketing Manager"
+    },
+    {
+      "country_code": "PL",
+      "keyword": "Mobile App Developer"
+    },
+    {
+      "country_code": "PL",
+      "keyword": "Network Engineer"
+    },
+    {
+      "country_code": "PL",
+      "keyword": "Office Administrator"
+    },
+    {
+      "country_code": "PL",
+      "keyword": "Office Support Staff"
+    },
+    {
+      "country_code": "PL",
+      "keyword": "Operations Manager"
+    },
+    {
+      "country_code": "PL",
+      "keyword": "Procurement Officer"
+    },
+    {
+      "country_code": "PL",
+      "keyword": "Product Manager (IT)"
+    },
+    {
+      "country_code": "PL",
+      "keyword": "QA Engineer"
+    },
+    {
+      "country_code": "PL",
+      "keyword": "Real Estate Agent"
+    },
+    {
+      "country_code": "PL",
+      "keyword": "Receptionist"
+    },
+    {
+      "country_code": "PL",
+      "keyword": "Restaurant Manager"
+    },
+    {
+      "country_code": "PL",
+      "keyword": "Sales Executive"
+    },
+    {
+      "country_code": "PL",
+      "keyword": "Sales Manager"
+    },
+    {
+      "country_code": "PL",
+      "keyword": "Scrum Master"
+    },
+    {
+      "country_code": "PL",
+      "keyword": "Security Guard"
+    },
+    {
+      "country_code": "PL",
+      "keyword": "Social Media Manager"
+    },
+    {
+      "country_code": "PL",
+      "keyword": "Software Engineer"
+    },
+    {
+      "country_code": "PL",
+      "keyword": "Store Manager"
+    },
+    {
+      "country_code": "PL",
+      "keyword": "System Administrator"
+    },
+    {
+      "country_code": "PL",
+      "keyword": "UI/UX Designer"
+    },
+    {
+      "country_code": "PL",
+      "keyword": "Web Developer"
+    },
+    {
+      "country_code": "QA",
+      "keyword": "AI Engineer"
+    },
+    {
+      "country_code": "QA",
+      "keyword": "Accountant"
+    },
+    {
+      "country_code": "QA",
+      "keyword": "Admin Assistant"
+    },
+    {
+      "country_code": "QA",
+      "keyword": "Automation Engineer"
+    },
+    {
+      "country_code": "QA",
+      "keyword": "Backend Developer"
+    },
+    {
+      "country_code": "QA",
+      "keyword": "Call Center Agent"
+    },
+    {
+      "country_code": "QA",
+      "keyword": "Cashier"
+    },
+    {
+      "country_code": "QA",
+      "keyword": "Cloud Engineer"
+    },
+    {
+      "country_code": "QA",
+      "keyword": "Content Writer"
+    },
+    {
+      "country_code": "QA",
+      "keyword": "Customer Service Representative"
+    },
+    {
+      "country_code": "QA",
+      "keyword": "Cyber Security Analyst"
+    },
+    {
+      "country_code": "QA",
+      "keyword": "Data Analyst"
+    },
+    {
+      "country_code": "QA",
+      "keyword": "Data Scientist"
+    },
+    {
+      "country_code": "QA",
+      "keyword": "Database Administrator"
+    },
+    {
+      "country_code": "QA",
+      "keyword": "DevOps Engineer"
+    },
+    {
+      "country_code": "QA",
+      "keyword": "Driver"
+    },
+    {
+      "country_code": "QA",
+      "keyword": "Event Coordinator"
+    },
+    {
+      "country_code": "QA",
+      "keyword": "Frontend Developer"
+    },
+    {
+      "country_code": "QA",
+      "keyword": "Full Stack Developer"
+    },
+    {
+      "country_code": "QA",
+      "keyword": "Game Developer"
+    },
+    {
+      "country_code": "QA",
+      "keyword": "Graphic Designer"
+    },
+    {
+      "country_code": "QA",
+      "keyword": "HR Manager"
+    },
+    {
+      "country_code": "QA",
+      "keyword": "Hotel Front Desk Officer"
+    },
+    {
+      "country_code": "QA",
+      "keyword": "Housekeeping Supervisor"
+    },
+    {
+      "country_code": "QA",
+      "keyword": "IT Manager"
+    },
+    {
+      "country_code": "QA",
+      "keyword": "IT Project Manager"
+    },
+    {
+      "country_code": "QA",
+      "keyword": "IT Support Specialist"
+    },
+    {
+      "country_code": "QA",
+      "keyword": "Machine Learning Engineer"
+    },
+    {
+      "country_code": "QA",
+      "keyword": "Marketing Manager"
+    },
+    {
+      "country_code": "QA",
+      "keyword": "Mobile App Developer"
+    },
+    {
+      "country_code": "QA",
+      "keyword": "Network Engineer"
+    },
+    {
+      "country_code": "QA",
+      "keyword": "Office Administrator"
+    },
+    {
+      "country_code": "QA",
+      "keyword": "Office Support Staff"
+    },
+    {
+      "country_code": "QA",
+      "keyword": "Operations Manager"
+    },
+    {
+      "country_code": "QA",
+      "keyword": "Procurement Officer"
+    },
+    {
+      "country_code": "QA",
+      "keyword": "Product Manager (IT)"
+    },
+    {
+      "country_code": "QA",
+      "keyword": "QA Engineer"
+    },
+    {
+      "country_code": "QA",
+      "keyword": "Real Estate Agent"
+    },
+    {
+      "country_code": "QA",
+      "keyword": "Receptionist"
+    },
+    {
+      "country_code": "QA",
+      "keyword": "Restaurant Manager"
+    },
+    {
+      "country_code": "QA",
+      "keyword": "Sales Executive"
+    },
+    {
+      "country_code": "QA",
+      "keyword": "Sales Manager"
+    },
+    {
+      "country_code": "QA",
+      "keyword": "Scrum Master"
+    },
+    {
+      "country_code": "QA",
+      "keyword": "Security Guard"
+    },
+    {
+      "country_code": "QA",
+      "keyword": "Social Media Manager"
+    },
+    {
+      "country_code": "QA",
+      "keyword": "Software Engineer"
+    },
+    {
+      "country_code": "QA",
+      "keyword": "Store Manager"
+    },
+    {
+      "country_code": "QA",
+      "keyword": "System Administrator"
+    },
+    {
+      "country_code": "QA",
+      "keyword": "UI/UX Designer"
+    },
+    {
+      "country_code": "QA",
+      "keyword": "Web Developer"
+    },
+    {
+      "country_code": "SA",
+      "keyword": "AI Engineer"
+    },
+    {
+      "country_code": "SA",
+      "keyword": "Accountant"
+    },
+    {
+      "country_code": "SA",
+      "keyword": "Admin Assistant"
+    },
+    {
+      "country_code": "SA",
+      "keyword": "Automation Engineer"
+    },
+    {
+      "country_code": "SA",
+      "keyword": "Backend Developer"
+    },
+    {
+      "country_code": "SA",
+      "keyword": "Call Center Agent"
+    },
+    {
+      "country_code": "SA",
+      "keyword": "Cashier"
+    },
+    {
+      "country_code": "SA",
+      "keyword": "Cloud Engineer"
+    },
+    {
+      "country_code": "SA",
+      "keyword": "Content Writer"
+    },
+    {
+      "country_code": "SA",
+      "keyword": "Customer Service Representative"
+    },
+    {
+      "country_code": "SA",
+      "keyword": "Cyber Security Analyst"
+    },
+    {
+      "country_code": "SA",
+      "keyword": "Data Analyst"
+    },
+    {
+      "country_code": "SA",
+      "keyword": "Data Scientist"
+    },
+    {
+      "country_code": "SA",
+      "keyword": "Database Administrator"
+    },
+    {
+      "country_code": "SA",
+      "keyword": "DevOps Engineer"
+    },
+    {
+      "country_code": "SA",
+      "keyword": "Driver"
+    },
+    {
+      "country_code": "SA",
+      "keyword": "Event Coordinator"
+    },
+    {
+      "country_code": "SA",
+      "keyword": "Frontend Developer"
+    },
+    {
+      "country_code": "SA",
+      "keyword": "Full Stack Developer"
+    },
+    {
+      "country_code": "SA",
+      "keyword": "Game Developer"
+    },
+    {
+      "country_code": "SA",
+      "keyword": "Graphic Designer"
+    },
+    {
+      "country_code": "SA",
+      "keyword": "HR Manager"
+    },
+    {
+      "country_code": "SA",
+      "keyword": "Hotel Front Desk Officer"
+    },
+    {
+      "country_code": "SA",
+      "keyword": "Housekeeping Supervisor"
+    },
+    {
+      "country_code": "SA",
+      "keyword": "IT Manager"
+    },
+    {
+      "country_code": "SA",
+      "keyword": "IT Project Manager"
+    },
+    {
+      "country_code": "SA",
+      "keyword": "IT Support Specialist"
+    },
+    {
+      "country_code": "SA",
+      "keyword": "Machine Learning Engineer"
+    },
+    {
+      "country_code": "SA",
+      "keyword": "Marketing Manager"
+    },
+    {
+      "country_code": "SA",
+      "keyword": "Mobile App Developer"
+    },
+    {
+      "country_code": "SA",
+      "keyword": "Network Engineer"
+    },
+    {
+      "country_code": "SA",
+      "keyword": "Office Administrator"
+    },
+    {
+      "country_code": "SA",
+      "keyword": "Office Support Staff"
+    },
+    {
+      "country_code": "SA",
+      "keyword": "Operations Manager"
+    },
+    {
+      "country_code": "SA",
+      "keyword": "Procurement Officer"
+    },
+    {
+      "country_code": "SA",
+      "keyword": "Product Manager (IT)"
+    },
+    {
+      "country_code": "SA",
+      "keyword": "QA Engineer"
+    },
+    {
+      "country_code": "SA",
+      "keyword": "Real Estate Agent"
+    },
+    {
+      "country_code": "SA",
+      "keyword": "Receptionist"
+    },
+    {
+      "country_code": "SA",
+      "keyword": "Restaurant Manager"
+    },
+    {
+      "country_code": "SA",
+      "keyword": "Sales Executive"
+    },
+    {
+      "country_code": "SA",
+      "keyword": "Sales Manager"
+    },
+    {
+      "country_code": "SA",
+      "keyword": "Scrum Master"
+    },
+    {
+      "country_code": "SA",
+      "keyword": "Security Guard"
+    },
+    {
+      "country_code": "SA",
+      "keyword": "Social Media Manager"
+    },
+    {
+      "country_code": "SA",
+      "keyword": "Software Engineer"
+    },
+    {
+      "country_code": "SA",
+      "keyword": "Store Manager"
+    },
+    {
+      "country_code": "SA",
+      "keyword": "System Administrator"
+    },
+    {
+      "country_code": "SA",
+      "keyword": "UI/UX Designer"
+    },
+    {
+      "country_code": "SA",
+      "keyword": "Web Developer"
+    },
+    {
+      "country_code": "SG",
+      "keyword": "AI Engineer"
+    },
+    {
+      "country_code": "SG",
+      "keyword": "Accountant"
+    },
+    {
+      "country_code": "SG",
+      "keyword": "Admin Assistant"
+    },
+    {
+      "country_code": "SG",
+      "keyword": "Automation Engineer"
+    },
+    {
+      "country_code": "SG",
+      "keyword": "Backend Developer"
+    },
+    {
+      "country_code": "SG",
+      "keyword": "Call Center Agent"
+    },
+    {
+      "country_code": "SG",
+      "keyword": "Cashier"
+    },
+    {
+      "country_code": "SG",
+      "keyword": "Cloud Engineer"
+    },
+    {
+      "country_code": "SG",
+      "keyword": "Content Writer"
+    },
+    {
+      "country_code": "SG",
+      "keyword": "Customer Service Representative"
+    },
+    {
+      "country_code": "SG",
+      "keyword": "Cyber Security Analyst"
+    },
+    {
+      "country_code": "SG",
+      "keyword": "Data Analyst"
+    },
+    {
+      "country_code": "SG",
+      "keyword": "Data Scientist"
+    },
+    {
+      "country_code": "SG",
+      "keyword": "Database Administrator"
+    },
+    {
+      "country_code": "SG",
+      "keyword": "DevOps Engineer"
+    },
+    {
+      "country_code": "SG",
+      "keyword": "Driver"
+    },
+    {
+      "country_code": "SG",
+      "keyword": "Event Coordinator"
+    },
+    {
+      "country_code": "SG",
+      "keyword": "Frontend Developer"
+    },
+    {
+      "country_code": "SG",
+      "keyword": "Full Stack Developer"
+    },
+    {
+      "country_code": "SG",
+      "keyword": "Game Developer"
+    },
+    {
+      "country_code": "SG",
+      "keyword": "Graphic Designer"
+    },
+    {
+      "country_code": "SG",
+      "keyword": "HR Manager"
+    },
+    {
+      "country_code": "SG",
+      "keyword": "Hotel Front Desk Officer"
+    },
+    {
+      "country_code": "SG",
+      "keyword": "Housekeeping Supervisor"
+    },
+    {
+      "country_code": "SG",
+      "keyword": "IT Manager"
+    },
+    {
+      "country_code": "SG",
+      "keyword": "IT Project Manager"
+    },
+    {
+      "country_code": "SG",
+      "keyword": "IT Support Specialist"
+    },
+    {
+      "country_code": "SG",
+      "keyword": "Machine Learning Engineer"
+    },
+    {
+      "country_code": "SG",
+      "keyword": "Marketing Manager"
+    },
+    {
+      "country_code": "SG",
+      "keyword": "Mobile App Developer"
+    },
+    {
+      "country_code": "SG",
+      "keyword": "Network Engineer"
+    },
+    {
+      "country_code": "SG",
+      "keyword": "Office Administrator"
+    },
+    {
+      "country_code": "SG",
+      "keyword": "Office Support Staff"
+    },
+    {
+      "country_code": "SG",
+      "keyword": "Operations Manager"
+    },
+    {
+      "country_code": "SG",
+      "keyword": "Procurement Officer"
+    },
+    {
+      "country_code": "SG",
+      "keyword": "Product Manager (IT)"
+    },
+    {
+      "country_code": "SG",
+      "keyword": "QA Engineer"
+    },
+    {
+      "country_code": "SG",
+      "keyword": "Real Estate Agent"
+    },
+    {
+      "country_code": "SG",
+      "keyword": "Receptionist"
+    },
+    {
+      "country_code": "SG",
+      "keyword": "Restaurant Manager"
+    },
+    {
+      "country_code": "SG",
+      "keyword": "Sales Executive"
+    },
+    {
+      "country_code": "SG",
+      "keyword": "Sales Manager"
+    },
+    {
+      "country_code": "SG",
+      "keyword": "Scrum Master"
+    },
+    {
+      "country_code": "SG",
+      "keyword": "Security Guard"
+    },
+    {
+      "country_code": "SG",
+      "keyword": "Social Media Manager"
+    },
+    {
+      "country_code": "SG",
+      "keyword": "Software Engineer"
+    },
+    {
+      "country_code": "SG",
+      "keyword": "Store Manager"
+    },
+    {
+      "country_code": "SG",
+      "keyword": "System Administrator"
+    },
+    {
+      "country_code": "SG",
+      "keyword": "UI/UX Designer"
+    },
+    {
+      "country_code": "SG",
+      "keyword": "Web Developer"
+    },
+    {
+      "country_code": "ZA",
+      "keyword": "AI Engineer"
+    },
+    {
+      "country_code": "ZA",
+      "keyword": "Accountant"
+    },
+    {
+      "country_code": "ZA",
+      "keyword": "Admin Assistant"
+    },
+    {
+      "country_code": "ZA",
+      "keyword": "Automation Engineer"
+    },
+    {
+      "country_code": "ZA",
+      "keyword": "Backend Developer"
+    },
+    {
+      "country_code": "ZA",
+      "keyword": "Call Center Agent"
+    },
+    {
+      "country_code": "ZA",
+      "keyword": "Cashier"
+    },
+    {
+      "country_code": "ZA",
+      "keyword": "Cloud Engineer"
+    },
+    {
+      "country_code": "ZA",
+      "keyword": "Content Writer"
+    },
+    {
+      "country_code": "ZA",
+      "keyword": "Customer Service Representative"
+    },
+    {
+      "country_code": "ZA",
+      "keyword": "Cyber Security Analyst"
+    },
+    {
+      "country_code": "ZA",
+      "keyword": "Data Analyst"
+    },
+    {
+      "country_code": "ZA",
+      "keyword": "Data Scientist"
+    },
+    {
+      "country_code": "ZA",
+      "keyword": "Database Administrator"
+    },
+    {
+      "country_code": "ZA",
+      "keyword": "DevOps Engineer"
+    },
+    {
+      "country_code": "ZA",
+      "keyword": "Driver"
+    },
+    {
+      "country_code": "ZA",
+      "keyword": "Event Coordinator"
+    },
+    {
+      "country_code": "ZA",
+      "keyword": "Frontend Developer"
+    },
+    {
+      "country_code": "ZA",
+      "keyword": "Full Stack Developer"
+    },
+    {
+      "country_code": "ZA",
+      "keyword": "Game Developer"
+    },
+    {
+      "country_code": "ZA",
+      "keyword": "Graphic Designer"
+    },
+    {
+      "country_code": "ZA",
+      "keyword": "HR Manager"
+    },
+    {
+      "country_code": "ZA",
+      "keyword": "Hotel Front Desk Officer"
+    },
+    {
+      "country_code": "ZA",
+      "keyword": "Housekeeping Supervisor"
+    },
+    {
+      "country_code": "ZA",
+      "keyword": "IT Manager"
+    },
+    {
+      "country_code": "ZA",
+      "keyword": "IT Project Manager"
+    },
+    {
+      "country_code": "ZA",
+      "keyword": "IT Support Specialist"
+    },
+    {
+      "country_code": "ZA",
+      "keyword": "Machine Learning Engineer"
+    },
+    {
+      "country_code": "ZA",
+      "keyword": "Marketing Manager"
+    },
+    {
+      "country_code": "ZA",
+      "keyword": "Mobile App Developer"
+    },
+    {
+      "country_code": "ZA",
+      "keyword": "Network Engineer"
+    },
+    {
+      "country_code": "ZA",
+      "keyword": "Office Administrator"
+    },
+    {
+      "country_code": "ZA",
+      "keyword": "Office Support Staff"
+    },
+    {
+      "country_code": "ZA",
+      "keyword": "Operations Manager"
+    },
+    {
+      "country_code": "ZA",
+      "keyword": "Procurement Officer"
+    },
+    {
+      "country_code": "ZA",
+      "keyword": "Product Manager (IT)"
+    },
+    {
+      "country_code": "ZA",
+      "keyword": "QA Engineer"
+    },
+    {
+      "country_code": "ZA",
+      "keyword": "Real Estate Agent"
+    },
+    {
+      "country_code": "ZA",
+      "keyword": "Receptionist"
+    },
+    {
+      "country_code": "ZA",
+      "keyword": "Restaurant Manager"
+    },
+    {
+      "country_code": "ZA",
+      "keyword": "Sales Executive"
+    },
+    {
+      "country_code": "ZA",
+      "keyword": "Sales Manager"
+    },
+    {
+      "country_code": "ZA",
+      "keyword": "Scrum Master"
+    },
+    {
+      "country_code": "ZA",
+      "keyword": "Security Guard"
+    },
+    {
+      "country_code": "ZA",
+      "keyword": "Social Media Manager"
+    },
+    {
+      "country_code": "ZA",
+      "keyword": "Software Engineer"
+    },
+    {
+      "country_code": "ZA",
+      "keyword": "Store Manager"
+    },
+    {
+      "country_code": "ZA",
+      "keyword": "System Administrator"
+    },
+    {
+      "country_code": "ZA",
+      "keyword": "UI/UX Designer"
+    },
+    {
+      "country_code": "ZA",
+      "keyword": "Web Developer"
+    },
+    {
+      "country_code": "KR",
+      "keyword": "AI Engineer"
+    },
+    {
+      "country_code": "KR",
+      "keyword": "Accountant"
+    },
+    {
+      "country_code": "KR",
+      "keyword": "Admin Assistant"
+    },
+    {
+      "country_code": "KR",
+      "keyword": "Automation Engineer"
+    },
+    {
+      "country_code": "KR",
+      "keyword": "Backend Developer"
+    },
+    {
+      "country_code": "KR",
+      "keyword": "Call Center Agent"
+    },
+    {
+      "country_code": "KR",
+      "keyword": "Cashier"
+    },
+    {
+      "country_code": "KR",
+      "keyword": "Cloud Engineer"
+    },
+    {
+      "country_code": "KR",
+      "keyword": "Content Writer"
+    },
+    {
+      "country_code": "KR",
+      "keyword": "Customer Service Representative"
+    },
+    {
+      "country_code": "KR",
+      "keyword": "Cyber Security Analyst"
+    },
+    {
+      "country_code": "KR",
+      "keyword": "Data Analyst"
+    },
+    {
+      "country_code": "KR",
+      "keyword": "Data Scientist"
+    },
+    {
+      "country_code": "KR",
+      "keyword": "Database Administrator"
+    },
+    {
+      "country_code": "KR",
+      "keyword": "DevOps Engineer"
+    },
+    {
+      "country_code": "KR",
+      "keyword": "Driver"
+    },
+    {
+      "country_code": "KR",
+      "keyword": "Event Coordinator"
+    },
+    {
+      "country_code": "KR",
+      "keyword": "Frontend Developer"
+    },
+    {
+      "country_code": "KR",
+      "keyword": "Full Stack Developer"
+    },
+    {
+      "country_code": "KR",
+      "keyword": "Game Developer"
+    },
+    {
+      "country_code": "KR",
+      "keyword": "Graphic Designer"
+    },
+    {
+      "country_code": "KR",
+      "keyword": "HR Manager"
+    },
+    {
+      "country_code": "KR",
+      "keyword": "Hotel Front Desk Officer"
+    },
+    {
+      "country_code": "KR",
+      "keyword": "Housekeeping Supervisor"
+    },
+    {
+      "country_code": "KR",
+      "keyword": "IT Manager"
+    },
+    {
+      "country_code": "KR",
+      "keyword": "IT Project Manager"
+    },
+    {
+      "country_code": "KR",
+      "keyword": "IT Support Specialist"
+    },
+    {
+      "country_code": "KR",
+      "keyword": "Machine Learning Engineer"
+    },
+    {
+      "country_code": "KR",
+      "keyword": "Marketing Manager"
+    },
+    {
+      "country_code": "KR",
+      "keyword": "Mobile App Developer"
+    },
+    {
+      "country_code": "KR",
+      "keyword": "Network Engineer"
+    },
+    {
+      "country_code": "KR",
+      "keyword": "Office Administrator"
+    },
+    {
+      "country_code": "KR",
+      "keyword": "Office Support Staff"
+    },
+    {
+      "country_code": "KR",
+      "keyword": "Operations Manager"
+    },
+    {
+      "country_code": "KR",
+      "keyword": "Procurement Officer"
+    },
+    {
+      "country_code": "KR",
+      "keyword": "Product Manager (IT)"
+    },
+    {
+      "country_code": "KR",
+      "keyword": "QA Engineer"
+    },
+    {
+      "country_code": "KR",
+      "keyword": "Real Estate Agent"
+    },
+    {
+      "country_code": "KR",
+      "keyword": "Receptionist"
+    },
+    {
+      "country_code": "KR",
+      "keyword": "Restaurant Manager"
+    },
+    {
+      "country_code": "KR",
+      "keyword": "Sales Executive"
+    },
+    {
+      "country_code": "KR",
+      "keyword": "Sales Manager"
+    },
+    {
+      "country_code": "KR",
+      "keyword": "Scrum Master"
+    },
+    {
+      "country_code": "KR",
+      "keyword": "Security Guard"
+    },
+    {
+      "country_code": "KR",
+      "keyword": "Social Media Manager"
+    },
+    {
+      "country_code": "KR",
+      "keyword": "Software Engineer"
+    },
+    {
+      "country_code": "KR",
+      "keyword": "Store Manager"
+    },
+    {
+      "country_code": "KR",
+      "keyword": "System Administrator"
+    },
+    {
+      "country_code": "KR",
+      "keyword": "UI/UX Designer"
+    },
+    {
+      "country_code": "KR",
+      "keyword": "Web Developer"
+    },
+    {
+      "country_code": "ES",
+      "keyword": "AI Engineer"
+    },
+    {
+      "country_code": "ES",
+      "keyword": "Accountant"
+    },
+    {
+      "country_code": "ES",
+      "keyword": "Admin Assistant"
+    },
+    {
+      "country_code": "ES",
+      "keyword": "Automation Engineer"
+    },
+    {
+      "country_code": "ES",
+      "keyword": "Backend Developer"
+    },
+    {
+      "country_code": "ES",
+      "keyword": "Call Center Agent"
+    },
+    {
+      "country_code": "ES",
+      "keyword": "Cashier"
+    },
+    {
+      "country_code": "ES",
+      "keyword": "Cloud Engineer"
+    },
+    {
+      "country_code": "ES",
+      "keyword": "Content Writer"
+    },
+    {
+      "country_code": "ES",
+      "keyword": "Customer Service Representative"
+    },
+    {
+      "country_code": "ES",
+      "keyword": "Cyber Security Analyst"
+    },
+    {
+      "country_code": "ES",
+      "keyword": "Data Analyst"
+    },
+    {
+      "country_code": "ES",
+      "keyword": "Data Scientist"
+    },
+    {
+      "country_code": "ES",
+      "keyword": "Database Administrator"
+    },
+    {
+      "country_code": "ES",
+      "keyword": "DevOps Engineer"
+    },
+    {
+      "country_code": "ES",
+      "keyword": "Driver"
+    },
+    {
+      "country_code": "ES",
+      "keyword": "Event Coordinator"
+    },
+    {
+      "country_code": "ES",
+      "keyword": "Frontend Developer"
+    },
+    {
+      "country_code": "ES",
+      "keyword": "Full Stack Developer"
+    },
+    {
+      "country_code": "ES",
+      "keyword": "Game Developer"
+    },
+    {
+      "country_code": "ES",
+      "keyword": "Graphic Designer"
+    },
+    {
+      "country_code": "ES",
+      "keyword": "HR Manager"
+    },
+    {
+      "country_code": "ES",
+      "keyword": "Hotel Front Desk Officer"
+    },
+    {
+      "country_code": "ES",
+      "keyword": "Housekeeping Supervisor"
+    },
+    {
+      "country_code": "ES",
+      "keyword": "IT Manager"
+    },
+    {
+      "country_code": "ES",
+      "keyword": "IT Project Manager"
+    },
+    {
+      "country_code": "ES",
+      "keyword": "IT Support Specialist"
+    },
+    {
+      "country_code": "ES",
+      "keyword": "Machine Learning Engineer"
+    },
+    {
+      "country_code": "ES",
+      "keyword": "Marketing Manager"
+    },
+    {
+      "country_code": "ES",
+      "keyword": "Mobile App Developer"
+    },
+    {
+      "country_code": "ES",
+      "keyword": "Network Engineer"
+    },
+    {
+      "country_code": "ES",
+      "keyword": "Office Administrator"
+    },
+    {
+      "country_code": "ES",
+      "keyword": "Office Support Staff"
+    },
+    {
+      "country_code": "ES",
+      "keyword": "Operations Manager"
+    },
+    {
+      "country_code": "ES",
+      "keyword": "Procurement Officer"
+    },
+    {
+      "country_code": "ES",
+      "keyword": "Product Manager (IT)"
+    },
+    {
+      "country_code": "ES",
+      "keyword": "QA Engineer"
+    },
+    {
+      "country_code": "ES",
+      "keyword": "Real Estate Agent"
+    },
+    {
+      "country_code": "ES",
+      "keyword": "Receptionist"
+    },
+    {
+      "country_code": "ES",
+      "keyword": "Restaurant Manager"
+    },
+    {
+      "country_code": "ES",
+      "keyword": "Sales Executive"
+    },
+    {
+      "country_code": "ES",
+      "keyword": "Sales Manager"
+    },
+    {
+      "country_code": "ES",
+      "keyword": "Scrum Master"
+    },
+    {
+      "country_code": "ES",
+      "keyword": "Security Guard"
+    },
+    {
+      "country_code": "ES",
+      "keyword": "Social Media Manager"
+    },
+    {
+      "country_code": "ES",
+      "keyword": "Software Engineer"
+    },
+    {
+      "country_code": "ES",
+      "keyword": "Store Manager"
+    },
+    {
+      "country_code": "ES",
+      "keyword": "System Administrator"
+    },
+    {
+      "country_code": "ES",
+      "keyword": "UI/UX Designer"
+    },
+    {
+      "country_code": "ES",
+      "keyword": "Web Developer"
+    },
+    {
+      "country_code": "SE",
+      "keyword": "AI Engineer"
+    },
+    {
+      "country_code": "SE",
+      "keyword": "Accountant"
+    },
+    {
+      "country_code": "SE",
+      "keyword": "Admin Assistant"
+    },
+    {
+      "country_code": "SE",
+      "keyword": "Automation Engineer"
+    },
+    {
+      "country_code": "SE",
+      "keyword": "Backend Developer"
+    },
+    {
+      "country_code": "SE",
+      "keyword": "Call Center Agent"
+    },
+    {
+      "country_code": "SE",
+      "keyword": "Cashier"
+    },
+    {
+      "country_code": "SE",
+      "keyword": "Cloud Engineer"
+    },
+    {
+      "country_code": "SE",
+      "keyword": "Content Writer"
+    },
+    {
+      "country_code": "SE",
+      "keyword": "Customer Service Representative"
+    },
+    {
+      "country_code": "SE",
+      "keyword": "Cyber Security Analyst"
+    },
+    {
+      "country_code": "SE",
+      "keyword": "Data Analyst"
+    },
+    {
+      "country_code": "SE",
+      "keyword": "Data Scientist"
+    },
+    {
+      "country_code": "SE",
+      "keyword": "Database Administrator"
+    },
+    {
+      "country_code": "SE",
+      "keyword": "DevOps Engineer"
+    },
+    {
+      "country_code": "SE",
+      "keyword": "Driver"
+    },
+    {
+      "country_code": "SE",
+      "keyword": "Event Coordinator"
+    },
+    {
+      "country_code": "SE",
+      "keyword": "Frontend Developer"
+    },
+    {
+      "country_code": "SE",
+      "keyword": "Full Stack Developer"
+    },
+    {
+      "country_code": "SE",
+      "keyword": "Game Developer"
+    },
+    {
+      "country_code": "SE",
+      "keyword": "Graphic Designer"
+    },
+    {
+      "country_code": "SE",
+      "keyword": "HR Manager"
+    },
+    {
+      "country_code": "SE",
+      "keyword": "Hotel Front Desk Officer"
+    },
+    {
+      "country_code": "SE",
+      "keyword": "Housekeeping Supervisor"
+    },
+    {
+      "country_code": "SE",
+      "keyword": "IT Manager"
+    },
+    {
+      "country_code": "SE",
+      "keyword": "IT Project Manager"
+    },
+    {
+      "country_code": "SE",
+      "keyword": "IT Support Specialist"
+    },
+    {
+      "country_code": "SE",
+      "keyword": "Machine Learning Engineer"
+    },
+    {
+      "country_code": "SE",
+      "keyword": "Marketing Manager"
+    },
+    {
+      "country_code": "SE",
+      "keyword": "Mobile App Developer"
+    },
+    {
+      "country_code": "SE",
+      "keyword": "Network Engineer"
+    },
+    {
+      "country_code": "SE",
+      "keyword": "Office Administrator"
+    },
+    {
+      "country_code": "SE",
+      "keyword": "Office Support Staff"
+    },
+    {
+      "country_code": "SE",
+      "keyword": "Operations Manager"
+    },
+    {
+      "country_code": "SE",
+      "keyword": "Procurement Officer"
+    },
+    {
+      "country_code": "SE",
+      "keyword": "Product Manager (IT)"
+    },
+    {
+      "country_code": "SE",
+      "keyword": "QA Engineer"
+    },
+    {
+      "country_code": "SE",
+      "keyword": "Real Estate Agent"
+    },
+    {
+      "country_code": "SE",
+      "keyword": "Receptionist"
+    },
+    {
+      "country_code": "SE",
+      "keyword": "Restaurant Manager"
+    },
+    {
+      "country_code": "SE",
+      "keyword": "Sales Executive"
+    },
+    {
+      "country_code": "SE",
+      "keyword": "Sales Manager"
+    },
+    {
+      "country_code": "SE",
+      "keyword": "Scrum Master"
+    },
+    {
+      "country_code": "SE",
+      "keyword": "Security Guard"
+    },
+    {
+      "country_code": "SE",
+      "keyword": "Social Media Manager"
+    },
+    {
+      "country_code": "SE",
+      "keyword": "Software Engineer"
+    },
+    {
+      "country_code": "SE",
+      "keyword": "Store Manager"
+    },
+    {
+      "country_code": "SE",
+      "keyword": "System Administrator"
+    },
+    {
+      "country_code": "SE",
+      "keyword": "UI/UX Designer"
+    },
+    {
+      "country_code": "SE",
+      "keyword": "Web Developer"
+    },
+    {
+      "country_code": "CH",
+      "keyword": "AI Engineer"
+    },
+    {
+      "country_code": "CH",
+      "keyword": "Accountant"
+    },
+    {
+      "country_code": "CH",
+      "keyword": "Admin Assistant"
+    },
+    {
+      "country_code": "CH",
+      "keyword": "Automation Engineer"
+    },
+    {
+      "country_code": "CH",
+      "keyword": "Backend Developer"
+    },
+    {
+      "country_code": "CH",
+      "keyword": "Call Center Agent"
+    },
+    {
+      "country_code": "CH",
+      "keyword": "Cashier"
+    },
+    {
+      "country_code": "CH",
+      "keyword": "Cloud Engineer"
+    },
+    {
+      "country_code": "CH",
+      "keyword": "Content Writer"
+    },
+    {
+      "country_code": "CH",
+      "keyword": "Customer Service Representative"
+    },
+    {
+      "country_code": "CH",
+      "keyword": "Cyber Security Analyst"
+    },
+    {
+      "country_code": "CH",
+      "keyword": "Data Analyst"
+    },
+    {
+      "country_code": "CH",
+      "keyword": "Data Scientist"
+    },
+    {
+      "country_code": "CH",
+      "keyword": "Database Administrator"
+    },
+    {
+      "country_code": "CH",
+      "keyword": "DevOps Engineer"
+    },
+    {
+      "country_code": "CH",
+      "keyword": "Driver"
+    },
+    {
+      "country_code": "CH",
+      "keyword": "Event Coordinator"
+    },
+    {
+      "country_code": "CH",
+      "keyword": "Frontend Developer"
+    },
+    {
+      "country_code": "CH",
+      "keyword": "Full Stack Developer"
+    },
+    {
+      "country_code": "CH",
+      "keyword": "Game Developer"
+    },
+    {
+      "country_code": "CH",
+      "keyword": "Graphic Designer"
+    },
+    {
+      "country_code": "CH",
+      "keyword": "HR Manager"
+    },
+    {
+      "country_code": "CH",
+      "keyword": "Hotel Front Desk Officer"
+    },
+    {
+      "country_code": "CH",
+      "keyword": "Housekeeping Supervisor"
+    },
+    {
+      "country_code": "CH",
+      "keyword": "IT Manager"
+    },
+    {
+      "country_code": "CH",
+      "keyword": "IT Project Manager"
+    },
+    {
+      "country_code": "CH",
+      "keyword": "IT Support Specialist"
+    },
+    {
+      "country_code": "CH",
+      "keyword": "Machine Learning Engineer"
+    },
+    {
+      "country_code": "CH",
+      "keyword": "Marketing Manager"
+    },
+    {
+      "country_code": "CH",
+      "keyword": "Mobile App Developer"
+    },
+    {
+      "country_code": "CH",
+      "keyword": "Network Engineer"
+    },
+    {
+      "country_code": "CH",
+      "keyword": "Office Administrator"
+    },
+    {
+      "country_code": "CH",
+      "keyword": "Office Support Staff"
+    },
+    {
+      "country_code": "CH",
+      "keyword": "Operations Manager"
+    },
+    {
+      "country_code": "CH",
+      "keyword": "Procurement Officer"
+    },
+    {
+      "country_code": "CH",
+      "keyword": "Product Manager (IT)"
+    },
+    {
+      "country_code": "CH",
+      "keyword": "QA Engineer"
+    },
+    {
+      "country_code": "CH",
+      "keyword": "Real Estate Agent"
+    },
+    {
+      "country_code": "CH",
+      "keyword": "Receptionist"
+    },
+    {
+      "country_code": "CH",
+      "keyword": "Restaurant Manager"
+    },
+    {
+      "country_code": "CH",
+      "keyword": "Sales Executive"
+    },
+    {
+      "country_code": "CH",
+      "keyword": "Sales Manager"
+    },
+    {
+      "country_code": "CH",
+      "keyword": "Scrum Master"
+    },
+    {
+      "country_code": "CH",
+      "keyword": "Security Guard"
+    },
+    {
+      "country_code": "CH",
+      "keyword": "Social Media Manager"
+    },
+    {
+      "country_code": "CH",
+      "keyword": "Software Engineer"
+    },
+    {
+      "country_code": "CH",
+      "keyword": "Store Manager"
+    },
+    {
+      "country_code": "CH",
+      "keyword": "System Administrator"
+    },
+    {
+      "country_code": "CH",
+      "keyword": "UI/UX Designer"
+    },
+    {
+      "country_code": "CH",
+      "keyword": "Web Developer"
+    },
+    {
+      "country_code": "TH",
+      "keyword": "AI Engineer"
+    },
+    {
+      "country_code": "TH",
+      "keyword": "Accountant"
+    },
+    {
+      "country_code": "TH",
+      "keyword": "Admin Assistant"
+    },
+    {
+      "country_code": "TH",
+      "keyword": "Automation Engineer"
+    },
+    {
+      "country_code": "TH",
+      "keyword": "Backend Developer"
+    },
+    {
+      "country_code": "TH",
+      "keyword": "Call Center Agent"
+    },
+    {
+      "country_code": "TH",
+      "keyword": "Cashier"
+    },
+    {
+      "country_code": "TH",
+      "keyword": "Cloud Engineer"
+    },
+    {
+      "country_code": "TH",
+      "keyword": "Content Writer"
+    },
+    {
+      "country_code": "TH",
+      "keyword": "Customer Service Representative"
+    },
+    {
+      "country_code": "TH",
+      "keyword": "Cyber Security Analyst"
+    },
+    {
+      "country_code": "TH",
+      "keyword": "Data Analyst"
+    },
+    {
+      "country_code": "TH",
+      "keyword": "Data Scientist"
+    },
+    {
+      "country_code": "TH",
+      "keyword": "Database Administrator"
+    },
+    {
+      "country_code": "TH",
+      "keyword": "DevOps Engineer"
+    },
+    {
+      "country_code": "TH",
+      "keyword": "Driver"
+    },
+    {
+      "country_code": "TH",
+      "keyword": "Event Coordinator"
+    },
+    {
+      "country_code": "TH",
+      "keyword": "Frontend Developer"
+    },
+    {
+      "country_code": "TH",
+      "keyword": "Full Stack Developer"
+    },
+    {
+      "country_code": "TH",
+      "keyword": "Game Developer"
+    },
+    {
+      "country_code": "TH",
+      "keyword": "Graphic Designer"
+    },
+    {
+      "country_code": "TH",
+      "keyword": "HR Manager"
+    },
+    {
+      "country_code": "TH",
+      "keyword": "Hotel Front Desk Officer"
+    },
+    {
+      "country_code": "TH",
+      "keyword": "Housekeeping Supervisor"
+    },
+    {
+      "country_code": "TH",
+      "keyword": "IT Manager"
+    },
+    {
+      "country_code": "TH",
+      "keyword": "IT Project Manager"
+    },
+    {
+      "country_code": "TH",
+      "keyword": "IT Support Specialist"
+    },
+    {
+      "country_code": "TH",
+      "keyword": "Machine Learning Engineer"
+    },
+    {
+      "country_code": "TH",
+      "keyword": "Marketing Manager"
+    },
+    {
+      "country_code": "TH",
+      "keyword": "Mobile App Developer"
+    },
+    {
+      "country_code": "TH",
+      "keyword": "Network Engineer"
+    },
+    {
+      "country_code": "TH",
+      "keyword": "Office Administrator"
+    },
+    {
+      "country_code": "TH",
+      "keyword": "Office Support Staff"
+    },
+    {
+      "country_code": "TH",
+      "keyword": "Operations Manager"
+    },
+    {
+      "country_code": "TH",
+      "keyword": "Procurement Officer"
+    },
+    {
+      "country_code": "TH",
+      "keyword": "Product Manager (IT)"
+    },
+    {
+      "country_code": "TH",
+      "keyword": "QA Engineer"
+    },
+    {
+      "country_code": "TH",
+      "keyword": "Real Estate Agent"
+    },
+    {
+      "country_code": "TH",
+      "keyword": "Receptionist"
+    },
+    {
+      "country_code": "TH",
+      "keyword": "Restaurant Manager"
+    },
+    {
+      "country_code": "TH",
+      "keyword": "Sales Executive"
+    },
+    {
+      "country_code": "TH",
+      "keyword": "Sales Manager"
+    },
+    {
+      "country_code": "TH",
+      "keyword": "Scrum Master"
+    },
+    {
+      "country_code": "TH",
+      "keyword": "Security Guard"
+    },
+    {
+      "country_code": "TH",
+      "keyword": "Social Media Manager"
+    },
+    {
+      "country_code": "TH",
+      "keyword": "Software Engineer"
+    },
+    {
+      "country_code": "TH",
+      "keyword": "Store Manager"
+    },
+    {
+      "country_code": "TH",
+      "keyword": "System Administrator"
+    },
+    {
+      "country_code": "TH",
+      "keyword": "UI/UX Designer"
+    },
+    {
+      "country_code": "TH",
+      "keyword": "Web Developer"
+    },
+    {
+      "country_code": "TR",
+      "keyword": "AI Engineer"
+    },
+    {
+      "country_code": "TR",
+      "keyword": "Accountant"
+    },
+    {
+      "country_code": "TR",
+      "keyword": "Admin Assistant"
+    },
+    {
+      "country_code": "TR",
+      "keyword": "Automation Engineer"
+    },
+    {
+      "country_code": "TR",
+      "keyword": "Backend Developer"
+    },
+    {
+      "country_code": "TR",
+      "keyword": "Call Center Agent"
+    },
+    {
+      "country_code": "TR",
+      "keyword": "Cashier"
+    },
+    {
+      "country_code": "TR",
+      "keyword": "Cloud Engineer"
+    },
+    {
+      "country_code": "TR",
+      "keyword": "Content Writer"
+    },
+    {
+      "country_code": "TR",
+      "keyword": "Customer Service Representative"
+    },
+    {
+      "country_code": "TR",
+      "keyword": "Cyber Security Analyst"
+    },
+    {
+      "country_code": "TR",
+      "keyword": "Data Analyst"
+    },
+    {
+      "country_code": "TR",
+      "keyword": "Data Scientist"
+    },
+    {
+      "country_code": "TR",
+      "keyword": "Database Administrator"
+    },
+    {
+      "country_code": "TR",
+      "keyword": "DevOps Engineer"
+    },
+    {
+      "country_code": "TR",
+      "keyword": "Driver"
+    },
+    {
+      "country_code": "TR",
+      "keyword": "Event Coordinator"
+    },
+    {
+      "country_code": "TR",
+      "keyword": "Frontend Developer"
+    },
+    {
+      "country_code": "TR",
+      "keyword": "Full Stack Developer"
+    },
+    {
+      "country_code": "TR",
+      "keyword": "Game Developer"
+    },
+    {
+      "country_code": "TR",
+      "keyword": "Graphic Designer"
+    },
+    {
+      "country_code": "TR",
+      "keyword": "HR Manager"
+    },
+    {
+      "country_code": "TR",
+      "keyword": "Hotel Front Desk Officer"
+    },
+    {
+      "country_code": "TR",
+      "keyword": "Housekeeping Supervisor"
+    },
+    {
+      "country_code": "TR",
+      "keyword": "IT Manager"
+    },
+    {
+      "country_code": "TR",
+      "keyword": "IT Project Manager"
+    },
+    {
+      "country_code": "TR",
+      "keyword": "IT Support Specialist"
+    },
+    {
+      "country_code": "TR",
+      "keyword": "Machine Learning Engineer"
+    },
+    {
+      "country_code": "TR",
+      "keyword": "Marketing Manager"
+    },
+    {
+      "country_code": "TR",
+      "keyword": "Mobile App Developer"
+    },
+    {
+      "country_code": "TR",
+      "keyword": "Network Engineer"
+    },
+    {
+      "country_code": "TR",
+      "keyword": "Office Administrator"
+    },
+    {
+      "country_code": "TR",
+      "keyword": "Office Support Staff"
+    },
+    {
+      "country_code": "TR",
+      "keyword": "Operations Manager"
+    },
+    {
+      "country_code": "TR",
+      "keyword": "Procurement Officer"
+    },
+    {
+      "country_code": "TR",
+      "keyword": "Product Manager (IT)"
+    },
+    {
+      "country_code": "TR",
+      "keyword": "QA Engineer"
+    },
+    {
+      "country_code": "TR",
+      "keyword": "Real Estate Agent"
+    },
+    {
+      "country_code": "TR",
+      "keyword": "Receptionist"
+    },
+    {
+      "country_code": "TR",
+      "keyword": "Restaurant Manager"
+    },
+    {
+      "country_code": "TR",
+      "keyword": "Sales Executive"
+    },
+    {
+      "country_code": "TR",
+      "keyword": "Sales Manager"
+    },
+    {
+      "country_code": "TR",
+      "keyword": "Scrum Master"
+    },
+    {
+      "country_code": "TR",
+      "keyword": "Security Guard"
+    },
+    {
+      "country_code": "TR",
+      "keyword": "Social Media Manager"
+    },
+    {
+      "country_code": "TR",
+      "keyword": "Software Engineer"
+    },
+    {
+      "country_code": "TR",
+      "keyword": "Store Manager"
+    },
+    {
+      "country_code": "TR",
+      "keyword": "System Administrator"
+    },
+    {
+      "country_code": "TR",
+      "keyword": "UI/UX Designer"
+    },
+    {
+      "country_code": "TR",
+      "keyword": "Web Developer"
+    },
+    {
+      "country_code": "AE",
+      "keyword": "AI Engineer"
+    },
+    {
+      "country_code": "AE",
+      "keyword": "Accountant"
+    },
+    {
+      "country_code": "AE",
+      "keyword": "Admin Assistant"
+    },
+    {
+      "country_code": "AE",
+      "keyword": "Automation Engineer"
+    },
+    {
+      "country_code": "AE",
+      "keyword": "Backend Developer"
+    },
+    {
+      "country_code": "AE",
+      "keyword": "Call Center Agent"
+    },
+    {
+      "country_code": "AE",
+      "keyword": "Cashier"
+    },
+    {
+      "country_code": "AE",
+      "keyword": "Cloud Engineer"
+    },
+    {
+      "country_code": "AE",
+      "keyword": "Content Writer"
+    },
+    {
+      "country_code": "AE",
+      "keyword": "Customer Service Representative"
+    },
+    {
+      "country_code": "AE",
+      "keyword": "Cyber Security Analyst"
+    },
+    {
+      "country_code": "AE",
+      "keyword": "Data Analyst"
+    },
+    {
+      "country_code": "AE",
+      "keyword": "Data Scientist"
+    },
+    {
+      "country_code": "AE",
+      "keyword": "Database Administrator"
+    },
+    {
+      "country_code": "AE",
+      "keyword": "DevOps Engineer"
+    },
+    {
+      "country_code": "AE",
+      "keyword": "Driver"
+    },
+    {
+      "country_code": "AE",
+      "keyword": "Event Coordinator"
+    },
+    {
+      "country_code": "AE",
+      "keyword": "Frontend Developer"
+    },
+    {
+      "country_code": "AE",
+      "keyword": "Full Stack Developer"
+    },
+    {
+      "country_code": "AE",
+      "keyword": "Game Developer"
+    },
+    {
+      "country_code": "AE",
+      "keyword": "Graphic Designer"
+    },
+    {
+      "country_code": "AE",
+      "keyword": "HR Manager"
+    },
+    {
+      "country_code": "AE",
+      "keyword": "Hotel Front Desk Officer"
+    },
+    {
+      "country_code": "AE",
+      "keyword": "Housekeeping Supervisor"
+    },
+    {
+      "country_code": "AE",
+      "keyword": "IT Manager"
+    },
+    {
+      "country_code": "AE",
+      "keyword": "IT Project Manager"
+    },
+    {
+      "country_code": "AE",
+      "keyword": "IT Support Specialist"
+    },
+    {
+      "country_code": "AE",
+      "keyword": "Machine Learning Engineer"
+    },
+    {
+      "country_code": "AE",
+      "keyword": "Marketing Manager"
+    },
+    {
+      "country_code": "AE",
+      "keyword": "Mobile App Developer"
+    },
+    {
+      "country_code": "AE",
+      "keyword": "Network Engineer"
+    },
+    {
+      "country_code": "AE",
+      "keyword": "Office Administrator"
+    },
+    {
+      "country_code": "AE",
+      "keyword": "Office Support Staff"
+    },
+    {
+      "country_code": "AE",
+      "keyword": "Operations Manager"
+    },
+    {
+      "country_code": "AE",
+      "keyword": "Procurement Officer"
+    },
+    {
+      "country_code": "AE",
+      "keyword": "Product Manager (IT)"
+    },
+    {
+      "country_code": "AE",
+      "keyword": "QA Engineer"
+    },
+    {
+      "country_code": "AE",
+      "keyword": "Real Estate Agent"
+    },
+    {
+      "country_code": "AE",
+      "keyword": "Receptionist"
+    },
+    {
+      "country_code": "AE",
+      "keyword": "Restaurant Manager"
+    },
+    {
+      "country_code": "AE",
+      "keyword": "Sales Executive"
+    },
+    {
+      "country_code": "AE",
+      "keyword": "Sales Manager"
+    },
+    {
+      "country_code": "AE",
+      "keyword": "Scrum Master"
+    },
+    {
+      "country_code": "AE",
+      "keyword": "Security Guard"
+    },
+    {
+      "country_code": "AE",
+      "keyword": "Social Media Manager"
+    },
+    {
+      "country_code": "AE",
+      "keyword": "Software Engineer"
+    },
+    {
+      "country_code": "AE",
+      "keyword": "Store Manager"
+    },
+    {
+      "country_code": "AE",
+      "keyword": "System Administrator"
+    },
+    {
+      "country_code": "AE",
+      "keyword": "UI/UX Designer"
+    },
+    {
+      "country_code": "AE",
+      "keyword": "Web Developer"
+    },
+    {
+      "country_code": "GB",
+      "keyword": "AI Engineer"
+    },
+    {
+      "country_code": "GB",
+      "keyword": "Accountant"
+    },
+    {
+      "country_code": "GB",
+      "keyword": "Admin Assistant"
+    },
+    {
+      "country_code": "GB",
+      "keyword": "Automation Engineer"
+    },
+    {
+      "country_code": "GB",
+      "keyword": "Backend Developer"
+    },
+    {
+      "country_code": "GB",
+      "keyword": "Call Center Agent"
+    },
+    {
+      "country_code": "GB",
+      "keyword": "Cashier"
+    },
+    {
+      "country_code": "GB",
+      "keyword": "Cloud Engineer"
+    },
+    {
+      "country_code": "GB",
+      "keyword": "Content Writer"
+    },
+    {
+      "country_code": "GB",
+      "keyword": "Customer Service Representative"
+    },
+    {
+      "country_code": "GB",
+      "keyword": "Cyber Security Analyst"
+    },
+    {
+      "country_code": "GB",
+      "keyword": "Data Analyst"
+    },
+    {
+      "country_code": "GB",
+      "keyword": "Data Scientist"
+    },
+    {
+      "country_code": "GB",
+      "keyword": "Database Administrator"
+    },
+    {
+      "country_code": "GB",
+      "keyword": "DevOps Engineer"
+    },
+    {
+      "country_code": "GB",
+      "keyword": "Driver"
+    },
+    {
+      "country_code": "GB",
+      "keyword": "Event Coordinator"
+    },
+    {
+      "country_code": "GB",
+      "keyword": "Frontend Developer"
+    },
+    {
+      "country_code": "GB",
+      "keyword": "Full Stack Developer"
+    },
+    {
+      "country_code": "GB",
+      "keyword": "Game Developer"
+    },
+    {
+      "country_code": "GB",
+      "keyword": "Graphic Designer"
+    },
+    {
+      "country_code": "GB",
+      "keyword": "HR Manager"
+    },
+    {
+      "country_code": "GB",
+      "keyword": "Hotel Front Desk Officer"
+    },
+    {
+      "country_code": "GB",
+      "keyword": "Housekeeping Supervisor"
+    },
+    {
+      "country_code": "GB",
+      "keyword": "IT Manager"
+    },
+    {
+      "country_code": "GB",
+      "keyword": "IT Project Manager"
+    },
+    {
+      "country_code": "GB",
+      "keyword": "IT Support Specialist"
+    },
+    {
+      "country_code": "GB",
+      "keyword": "Machine Learning Engineer"
+    },
+    {
+      "country_code": "GB",
+      "keyword": "Marketing Manager"
+    },
+    {
+      "country_code": "GB",
+      "keyword": "Mobile App Developer"
+    },
+    {
+      "country_code": "GB",
+      "keyword": "Network Engineer"
+    },
+    {
+      "country_code": "GB",
+      "keyword": "Office Administrator"
+    },
+    {
+      "country_code": "GB",
+      "keyword": "Office Support Staff"
+    },
+    {
+      "country_code": "GB",
+      "keyword": "Operations Manager"
+    },
+    {
+      "country_code": "GB",
+      "keyword": "Procurement Officer"
+    },
+    {
+      "country_code": "GB",
+      "keyword": "Product Manager (IT)"
+    },
+    {
+      "country_code": "GB",
+      "keyword": "QA Engineer"
+    },
+    {
+      "country_code": "GB",
+      "keyword": "Real Estate Agent"
+    },
+    {
+      "country_code": "GB",
+      "keyword": "Receptionist"
+    },
+    {
+      "country_code": "GB",
+      "keyword": "Restaurant Manager"
+    },
+    {
+      "country_code": "GB",
+      "keyword": "Sales Executive"
+    },
+    {
+      "country_code": "GB",
+      "keyword": "Sales Manager"
+    },
+    {
+      "country_code": "GB",
+      "keyword": "Scrum Master"
+    },
+    {
+      "country_code": "GB",
+      "keyword": "Security Guard"
+    },
+    {
+      "country_code": "GB",
+      "keyword": "Social Media Manager"
+    },
+    {
+      "country_code": "GB",
+      "keyword": "Software Engineer"
+    },
+    {
+      "country_code": "GB",
+      "keyword": "Store Manager"
+    },
+    {
+      "country_code": "GB",
+      "keyword": "System Administrator"
+    },
+    {
+      "country_code": "GB",
+      "keyword": "UI/UX Designer"
+    },
+    {
+      "country_code": "GB",
+      "keyword": "Web Developer"
+    },
+    {
+      "country_code": "US",
+      "keyword": "AI Engineer"
+    },
+    {
+      "country_code": "US",
+      "keyword": "Accountant"
+    },
+    {
+      "country_code": "US",
+      "keyword": "Admin Assistant"
+    },
+    {
+      "country_code": "US",
+      "keyword": "Automation Engineer"
+    },
+    {
+      "country_code": "US",
+      "keyword": "Backend Developer"
+    },
+    {
+      "country_code": "US",
+      "keyword": "Call Center Agent"
+    },
+    {
+      "country_code": "US",
+      "keyword": "Cashier"
+    },
+    {
+      "country_code": "US",
+      "keyword": "Cloud Engineer"
+    },
+    {
+      "country_code": "US",
+      "keyword": "Content Writer"
+    },
+    {
+      "country_code": "US",
+      "keyword": "Customer Service Representative"
+    },
+    {
+      "country_code": "US",
+      "keyword": "Cyber Security Analyst"
+    },
+    {
+      "country_code": "US",
+      "keyword": "Data Analyst"
+    },
+    {
+      "country_code": "US",
+      "keyword": "Data Scientist"
+    },
+    {
+      "country_code": "US",
+      "keyword": "Database Administrator"
+    },
+    {
+      "country_code": "US",
+      "keyword": "DevOps Engineer"
+    },
+    {
+      "country_code": "US",
+      "keyword": "Driver"
+    },
+    {
+      "country_code": "US",
+      "keyword": "Event Coordinator"
+    },
+    {
+      "country_code": "US",
+      "keyword": "Frontend Developer"
+    },
+    {
+      "country_code": "US",
+      "keyword": "Full Stack Developer"
+    },
+    {
+      "country_code": "US",
+      "keyword": "Game Developer"
+    },
+    {
+      "country_code": "US",
+      "keyword": "Graphic Designer"
+    },
+    {
+      "country_code": "US",
+      "keyword": "HR Manager"
+    },
+    {
+      "country_code": "US",
+      "keyword": "Hotel Front Desk Officer"
+    },
+    {
+      "country_code": "US",
+      "keyword": "Housekeeping Supervisor"
+    },
+    {
+      "country_code": "US",
+      "keyword": "IT Manager"
+    },
+    {
+      "country_code": "US",
+      "keyword": "IT Project Manager"
+    },
+    {
+      "country_code": "US",
+      "keyword": "IT Support Specialist"
+    },
+    {
+      "country_code": "US",
+      "keyword": "Machine Learning Engineer"
+    },
+    {
+      "country_code": "US",
+      "keyword": "Marketing Manager"
+    },
+    {
+      "country_code": "US",
+      "keyword": "Mobile App Developer"
+    },
+    {
+      "country_code": "US",
+      "keyword": "Network Engineer"
+    },
+    {
+      "country_code": "US",
+      "keyword": "Office Administrator"
+    },
+    {
+      "country_code": "US",
+      "keyword": "Office Support Staff"
+    },
+    {
+      "country_code": "US",
+      "keyword": "Operations Manager"
+    },
+    {
+      "country_code": "US",
+      "keyword": "Procurement Officer"
+    },
+    {
+      "country_code": "US",
+      "keyword": "Product Manager (IT)"
+    },
+    {
+      "country_code": "US",
+      "keyword": "QA Engineer"
+    },
+    {
+      "country_code": "US",
+      "keyword": "Real Estate Agent"
+    },
+    {
+      "country_code": "US",
+      "keyword": "Receptionist"
+    },
+    {
+      "country_code": "US",
+      "keyword": "Restaurant Manager"
+    },
+    {
+      "country_code": "US",
+      "keyword": "Sales Executive"
+    },
+    {
+      "country_code": "US",
+      "keyword": "Sales Manager"
+    },
+    {
+      "country_code": "US",
+      "keyword": "Scrum Master"
+    },
+    {
+      "country_code": "US",
+      "keyword": "Security Guard"
+    },
+    {
+      "country_code": "US",
+      "keyword": "Social Media Manager"
+    },
+    {
+      "country_code": "US",
+      "keyword": "Software Engineer"
+    },
+    {
+      "country_code": "US",
+      "keyword": "Store Manager"
+    },
+    {
+      "country_code": "US",
+      "keyword": "System Administrator"
+    },
+    {
+      "country_code": "US",
+      "keyword": "UI/UX Designer"
+    },
+    {
+      "country_code": "US",
+      "keyword": "Web Developer"
+    },
+    {
+      "country_code": "VN",
+      "keyword": "AI Engineer"
+    },
+    {
+      "country_code": "VN",
+      "keyword": "Accountant"
+    },
+    {
+      "country_code": "VN",
+      "keyword": "Admin Assistant"
+    },
+    {
+      "country_code": "VN",
+      "keyword": "Automation Engineer"
+    },
+    {
+      "country_code": "VN",
+      "keyword": "Backend Developer"
+    },
+    {
+      "country_code": "VN",
+      "keyword": "Call Center Agent"
+    },
+    {
+      "country_code": "VN",
+      "keyword": "Cashier"
+    },
+    {
+      "country_code": "VN",
+      "keyword": "Cloud Engineer"
+    },
+    {
+      "country_code": "VN",
+      "keyword": "Content Writer"
+    },
+    {
+      "country_code": "VN",
+      "keyword": "Customer Service Representative"
+    },
+    {
+      "country_code": "VN",
+      "keyword": "Cyber Security Analyst"
+    },
+    {
+      "country_code": "VN",
+      "keyword": "Data Analyst"
+    },
+    {
+      "country_code": "VN",
+      "keyword": "Data Scientist"
+    },
+    {
+      "country_code": "VN",
+      "keyword": "Database Administrator"
+    },
+    {
+      "country_code": "VN",
+      "keyword": "DevOps Engineer"
+    },
+    {
+      "country_code": "VN",
+      "keyword": "Driver"
+    },
+    {
+      "country_code": "VN",
+      "keyword": "Event Coordinator"
+    },
+    {
+      "country_code": "VN",
+      "keyword": "Frontend Developer"
+    },
+    {
+      "country_code": "VN",
+      "keyword": "Full Stack Developer"
+    },
+    {
+      "country_code": "VN",
+      "keyword": "Game Developer"
+    },
+    {
+      "country_code": "VN",
+      "keyword": "Graphic Designer"
+    },
+    {
+      "country_code": "VN",
+      "keyword": "HR Manager"
+    },
+    {
+      "country_code": "VN",
+      "keyword": "Hotel Front Desk Officer"
+    },
+    {
+      "country_code": "VN",
+      "keyword": "Housekeeping Supervisor"
+    },
+    {
+      "country_code": "VN",
+      "keyword": "IT Manager"
+    },
+    {
+      "country_code": "VN",
+      "keyword": "IT Project Manager"
+    },
+    {
+      "country_code": "VN",
+      "keyword": "IT Support Specialist"
+    },
+    {
+      "country_code": "VN",
+      "keyword": "Machine Learning Engineer"
+    },
+    {
+      "country_code": "VN",
+      "keyword": "Marketing Manager"
+    },
+    {
+      "country_code": "VN",
+      "keyword": "Mobile App Developer"
+    },
+    {
+      "country_code": "VN",
+      "keyword": "Network Engineer"
+    },
+    {
+      "country_code": "VN",
+      "keyword": "Office Administrator"
+    },
+    {
+      "country_code": "VN",
+      "keyword": "Office Support Staff"
+    },
+    {
+      "country_code": "VN",
+      "keyword": "Operations Manager"
+    },
+    {
+      "country_code": "VN",
+      "keyword": "Procurement Officer"
+    },
+    {
+      "country_code": "VN",
+      "keyword": "Product Manager (IT)"
+    },
+    {
+      "country_code": "VN",
+      "keyword": "QA Engineer"
+    },
+    {
+      "country_code": "VN",
+      "keyword": "Real Estate Agent"
+    },
+    {
+      "country_code": "VN",
+      "keyword": "Receptionist"
+    },
+    {
+      "country_code": "VN",
+      "keyword": "Restaurant Manager"
+    },
+    {
+      "country_code": "VN",
+      "keyword": "Sales Executive"
+    },
+    {
+      "country_code": "VN",
+      "keyword": "Sales Manager"
+    },
+    {
+      "country_code": "VN",
+      "keyword": "Scrum Master"
+    },
+    {
+      "country_code": "VN",
+      "keyword": "Security Guard"
+    },
+    {
+      "country_code": "VN",
+      "keyword": "Social Media Manager"
+    },
+    {
+      "country_code": "VN",
+      "keyword": "Software Engineer"
+    },
+    {
+      "country_code": "VN",
+      "keyword": "Store Manager"
+    },
+    {
+      "country_code": "VN",
+      "keyword": "System Administrator"
+    },
+    {
+      "country_code": "VN",
+      "keyword": "UI/UX Designer"
+    },
+    {
+      "country_code": "VN",
+      "keyword": "Web Developer"
+    }
+  ]
+}

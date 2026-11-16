@@ -1,0 +1,67 @@
+# Secrets and local env (never commit)
+.env
+.env.*
+!.env.example
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+dist/
+build/
+*.egg-info/
+
+# IDE
+.idea/
+.vscode/
+
+# Logs and temp
+*.log
+logs/
+.tmp*
+tmp/
+
+# LinkedIn session, cookies, browser profiles (never commit)
+data/
+data/linkedin/
+**/storage_state.json
+**/*cookies*
+**/*Cookies*
+**/.playwright/
+.playwright/
+**/browser-profile*/
+**/Default/
+**/Crashpad/
+WSLCrash/
+core.*
+
+# Database dumps and backups
+*.bson
+*.dump
+*.gz
+dump/
+dumps/
+mongo-backup/
+**/backup/
+
+# Keys and credentials
+*.pem
+*.key
+*.p12
+*.pfx
+credentials.json
+credentials*.json
+secrets/
+**/id_rsa*
+**/known_hosts
+
+# OS
+.DS_Store
+Thumbs.db
