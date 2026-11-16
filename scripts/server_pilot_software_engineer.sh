@@ -151,7 +151,7 @@ printjson({
 });
 "
 
-docker logs --tail 50 "$PILOT_CONTAINER" 2>&1 | grep -Ei 'rejected_|jobs_collected|search_dom_snapshot|cards_count|created_count' | tail -20 || true
+docker logs --tail 120 "$PILOT_CONTAINER" 2>&1 | grep -Ei 'rejected_|jobs_collected|search_dom_snapshot|cards_count|created_count|detail skip|adapter_rejected|normalized|mongo_persist|Worker collection finished' | tail -35 || true
 
 log "STEP pilot_api_verify"
 docker rm -f linkedin-pilot-api-verify 2>/dev/null || true
