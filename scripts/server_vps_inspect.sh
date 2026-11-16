@@ -48,7 +48,7 @@ printjson({
 
 log "STEP redis_collection_queue"
 REDIS_PASS=$(timeout 30 docker exec linkedin-scraper-redis printenv REDIS_PASSWORD)
-QUEUE=$($COMPOSE exec -T redis printenv CELERY_TASK_DEFAULT_QUEUE 2>/dev/null || echo "collection")
+QUEUE="collection"
 DEPTH=$(timeout 15 docker exec linkedin-scraper-redis redis-cli -a "$REDIS_PASS" --no-auth-warning LLEN "$QUEUE" 2>/dev/null || echo "unavailable")
 echo "queue_name=$QUEUE queue_depth=$DEPTH"
 
