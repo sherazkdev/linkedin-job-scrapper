@@ -124,18 +124,20 @@ async def test_auth_block_on_detail_still_skips_without_crashing_batch() -> None
     adapter._session = MagicMock()
     adapter._session.require_session = MagicMock()
     auth_html = "<html><body>sign in to linkedin</body></html>"
-    with patch(
-        "app.modules.collection.linkedin.adapter.capture_search_page_html",
-        new=AsyncMock(
-            return_value=MagicMock(
-                html=auth_html,
-                page_url="https://www.linkedin.com/login",
-                page_title="Login",
-                selector_timed_out=False,
-                content_timed_out=False,
-                title_timed_out=False,
-                page_unresponsive=False,
-            )
+    with (
+        patch(
+            "app.modules.collection.linkedin.adapter.capture_search_page_html",
+            new=AsyncMock(
+                return_value=MagicMock(
+                    html=auth_html,
+                    page_url="https://www.linkedin.com/login",
+                    page_title="Login",
+                    selector_timed_out=False,
+                    content_timed_out=False,
+                    title_timed_out=False,
+                    page_unresponsive=False,
+                )
+            ),
         ),
         patch(
             "app.modules.collection.linkedin.adapter.close_page_bounded",
