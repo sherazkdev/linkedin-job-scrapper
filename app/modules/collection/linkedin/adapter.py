@@ -28,6 +28,10 @@ from app.modules.collection.linkedin.search_page_capture import (
 )
 from app.modules.collection.linkedin.timing import log_phase_start
 from app.modules.collection.linkedin.keyword_relevance import title_matches_keyword
+from app.modules.collection.linkedin.pagination import (
+    LINKEDIN_SEARCH_PAGE_SIZE,
+    compute_search_has_more,
+)
 from app.modules.collection.linkedin.recency import (
     build_recency_rejection_diagnostic,
     is_within_past_24_hours,
@@ -152,7 +156,7 @@ class LinkedInJobSourceAdapter(JobSourceAdapter):
         return AdapterFetchResult(
             jobs=jobs,
             checkpoint=checkpoint,
-            has_more=has_more and len(jobs) >= limit,
+            has_more=has_more and len(jobs) < limit,
         )
 
     async def _fetch_live(
@@ -174,19 +178,111 @@ class LinkedInJobSourceAdapter(JobSourceAdapter):
         live_timer = log_phase_start(logger, "live_fetch")
         await self._browser.start()
         location = resolve_search_location(country_code, search_location)
-        start = page_index * 25
-        url = _build_search_url(
-            keyword=keyword,
-            location=location,
-            start=start,
-            past_24h=self._filter_past_24h,
-            sort_recent=True,
-        )
         nav_ms = self._settings.linkedin_navigation_timeout_ms
         op_ms = self._settings.linkedin_page_operation_timeout_ms
         sel_ms = self._settings.linkedin_selector_timeout_ms
         close_grace_ms = self._settings.linkedin_browser_shutdown_grace_ms
+        max_pages = max(1, int(self._settings.linkedin_max_search_pages_per_run))
 
+        jobs: list[RawJobRecord] = []
+        metrics: dict[str, Any] = {
+            "rejected_stale": 0,
+            "rejected_unknown_posting": 0,
+            "rejected_location_mismatch": 0,
+            "rejected_keyword_mismatch": 0,
+            "rejected_detail_error": 0,
+            "rejection_diagnostics": [],
+            "filter_past_24_hours": self._filter_past_24h,
+            "search_location": location,
+            "search_pages_fetched": 0,
+            "search_cards_seen": 0,
+        }
+        now = datetime.now(UTC)
+        current_page = page_index
+        pages_fetched = 0
+        cards_on_last_page = 0
+
+        while len(jobs) < limit and pages_fetched < max_pages:
+            start = current_page * LINKEDIN_SEARCH_PAGE_SIZE
+            url = _build_search_url(
+                keyword=keyword,
+                location=location,
+                start=start,
+                past_24h=self._filter_past_24h,
+                sort_recent=True,
+            )
+            cards, page_metrics = await self._live_fetch_search_page_cards(
+                country_code=country_code,
+                url=url,
+                nav_ms=nav_ms,
+                op_ms=op_ms,
+                sel_ms=sel_ms,
+                close_grace_ms=close_grace_ms,
+            )
+            if not cards:
+                if pages_fetched == 0:
+                    page_msg = page_metrics.get("message")
+                    raise LinkedInCollectionError(
+                        LinkedInFailureState.NO_RESULTS,
+                        page_msg or "LinkedIn reported zero matching jobs for this search",
+                    )
+                cards_on_last_page = 0
+                break
+            cards_on_last_page = len(cards)
+            metrics["search_pages_fetched"] += 1
+            metrics["search_cards_seen"] += cards_on_last_page
+            pages_fetched += 1
+
+            await self._live_process_search_cards(
+                cards=cards,
+                jobs=jobs,
+                limit=limit,
+                processed_ids=processed_ids,
+                keyword=keyword,
+                search_location=search_location,
+                location=location,
+                nav_ms=nav_ms,
+                op_ms=op_ms,
+                close_grace_ms=close_grace_ms,
+                now=now,
+                metrics=metrics,
+            )
+            if cards_on_last_page < LINKEDIN_SEARCH_PAGE_SIZE:
+                break
+            current_page += 1
+
+        has_more = compute_search_has_more(
+            jobs_collected=len(jobs),
+            limit=limit,
+            cards_on_last_page=cards_on_last_page,
+        )
+        live_timer.finish(
+            jobs_collected=len(jobs),
+            pages_fetched=pages_fetched,
+            has_more=has_more,
+        )
+        checkpoint = {
+            "page_index": current_page + 1,
+            "processed_ids": list(processed_ids),
+            "keyword": keyword.lower(),
+        }
+        return AdapterFetchResult(
+            jobs=jobs,
+            checkpoint=checkpoint,
+            has_more=has_more,
+            metrics=metrics,
+        )
+
+    async def _live_fetch_search_page_cards(
+        self,
+        *,
+        country_code: str,
+        url: str,
+        nav_ms: int,
+        op_ms: int,
+        sel_ms: int,
+        close_grace_ms: int,
+    ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
         page_timer = log_phase_start(logger, "search_new_page")
         page = await self._browser.new_page()
         page_timer.finish()
@@ -265,20 +361,26 @@ class LinkedInJobSourceAdapter(JobSourceAdapter):
                 msg += " (past 24h URL filter f_TPR=r86400 is active)"
             if not diag.get("genuine_empty"):
                 msg += "; page lacked recognizable results markup"
-            raise LinkedInCollectionError(LinkedInFailureState.NO_RESULTS, msg)
+            return [], {"diagnostics": diag, "message": msg}
 
-        jobs: list[RawJobRecord] = []
-        metrics: dict[str, Any] = {
-            "rejected_stale": 0,
-            "rejected_unknown_posting": 0,
-            "rejected_location_mismatch": 0,
-            "rejected_keyword_mismatch": 0,
-            "rejected_detail_error": 0,
-            "rejection_diagnostics": [],
-            "filter_past_24_hours": self._filter_past_24h,
-            "search_location": location,
-        }
-        now = datetime.now(UTC)
+        return cards, {}
+
+    async def _live_process_search_cards(
+        self,
+        *,
+        cards: list[dict[str, Any]],
+        jobs: list[RawJobRecord],
+        limit: int,
+        processed_ids: set[str],
+        keyword: str,
+        search_location: str | None,
+        location: str,
+        nav_ms: int,
+        op_ms: int,
+        close_grace_ms: int,
+        now: datetime,
+        metrics: dict[str, Any],
+    ) -> None:
         for card in cards:
             if len(jobs) >= limit:
                 break
@@ -320,8 +422,9 @@ class LinkedInJobSourceAdapter(JobSourceAdapter):
                 )
                 continue
             filter_timer = log_phase_start(logger, "detail_recency_location", job_id=job_id)
+            card_location = card.get("location_text")
             if search_location and not job_matches_search_location(
-                raw.location_text or card.get("location_text"),
+                card_location or raw.location_text,
                 location,
             ):
                 filter_timer.finish(outcome="rejected_location_mismatch")
@@ -337,7 +440,7 @@ class LinkedInJobSourceAdapter(JobSourceAdapter):
                     )
                 )
                 continue
-            job_title = raw.title or card.get("title")
+            job_title = card.get("title") or raw.title
             if not title_matches_keyword(job_title, keyword):
                 filter_timer.finish(outcome="rejected_keyword_mismatch")
                 metrics["rejected_keyword_mismatch"] += 1
@@ -385,19 +488,6 @@ class LinkedInJobSourceAdapter(JobSourceAdapter):
             filter_timer.finish(outcome="accepted")
             jobs.append(raw)
             processed_ids.add(job_id)
-
-        live_timer.finish(jobs_collected=len(jobs))
-        checkpoint = {
-            "page_index": page_index + 1,
-            "processed_ids": list(processed_ids),
-            "keyword": keyword.lower(),
-        }
-        return AdapterFetchResult(
-            jobs=jobs,
-            checkpoint=checkpoint,
-            has_more=len(cards) > len(jobs),
-            metrics=metrics,
-        )
 
     async def shutdown_browser(self) -> None:
         if self._browser is not None:

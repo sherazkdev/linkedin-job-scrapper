@@ -98,6 +98,10 @@ class Settings(BaseSettings):
         default=True,
         alias="LINKEDIN_FILTER_PAST_24_HOURS",
     )
+    linkedin_max_search_pages_per_run: int = Field(
+        default=5,
+        alias="LINKEDIN_MAX_SEARCH_PAGES_PER_RUN",
+    )
 
     allow_live_public_board_collection: bool = Field(
         default=False,

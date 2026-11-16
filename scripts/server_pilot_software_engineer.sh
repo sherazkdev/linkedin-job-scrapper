@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# ONE live pilot: PK / Islamabad / Software Engineer / max_jobs=10 / global_jobs_pilot
+# ONE live pilot: PK country-wide / Software Engineer / max_jobs=5 / global_jobs_pilot
 set -euo pipefail
 APP_DIR=/var/www/linkedin-job-scrapper
 cd "$APP_DIR"
@@ -7,8 +7,8 @@ COMPOSE="docker compose -f compose.yaml -f compose.contabo-vps.yaml -f compose.c
 PILOT_DB=global_jobs_pilot
 PILOT_CONTAINER=linkedin-pilot-live-once
 PILOT_KEYWORD="software engineer"
-PILOT_MAX_JOBS=10
-PILOT_LOCATION="islamabad, pakistan"
+PILOT_MAX_JOBS=5
+PILOT_LOCATION=""
 
 D_MONGO=45
 D_COMPOSE=180
@@ -59,7 +59,7 @@ log "STEP enable_software_engineer_target max_jobs=${PILOT_MAX_JOBS}"
 mongo_eval "
 const dbp = db.getSiblingDB('${PILOT_DB}');
 dbp.collection_targets.updateOne(
-  { source: 'linkedin', country_code: 'PK', keyword: '${PILOT_KEYWORD}', search_location: '${PILOT_LOCATION}' },
+  { source: 'linkedin', country_code: 'PK', keyword: '${PILOT_KEYWORD}', search_location: '' },
   { \$set: { enabled: true, max_jobs_per_run: ${PILOT_MAX_JOBS}, lock_owner: null, locked_until: null, priority: 200, country_name: 'Pakistan' } },
   { upsert: true }
 );
