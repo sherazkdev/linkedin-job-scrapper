@@ -5,6 +5,7 @@ from tests.fixture_paths import LINKEDIN_FIXTURES as FIXTURES
 
 from app.modules.collection.linkedin.errors import LinkedInCollectionError, LinkedInFailureState
 from app.modules.collection.linkedin.parser import (
+    dedupe_and_cap_search_cards,
     detect_page_state,
     parse_job_detail_html,
     parse_search_job_cards,
@@ -186,3 +187,22 @@ def test_classify_spa_shell_unsupported() -> None:
         classify_search_page("<html><body><div id='app'></div></body></html>", search_country_code="PK")
         == "unsupported"
     )
+
+
+def test_dedupe_and_cap_search_cards() -> None:
+    base = {
+        "title": "Software Engineer",
+        "company": "Acme",
+        "location_text": "Lahore",
+        "search_country_code": "PK",
+        "job_url": "https://www.linkedin.com/jobs/view/1",
+    }
+    cards = [
+        {"source_job_id": "1", **base},
+        {"source_job_id": "1", **base},
+        *[{"source_job_id": str(i), **base} for i in range(2, 40)],
+    ]
+    capped = dedupe_and_cap_search_cards(cards)
+    assert len(capped) == 25
+    assert capped[0]["source_job_id"] == "1"
+    assert len({c["source_job_id"] for c in capped}) == 25

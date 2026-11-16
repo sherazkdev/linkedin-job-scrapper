@@ -5,6 +5,7 @@ from urllib.parse import parse_qs, urlparse
 from bs4 import BeautifulSoup
 
 from app.modules.collection.linkedin.errors import LinkedInCollectionError, LinkedInFailureState
+from app.modules.collection.linkedin.pagination import LINKEDIN_SEARCH_PAGE_SIZE
 from app.modules.collection.models.raw_job import RawJobRecord
 from app.modules.jobs.posting_time import parse_posting_time
 
@@ -46,6 +47,21 @@ def detect_page_state(html: str) -> LinkedInFailureState | None:
     return None
 
 
+def dedupe_and_cap_search_cards(cards: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """One card per job; LinkedIn SERP offset increments by 25."""
+    seen: set[str] = set()
+    unique: list[dict[str, Any]] = []
+    for card in cards:
+        job_id = str(card["source_job_id"])
+        if job_id in seen:
+            continue
+        seen.add(job_id)
+        unique.append(card)
+        if len(unique) >= LINKEDIN_SEARCH_PAGE_SIZE:
+            break
+    return unique
+
+
 def parse_search_job_cards(html: str, *, search_country_code: str) -> list[dict[str, Any]]:
     state = detect_page_state(html)
     if state is not None:
@@ -63,7 +79,9 @@ def parse_search_job_cards(html: str, *, search_country_code: str) -> list[dict[
             "div.base-card, [data-occludable-job-id]"
         )
     if not cards:
-        return _finalize_search_cards(soup, items=[], search_country_code=search_country_code)
+        return dedupe_and_cap_search_cards(
+            _finalize_search_cards(soup, items=[], search_country_code=search_country_code)
+        )
 
     items: list[dict[str, Any]] = []
     for card in cards:
@@ -105,12 +123,12 @@ def parse_search_job_cards(html: str, *, search_country_code: str) -> list[dict[
     if not items:
         fallback = _parse_cards_from_job_links(soup, search_country_code=search_country_code)
         if fallback:
-            return fallback
+            return dedupe_and_cap_search_cards(fallback)
         raise LinkedInCollectionError(
             LinkedInFailureState.UNSUPPORTED_PAGE_STRUCTURE,
             "Search results present but required job card fields missing",
         )
-    return items
+    return dedupe_and_cap_search_cards(items)
 
 
 def search_page_diagnostics(html: str) -> dict[str, int | bool]:
@@ -148,10 +166,10 @@ def _finalize_search_cards(
     search_country_code: str,
 ) -> list[dict[str, Any]]:
     if items:
-        return items
+        return dedupe_and_cap_search_cards(items)
     fallback = _parse_cards_from_job_links(soup, search_country_code=search_country_code)
     if fallback:
-        return fallback
+        return dedupe_and_cap_search_cards(fallback)
     if _is_genuine_empty_results(soup):
         return []
     if _count_job_view_links(soup) > 0:
