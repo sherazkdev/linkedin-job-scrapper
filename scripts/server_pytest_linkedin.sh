@@ -4,7 +4,7 @@ set -euo pipefail
 APP_DIR=/var/www/linkedin-job-scrapper
 cd "$APP_DIR"
 IMAGE="${LINKEDIN_WORKER_IMAGE:-global-jobs-collector-worker:latest}"
-NET="${DOCKER_NETWORK:-linkedin-scraper_default}"
+NET="${DOCKER_NETWORK:-linkedin_scraper_internal}"
 MONGO_USER=$(docker exec linkedin-scraper-mongodb printenv MONGO_INITDB_ROOT_USERNAME)
 MONGO_PASS=$(docker exec linkedin-scraper-mongodb printenv MONGO_INITDB_ROOT_PASSWORD)
 REDIS_PASS=$(docker exec linkedin-scraper-redis printenv REDIS_PASSWORD 2>/dev/null || true)
