@@ -23,9 +23,10 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 SEARCH_RESULTS_SELECTOR = (
-    'a[href*="/jobs/view/"], li.jobs-search-results__list-item, div.job-search-card, '
-    "div.job-card-container, article.job-card-container, "
-    "div.base-card[data-entity-urn*='jobPosting']"
+    'a[href*="/jobs/view/"], li.jobs-search-results__list-item, '
+    "ul.jobs-search__results-list li, div.jobs-search-results-list__list-item, "
+    "div.job-search-card, div.job-card-container, article.job-card-container, "
+    "div.base-card[data-entity-urn*='jobPosting'], [data-occludable-job-id]"
 )
 
 _JOB_LIST_HYDRATION_JS = """() => {
@@ -38,10 +39,14 @@ _JOB_LIST_HYDRATION_JS = """() => {
   if (document.querySelectorAll('a[href*="/jobs/view/"]').length > 0) return true;
   const markers = document.querySelectorAll(
     "li.jobs-search-results__list-item, div.job-search-card, div.job-card-container, "
-    + "article.job-card-container, ul.scaffold-layout__list-container li"
+    + "article.job-card-container, ul.scaffold-layout__list-container li, "
+    + "ul.jobs-search__results-list li, div.jobs-search-results-list__list-item, "
+    + "[data-occludable-job-id]"
   );
   return markers.length > 0;
 }"""
+
+_POST_HYDRATION_NUDGE_MS = 15_000
 
 # After selector timeout, probe the tab before spending title/content budgets.
 _PAGE_PROBE_MAX_MS = 2_000
@@ -154,6 +159,7 @@ async def _read_dom_indicators(page: Page) -> dict[str, Any]:
               scaffold_items: document.querySelectorAll(
                 "ul.scaffold-layout__list-container li"
               ).length,
+              occludable_jobs: document.querySelectorAll("[data-occludable-job-id]").length,
               ready_state: document.readyState,
               genuine_empty: lower.includes("no matching jobs") || lower.includes("no results found"),
               page_title_len: (document.title || "").length,
@@ -167,6 +173,21 @@ async def _read_dom_indicators(page: Page) -> dict[str, Any]:
         logger.debug("dom indicators failed error=%s", exc.__class__.__name__)
         return {"error": exc.__class__.__name__}
     return {}
+
+
+async def _nudge_search_results_viewport(page: Page) -> None:
+    try:
+        await page.evaluate(
+            """() => {
+            const list = document.querySelector(
+              ".jobs-search-results-list, .scaffold-layout__list, ul.jobs-search__results-list"
+            );
+            if (list && "scrollTop" in list) list.scrollTop = 120;
+            window.scrollBy(0, 320);
+          }"""
+        )
+    except Exception as exc:
+        logger.debug("search viewport nudge failed error=%s", exc.__class__.__name__)
 
 
 async def _wait_for_job_list_hydration(page: Page, *, budget_ms: int) -> bool:
@@ -230,8 +251,17 @@ async def capture_search_page_html(
         selector_timed_out = True
         sel_timer.finish(event="selector_timeout")
 
-    hydration_budget = selector_timeout_ms if selector_timed_out else 0
-    if hydration_budget > 0:
+    await _nudge_search_results_viewport(page)
+
+    hydration_needed = selector_timed_out
+    if not hydration_needed:
+        try:
+            hydration_needed = await page.evaluate(_JOB_LIST_HYDRATION_JS) is not True
+        except Exception:
+            hydration_needed = True
+
+    hydration_budget = selector_timeout_ms if selector_timed_out else _POST_HYDRATION_NUDGE_MS
+    if hydration_needed and hydration_budget > 0:
         hyd_timer = log_phase_start(logger, "search_hydration", budget_ms=hydration_budget)
         hydrated = await _wait_for_job_list_hydration(page, budget_ms=hydration_budget)
         indicators = await _read_dom_indicators(page)
@@ -243,6 +273,7 @@ async def capture_search_page_html(
                 "list_items",
                 "job_cards",
                 "scaffold_items",
+                "occludable_jobs",
                 "genuine_empty",
                 "ready_state",
                 "body_text_len",
@@ -253,6 +284,22 @@ async def capture_search_page_html(
         )
         if hydrated:
             selector_timed_out = False
+    elif not selector_timed_out:
+        snap = await _read_dom_indicators(page)
+        logger.info(
+            "linkedin_collect phase=search_dom_snapshot indicators=%s url=%s",
+            {k: snap.get(k) for k in (
+                "job_view_links",
+                "list_items",
+                "job_cards",
+                "scaffold_items",
+                "occludable_jobs",
+                "genuine_empty",
+                "ready_state",
+                "body_text_len",
+            )},
+            safe_url,
+        )
 
     page_url = page.url
     dom_indicators = await _read_dom_indicators(page)

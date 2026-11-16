@@ -25,6 +25,8 @@ def _html_looks_like_job_search_results(lowered_html: str) -> bool:
         or "job-search-card" in lowered_html
         or "job-card-container" in lowered_html
         or "scaffold-layout__list-container" in lowered_html
+        or "jobs-search__results-list" in lowered_html
+        or "data-occludable-job-id" in lowered_html
         or "base-search-card__title" in lowered_html
     )
 
@@ -53,7 +55,12 @@ def parse_search_job_cards(html: str, *, search_country_code: str) -> list[dict[
     cards = soup.select("li.jobs-search-results__list-item")
     if not cards:
         cards = soup.select(
-            "div.job-search-card, div.job-card-container, article.job-card-container, div.base-card"
+            "ul.jobs-search__results-list li, div.jobs-search-results-list__list-item"
+        )
+    if not cards:
+        cards = soup.select(
+            "div.job-search-card, div.job-card-container, article.job-card-container, "
+            "div.base-card, [data-occludable-job-id]"
         )
     if not cards:
         return _finalize_search_cards(soup, items=[], search_country_code=search_country_code)
@@ -118,6 +125,10 @@ def search_page_diagnostics(html: str) -> dict[str, int | bool]:
             soup.select("div.job-card-container, article.job-card-container")
         ),
         "scaffold_items": len(soup.select("ul.scaffold-layout__list-container li")),
+        "jobs_search_results": len(
+            soup.select("ul.jobs-search__results-list li, div.jobs-search-results-list__list-item")
+        ),
+        "occludable_jobs": len(soup.select("[data-occludable-job-id]")),
         "base_cards": len(soup.select("div.base-card")),
         "job_view_links": len(soup.select('a[href*="/jobs/view/"]')),
         "genuine_empty": _is_genuine_empty_results(soup),
