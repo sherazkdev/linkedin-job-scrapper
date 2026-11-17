@@ -19,6 +19,9 @@ docker rm -f linkedin-scraper-worker 2>/dev/null || true
 
 echo "STEP enable_wave1_targets"
 $COMPOSE run --rm --no-deps worker-linkedin python -m app.cli.wave1_ops enable
+START_ISO=$(date -u +%Y-%m-%dT%H:%M:%S+00:00)
+mkdir -p evidence/wave1_observation
+printf '%s\n' "{\"started_at\":\"${START_ISO}\"}" >evidence/wave1_observation/wave1_started_at.json
 
 echo "STEP start_worker_beat"
 $COMPOSE --profile celery-linkedin up -d --force-recreate worker-linkedin
