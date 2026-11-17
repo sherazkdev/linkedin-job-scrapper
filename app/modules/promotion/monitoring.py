@@ -85,13 +85,14 @@ async def collect_publication_metrics(
         sort=[("created_at", -1)],
     )
 
-    coverage = await pilot_db[JOBS_COLLECTION].aggregate(
+    coverage_cursor = pilot_db[JOBS_COLLECTION].aggregate(
         [
             {"$match": ELIGIBLE_QUERY},
             {"$group": {"_id": "$search_country_code", "count": {"$sum": 1}}},
             {"$sort": {"count": -1}},
         ]
-    ).to_list(length=50)
+    )
+    coverage = await coverage_cursor.to_list(length=50)
 
     prod_docs = await fetch_production_published(production_db)
     promoted_ages: list[float] = []
