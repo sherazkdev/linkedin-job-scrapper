@@ -1,0 +1,42 @@
+# Localhost pilot API reading global_jobs_pilot (does not change production API).
+# Usage:
+#   docker compose -f compose.yaml -f compose.contabo-vps.yaml -f compose.contabo-pilot-api.yaml \
+#     -p linkedin-scraper up -d api-pilot
+
+services:
+  api-pilot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    image: linkedin-scraper-api
+    container_name: linkedin-scraper-api-pilot
+    env_file:
+      - .env
+    environment:
+      API_HOST: 0.0.0.0
+      API_PORT: 8000
+      MONGO_DB_NAME: global_jobs_pilot
+      ALLOW_COLLECTION_PRODUCTION_DB: "false"
+    ports:
+      - "127.0.0.1:${LINKEDIN_SCRAPER_PILOT_API_PORT:-18097}:8000"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - internal
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health/live')",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 25s

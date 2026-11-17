@@ -208,6 +208,14 @@ class Settings(BaseSettings):
         alias="LINKEDIN_MAX_LIVE_RUNS_PER_24H",
         description="Hard cap on live LinkedIn collection runs started in any rolling 24h window.",
     )
+    pilot_mongo_db_name: str = Field(
+        default="global_jobs_pilot",
+        alias="PILOT_MONGO_DB_NAME",
+    )
+    allow_pilot_to_production_promotion: bool = Field(
+        default=False,
+        alias="ALLOW_PILOT_TO_PRODUCTION_PROMOTION",
+    )
 
     internal_ops_token: str | None = Field(default=None, alias="INTERNAL_OPS_TOKEN")
     job_stale_after_days: int = Field(

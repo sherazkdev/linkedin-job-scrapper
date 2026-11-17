@@ -46,6 +46,7 @@ docker run --rm \
     tests/collection/test_target_last_run_stats.py \
     tests/scheduling/test_rollout_plan.py \
     tests/scheduling/test_linkedin_daily_cap.py \
+    tests/promotion/test_pilot_to_production.py \
     -q --tb=short
 
 echo "PYTEST_LINKEDIN_OK"
