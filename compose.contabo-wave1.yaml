@@ -1,0 +1,42 @@
+# Wave 1 — 40-country software engineer rollout on global_jobs_pilot only.
+# Usage:
+#   docker compose -f compose.yaml -f compose.contabo-vps.yaml -f compose.contabo-wave1.yaml \
+#     -p linkedin-scraper --profile celery --profile celery-linkedin up -d worker-linkedin beat
+
+services:
+  worker-linkedin:
+    environment:
+      CELERY_WORKER_MONGO_DB_NAME: global_jobs_pilot
+      ALLOW_COLLECTION_PRODUCTION_DB: "false"
+      ALLOW_LIVE_LINKEDIN_COLLECTION: "true"
+      CELERY_ALLOW_LINKEDIN_TASKS: "true"
+      CELERY_DISPATCH_MAX_PER_TICK: "1"
+      CELERY_DISPATCH_SOURCE_ALLOWLIST: linkedin
+      CELERY_DISPATCH_FAIR_COUNTRY_COVERAGE: "true"
+      CELERY_TARGET_COOLDOWN_SECONDS: "3600"
+      CELERY_BEAT_DISPATCH_INTERVAL_SECONDS: "120"
+      CELERY_WORKER_CONCURRENCY: "1"
+      LINKEDIN_MAX_LIVE_RUNS_PER_24H: "30"
+    restart: unless-stopped
+
+  beat:
+    profiles:
+      - celery
+    environment:
+      CELERY_WORKER_MONGO_DB_NAME: global_jobs_pilot
+      ALLOW_COLLECTION_PRODUCTION_DB: "false"
+      ALLOW_LIVE_LINKEDIN_COLLECTION: "false"
+      CELERY_ALLOW_LINKEDIN_TASKS: "true"
+      CELERY_DISPATCH_MAX_PER_TICK: "1"
+      CELERY_DISPATCH_SOURCE_ALLOWLIST: linkedin
+      CELERY_DISPATCH_FAIR_COUNTRY_COVERAGE: "true"
+      CELERY_TARGET_COOLDOWN_SECONDS: "3600"
+      CELERY_BEAT_DISPATCH_INTERVAL_SECONDS: "120"
+      LINKEDIN_MAX_LIVE_RUNS_PER_24H: "30"
+
+  worker:
+    profiles:
+      - celery
+    environment:
+      CELERY_ALLOW_LINKEDIN_TASKS: "false"
+      ALLOW_LIVE_LINKEDIN_COLLECTION: "false"
