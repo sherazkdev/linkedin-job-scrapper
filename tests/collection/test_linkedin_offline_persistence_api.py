@@ -54,7 +54,8 @@ async def test_linkedin_offline_collect_then_api_lists_jobs(integration_db: None
             ids = {item["source_job_id"] for item in items}
             assert "9001001" in ids
             assert "9001002" in ids
-            detail = await client.get("/api/v1/jobs/9001001", params={"source": "linkedin"})
+            job = next(i for i in items if i["source_job_id"] == "9001001")
+            detail = await client.get(f"/api/v1/jobs/{job['id']}")
             assert detail.status_code == 200
             body = detail.json()["data"]
             assert body["title"]
