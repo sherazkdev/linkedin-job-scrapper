@@ -140,16 +140,11 @@ printjson({
 docker logs --tail 200 "$PILOT_CONTAINER" 2>&1 | tail -80
 
 log "STEP pilot_api_verify"
-docker rm -f linkedin-pilot-api-verify 2>/dev/null || true
-timeout "$D_COMPOSE" $COMPOSE run -d --name linkedin-pilot-api-verify \
-  -p 127.0.0.1:18097:8000 \
-  -e MONGO_DB_NAME="$PILOT_DB" \
-  api
-for i in $(seq 1 30); do
-  if curl -sf http://127.0.0.1:18097/health/live >/dev/null; then break; fi
-  sleep 2
-done
-curl -sf "http://127.0.0.1:18097/api/v1/jobs?source=linkedin&country_code=${PILOT_COUNTRY}&page_size=5" | python3 -m json.tool | head -80 || true
+PILOT_API_PORT="${LINKEDIN_SCRAPER_PILOT_API_PORT:-18097}"
+if ! curl -sf "http://127.0.0.1:${PILOT_API_PORT}/health/live" >/dev/null 2>&1; then
+  bash scripts/server_pilot_api_up.sh
+fi
+curl -sf "http://127.0.0.1:${PILOT_API_PORT}/api/v1/jobs?source=linkedin&country_code=${PILOT_COUNTRY}&page_size=5" | python3 -m json.tool | head -80 || true
 
 trap - EXIT INT TERM
 pilot_cleanup

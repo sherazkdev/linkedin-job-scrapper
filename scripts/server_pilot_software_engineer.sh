@@ -154,18 +154,23 @@ printjson({
 docker logs --tail 120 "$PILOT_CONTAINER" 2>&1 | grep -Ei 'rejected_|jobs_collected|search_dom_snapshot|cards_count|created_count|detail skip|adapter_rejected|normalized|mongo_persist|Worker collection finished' | tail -35 || true
 
 log "STEP pilot_api_verify"
-docker rm -f linkedin-pilot-api-verify 2>/dev/null || true
-timeout "$D_COMPOSE" $COMPOSE run -d --name linkedin-pilot-api-verify \
-  -p 127.0.0.1:18097:8000 \
-  -e MONGO_DB_NAME="$PILOT_DB" \
-  api
-for i in $(seq 1 30); do
-  if curl -sf http://127.0.0.1:18097/health/live >/dev/null; then break; fi
-  sleep 2
-done
-curl -sf "http://127.0.0.1:18097/api/v1/jobs?source=linkedin&country_code=PK&page_size=5" | python3 -m json.tool | head -80 || echo "API_FETCH_FAILED"
+PILOT_API_PORT="${LINKEDIN_SCRAPER_PILOT_API_PORT:-18097}"
+if ! curl -sf "http://127.0.0.1:${PILOT_API_PORT}/health/live" >/dev/null 2>&1; then
+  bash scripts/server_pilot_api_up.sh
+fi
+curl -sf "http://127.0.0.1:${PILOT_API_PORT}/api/v1/jobs?source=linkedin&country_code=PK&page_size=5" \
+  | python3 -m json.tool | head -80 || echo "API_FETCH_FAILED"
 curl -sf http://127.0.0.1:18095/health/live >/dev/null && echo "PRODUCTION_API_OK"
 
 trap - EXIT INT TERM
 pilot_cleanup
-log "STEP done"
+FINAL_RUN=$(mongo_eval "
+const r=db.getSiblingDB('${PILOT_DB}').collection_runs.find({source:'linkedin'}).sort({started_at:-1}).limit(1).toArray()[0];
+if (!r) { print('none'); } else { print([r.status,r.error_summary||''].join('|')); }
+")
+FINAL_STATUS=$(echo "$FINAL_RUN" | cut -d'|' -f1)
+FINAL_ERR=$(echo "$FINAL_RUN" | cut -d'|' -f2-)
+log "STEP done status=$FINAL_STATUS error=$FINAL_ERR"
+if [ "$FINAL_STATUS" != "completed" ]; then
+  exit 12
+fi

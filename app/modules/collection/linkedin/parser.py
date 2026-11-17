@@ -131,6 +131,48 @@ def parse_search_job_cards(html: str, *, search_country_code: str) -> list[dict[
     return dedupe_and_cap_search_cards(items)
 
 
+def search_page_is_pagination_exhausted(
+    html: str,
+    *,
+    dom_indicators: dict[str, Any] | None = None,
+) -> bool:
+    """True when a later SERP offset has no jobs (not auth/block).
+
+    LinkedIn often returns a minimal SPA shell when ``start`` is past the last result.
+    """
+    if detect_page_state(html) is not None:
+        return False
+    diag = search_page_diagnostics(html)
+    if diag.get("genuine_empty"):
+        return True
+    indicators = dom_indicators or {}
+    if indicators.get("genuine_empty"):
+        return True
+    job_links = int(indicators.get("job_view_links", diag.get("job_view_links", 0)))
+    if job_links > 0:
+        return False
+    body_len = int(indicators.get("body_text_len", 0))
+    if body_len <= 0:
+        soup = BeautifulSoup(html, "html.parser")
+        body_len = len(soup.get_text(" ", strip=True))
+    has_list_markup = any(
+        int(diag.get(key, 0)) > 0
+        for key in (
+            "list_items",
+            "job_search_cards",
+            "job_card_containers",
+            "jobs_search_results",
+            "occludable_jobs",
+            "base_cards",
+        )
+    )
+    if has_list_markup:
+        return False
+    if 0 < body_len < 600:
+        return True
+    return False
+
+
 def search_page_diagnostics(html: str) -> dict[str, int | bool]:
     soup = BeautifulSoup(html, "html.parser")
     return {

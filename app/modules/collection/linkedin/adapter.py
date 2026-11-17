@@ -19,9 +19,11 @@ from app.modules.collection.linkedin.parser import (
     parse_job_detail_html,
     parse_search_job_cards,
     search_page_diagnostics,
+    search_page_is_pagination_exhausted,
 )
 from app.modules.collection.linkedin.browser_page import close_page_bounded
 from app.modules.collection.linkedin.search_page_capture import (
+    SearchPageCapture,
     capture_job_detail_html,
     capture_search_page_html,
     classify_search_page,
@@ -235,6 +237,7 @@ class LinkedInJobSourceAdapter(JobSourceAdapter):
                 op_ms=op_ms,
                 sel_ms=sel_ms,
                 close_grace_ms=close_grace_ms,
+                continuation=pages_fetched > 0,
             )
             if not cards:
                 if pages_fetched == 0:
@@ -302,10 +305,12 @@ class LinkedInJobSourceAdapter(JobSourceAdapter):
         op_ms: int,
         sel_ms: int,
         close_grace_ms: int,
+        continuation: bool = False,
     ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
         page_timer = log_phase_start(logger, "search_new_page")
         page = await self._browser.new_page()
         page_timer.finish()
+        capture: SearchPageCapture | None = None
         try:
             capture = await capture_search_page_html(
                 page,
@@ -372,9 +377,25 @@ class LinkedInJobSourceAdapter(JobSourceAdapter):
             await close_page_bounded(page, grace_ms=close_grace_ms)
             close_timer.finish()
 
+        dom_indicators = capture.dom_indicators if capture else None
+
+        def _pagination_end_payload() -> tuple[list[dict[str, Any]], dict[str, Any]]:
+            diag = search_page_diagnostics(html)
+            return [], {
+                "diagnostics": diag,
+                "message": "LinkedIn search pagination end (no further results on this page)",
+                "pagination_end": True,
+            }
+
         class_timer = log_phase_start(logger, "search_classification")
         classification = classify_search_page(html, search_country_code=country_code)
         class_timer.finish(classification=classification)
+
+        if continuation and search_page_is_pagination_exhausted(
+            html, dom_indicators=dom_indicators
+        ):
+            logger.info("LinkedIn search pagination exhausted url=%s", url)
+            return _pagination_end_payload()
 
         page_state = detect_page_state(html)
         if page_state is not None:
@@ -383,7 +404,20 @@ class LinkedInJobSourceAdapter(JobSourceAdapter):
                 f"LinkedIn search blocked: {page_state.value}",
             )
         cards_timer = log_phase_start(logger, "search_cards_parse")
-        cards = parse_search_job_cards(html, search_country_code=country_code)
+        try:
+            cards = parse_search_job_cards(html, search_country_code=country_code)
+        except LinkedInCollectionError as exc:
+            if (
+                continuation
+                and exc.state == LinkedInFailureState.UNSUPPORTED_PAGE_STRUCTURE
+                and search_page_is_pagination_exhausted(html, dom_indicators=dom_indicators)
+            ):
+                logger.info(
+                    "LinkedIn search pagination exhausted after unsupported markup url=%s",
+                    url,
+                )
+                return _pagination_end_payload()
+            raise
         cards_timer.finish(cards_count=len(cards))
         if not cards:
             diag = search_page_diagnostics(html)

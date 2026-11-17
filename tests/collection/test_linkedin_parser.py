@@ -150,6 +150,13 @@ def test_parse_scaffold_layout_job_cards() -> None:
     assert "ERP" in cards[0]["title"]
 
 
+def test_genuine_empty_on_continuation_is_pagination_exhausted() -> None:
+    from app.modules.collection.linkedin.parser import search_page_is_pagination_exhausted
+
+    html = (FIXTURES / "search_page_genuine_empty.html").read_text(encoding="utf-8")
+    assert search_page_is_pagination_exhausted(html) is True
+
+
 def test_spa_shell_raises_unsupported_not_empty_list() -> None:
     with pytest.raises(LinkedInCollectionError) as err:
         parse_search_job_cards("<html><body><div id='app'></div></body></html>", search_country_code="PK")

@@ -8,13 +8,9 @@ PILOT_DB=global_jobs_pilot
 API_PORT=127.0.0.1:18097
 COUNTRIES=(PK GB US DE AE)
 
-docker rm -f linkedin-pilot-api-verify 2>/dev/null || true
-timeout 120 $COMPOSE run -d --name linkedin-pilot-api-verify \
-  -p "${API_PORT}:8000" -e MONGO_DB_NAME="$PILOT_DB" api
-for i in $(seq 1 30); do
-  curl -sf "http://${API_PORT}/health/live" >/dev/null && break
-  sleep 2
-done
+if ! curl -sf "http://${API_PORT}/health/live" >/dev/null 2>&1; then
+  bash scripts/server_pilot_api_up.sh
+fi
 
 echo "=== Pilot API verification ==="
 for CC in "${COUNTRIES[@]}"; do
@@ -27,5 +23,4 @@ print(cc, 'country_code total=', c['data']['total'], 'search_country_code total=
     "$CJ" "$SJ"
 done
 
-docker stop linkedin-pilot-api-verify >/dev/null 2>&1 || true
-docker rm -f linkedin-pilot-api-verify >/dev/null 2>&1 || true
+echo "PILOT_API_VERIFY_DONE using linkedin-scraper-api-pilot"

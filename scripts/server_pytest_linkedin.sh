@@ -33,6 +33,7 @@ docker run --rm \
   "$COLLECTOR_IMAGE" \
   python -m pytest \
     tests/collection/test_linkedin_pagination.py \
+    tests/collection/test_linkedin_pagination_exhausted.py \
     tests/collection/test_linkedin_parser.py \
     tests/collection/test_linkedin_detail_skip.py \
     tests/collection/test_collection_error_handler.py \
@@ -47,6 +48,7 @@ docker run --rm \
     tests/collection/test_target_last_run_stats.py \
     tests/scheduling/test_rollout_plan.py \
     tests/scheduling/test_linkedin_daily_cap.py \
+    tests/scripts/test_pilot_smoke_pilot_api.py \
     tests/promotion/test_pilot_to_production.py \
     tests/promotion/test_publication_sync_pipeline.py \
     tests/promotion/test_deprecation_safety.py \
