@@ -17,6 +17,8 @@ services:
       API_HOST: 0.0.0.0
       API_PORT: 8000
       MONGO_DB_NAME: global_jobs_pilot
+      PROMOTION_TARGET_MONGO_DB_NAME: global_jobs
+      PILOT_MONGO_DB_NAME: global_jobs_pilot
       ALLOW_COLLECTION_PRODUCTION_DB: "false"
     ports:
       - "127.0.0.1:${LINKEDIN_SCRAPER_PILOT_API_PORT:-18097}:8000"

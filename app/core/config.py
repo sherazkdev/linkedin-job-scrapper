@@ -216,6 +216,10 @@ class Settings(BaseSettings):
         default=False,
         alias="ALLOW_PILOT_TO_PRODUCTION_PROMOTION",
     )
+    promotion_target_mongo_db_name: str = Field(
+        default="global_jobs",
+        alias="PROMOTION_TARGET_MONGO_DB_NAME",
+    )
 
     internal_ops_token: str | None = Field(default=None, alias="INTERNAL_OPS_TOKEN")
     job_stale_after_days: int = Field(

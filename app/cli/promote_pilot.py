@@ -56,7 +56,7 @@ def _assert_promotion_allowed(settings: Settings) -> None:
 async def _run(args: argparse.Namespace) -> int:
     settings = get_settings()
     pilot_db_name = _pilot_db(settings)
-    prod_db_name = settings.mongo_db_name
+    prod_db_name = settings.promotion_target_mongo_db_name
 
     async with open_database(pilot_db_name) as pilot, open_database(prod_db_name) as prod:
         if args.command in ("preflight", "dry-run"):
