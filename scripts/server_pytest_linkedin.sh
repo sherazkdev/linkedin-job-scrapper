@@ -8,7 +8,10 @@ NET="${DOCKER_NETWORK:-linkedin_scraper_internal}"
 
 MONGO_USER=$(docker exec linkedin-scraper-mongodb printenv MONGO_INITDB_ROOT_USERNAME)
 MONGO_PASS=$(docker exec linkedin-scraper-mongodb printenv MONGO_INITDB_ROOT_PASSWORD)
-REDIS_PASS=$(docker exec linkedin-scraper-redis printenv REDIS_PASSWORD 2>/dev/null || true)
+REDIS_PASS="$(docker exec linkedin-scraper-redis printenv REDIS_PASSWORD 2>/dev/null || true)"
+if [ -z "$REDIS_PASS" ] && [ -f "$APP_DIR/.env" ]; then
+  REDIS_PASS="$(grep -E '^REDIS_PASSWORD=' "$APP_DIR/.env" | cut -d= -f2- | tr -d '\r\"' || true)"
+fi
 MONGO_URI="mongodb://${MONGO_USER}:${MONGO_PASS}@mongodb:27017/?authSource=admin"
 if [ -n "$REDIS_PASS" ]; then
   REDIS_URL="redis://:${REDIS_PASS}@redis:6379/0"
@@ -20,6 +23,7 @@ docker run --rm \
   --network "$NET" \
   -v "$APP_DIR/tests:/app/tests:ro" \
   -v "$APP_DIR/tests/fixtures:/app/tests/fixtures:ro" \
+  -v "$APP_DIR/config:/app/config:ro" \
   -e MONGO_URI="$MONGO_URI" \
   -e REDIS_URL="$REDIS_URL" \
   -e MONGO_DB_NAME=global_jobs_test \
