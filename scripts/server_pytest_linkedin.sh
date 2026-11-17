@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
-# LinkedIn regression + Mongo integration tests on VPS (api image for DB; collector for Playwright).
+# Full LinkedIn regression + Mongo integration (collector image: Playwright + app + pytest).
 set -euo pipefail
 APP_DIR=/var/www/linkedin-job-scrapper
 cd "$APP_DIR"
-COMPOSE="docker compose -f compose.yaml -f compose.contabo-vps.yaml -p linkedin-scraper"
 COLLECTOR_IMAGE="${LINKEDIN_WORKER_IMAGE:-global-jobs-collector-worker:latest}"
 NET="${DOCKER_NETWORK:-linkedin_scraper_internal}"
 
@@ -17,17 +16,8 @@ else
   REDIS_URL="redis://redis:6379/0"
 fi
 
-PYTEST_COMMON=(
-  tests/collection/test_linkedin_pagination.py
-  tests/collection/test_linkedin_parser.py::test_dedupe_and_cap_search_cards
-  tests/collection/test_collection_error_handler.py
-  tests/collection/test_linkedin_timing.py::test_linkedin_adapter_timeout_estimate_exceeds_default_collection_timeout
-  tests/collection/test_linkedin_adapter_metrics.py
-  tests/collection/test_linkedin_adapter_offline.py
-)
-
-echo "=== linkedin pytest (api / Mongo integration) ==="
-$COMPOSE run --rm --no-deps \
+docker run --rm \
+  --network "$NET" \
   -v "$APP_DIR/tests:/app/tests:ro" \
   -v "$APP_DIR/tests/fixtures:/app/tests/fixtures:ro" \
   -e MONGO_URI="$MONGO_URI" \
@@ -35,22 +25,16 @@ $COMPOSE run --rm --no-deps \
   -e MONGO_DB_NAME=global_jobs_test \
   -e RUN_INTEGRATION=1 \
   -e ALLOW_LIVE_LINKEDIN_COLLECTION=false \
-  api \
-  python -m pytest "${PYTEST_COMMON[@]}" \
-    tests/collection/test_linkedin_offline_persistence_api.py \
-    -q --tb=short
-
-echo "=== linkedin pytest (collector / Playwright detail-skip) ==="
-docker run --rm \
-  --network "$NET" \
-  -v "$APP_DIR/tests:/app/tests:ro" \
-  -e MONGO_URI="$MONGO_URI" \
-  -e REDIS_URL="$REDIS_URL" \
-  -e MONGO_DB_NAME=global_jobs_test \
-  -e ALLOW_LIVE_LINKEDIN_COLLECTION=true \
   "$COLLECTOR_IMAGE" \
   python -m pytest \
+    tests/collection/test_linkedin_pagination.py \
+    tests/collection/test_linkedin_parser.py \
     tests/collection/test_linkedin_detail_skip.py \
+    tests/collection/test_collection_error_handler.py \
+    tests/collection/test_linkedin_timing.py \
+    tests/collection/test_linkedin_adapter_metrics.py \
+    tests/collection/test_linkedin_adapter_offline.py \
+    tests/collection/test_linkedin_offline_persistence_api.py \
     -q --tb=short
 
 echo "PYTEST_LINKEDIN_OK"
