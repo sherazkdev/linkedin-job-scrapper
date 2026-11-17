@@ -22,6 +22,11 @@ build/
 .idea/
 .vscode/
 
+# Pilot evidence exports (on-server snapshots, not source)
+evidence/pilot_*.json
+evidence/**/*.json
+!evidence/.gitkeep
+
 # Logs and temp
 *.log
 logs/

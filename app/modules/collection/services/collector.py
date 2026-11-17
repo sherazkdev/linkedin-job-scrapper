@@ -281,6 +281,7 @@ class JobCollector:
         stats.adapter_rejected_keyword_mismatch = int(
             adapter_metrics.get("rejected_keyword_mismatch", 0)
         )
+        stats.adapter_rejected_keyword_serp = int(adapter_metrics.get("rejected_keyword_serp", 0))
 
         normalized_jobs = []
         for raw in adapter_result.jobs:

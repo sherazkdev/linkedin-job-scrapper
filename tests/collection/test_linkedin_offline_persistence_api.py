@@ -43,25 +43,26 @@ async def test_linkedin_offline_collect_then_api_lists_jobs(integration_db: None
 
     app = create_app()
     transport = httpx.ASGITransport(app=app)
-    async with httpx.AsyncClient(transport=transport, base_url="http://test") as client:
-        response = await client.get(
-            "/api/v1/jobs",
-            params={"source": "linkedin", "country_code": "DE", "page_size": 10},
-        )
-        assert response.status_code == 200
-        items = response.json()["data"]["items"]
-        ids = {item["source_job_id"] for item in items}
-        assert "9001001" in ids
-        assert "9001002" in ids
-        detail = await client.get("/api/v1/jobs/9001001", params={"source": "linkedin"})
-        assert detail.status_code == 200
-        body = detail.json()["data"]
-        assert body["title"]
-        assert body["company"]
-        assert body.get("data_provenance") in (
-            "offline_provider_fixture",
-            "synthetic_fixture",
-            "unknown",
-            "live_api_verified",
-        )
-        assert Path(body["job_url"]).name or body["job_url"]
+    async with app.router.lifespan_context(app):
+        async with httpx.AsyncClient(transport=transport, base_url="http://test") as client:
+            response = await client.get(
+                "/api/v1/jobs",
+                params={"source": "linkedin", "country_code": "DE", "page_size": 10},
+            )
+            assert response.status_code == 200
+            items = response.json()["data"]["items"]
+            ids = {item["source_job_id"] for item in items}
+            assert "9001001" in ids
+            assert "9001002" in ids
+            detail = await client.get("/api/v1/jobs/9001001", params={"source": "linkedin"})
+            assert detail.status_code == 200
+            body = detail.json()["data"]
+            assert body["title"]
+            assert body["company"]
+            assert body.get("data_provenance") in (
+                "offline_provider_fixture",
+                "synthetic_fixture",
+                "unknown",
+                "live_api_verified",
+            )
+            assert Path(body["job_url"]).name or body["job_url"]

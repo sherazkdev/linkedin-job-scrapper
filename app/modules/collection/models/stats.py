@@ -12,6 +12,7 @@ class CollectionStats(BaseModel):
     adapter_rejected_unknown_posting: int = 0
     adapter_rejected_location_mismatch: int = 0
     adapter_rejected_keyword_mismatch: int = 0
+    adapter_rejected_keyword_serp: int = 0
 
     def merge(self, other: "CollectionStats") -> None:
         self.collected_count += other.collected_count
@@ -24,3 +25,4 @@ class CollectionStats(BaseModel):
         self.adapter_rejected_unknown_posting += other.adapter_rejected_unknown_posting
         self.adapter_rejected_location_mismatch += other.adapter_rejected_location_mismatch
         self.adapter_rejected_keyword_mismatch += other.adapter_rejected_keyword_mismatch
+        self.adapter_rejected_keyword_serp += other.adapter_rejected_keyword_serp

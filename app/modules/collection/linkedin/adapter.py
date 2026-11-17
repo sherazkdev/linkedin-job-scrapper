@@ -431,7 +431,6 @@ class LinkedInJobSourceAdapter(JobSourceAdapter):
             card_title = card.get("title")
             if not title_matches_keyword(card_title, keyword):
                 metrics["rejected_keyword_serp"] += 1
-                metrics["rejected_keyword_mismatch"] += 1
                 metrics["rejection_diagnostics"].append(
                     build_recency_rejection_diagnostic(
                         source_job_id=job_id,
