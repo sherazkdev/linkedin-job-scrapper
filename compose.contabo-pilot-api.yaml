@@ -27,6 +27,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+    volumes:
+      - ./evidence:/app/evidence
     networks:
       - internal
     restart: unless-stopped
