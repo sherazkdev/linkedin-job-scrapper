@@ -21,6 +21,7 @@ fi
 
 docker run --rm \
   --network "$NET" \
+  -v "$APP_DIR/app:/app/app:ro" \
   -v "$APP_DIR/tests:/app/tests:ro" \
   -v "$APP_DIR/tests/fixtures:/app/tests/fixtures:ro" \
   -v "$APP_DIR/config:/app/config:ro" \
