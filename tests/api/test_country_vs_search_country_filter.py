@@ -11,11 +11,13 @@ from app.modules.jobs.models.job import JobDataProvenance, JobSource, JobStatus,
 async def test_us_search_job_invisible_under_country_code_when_geo_resolved_non_us(
     integration_db: None,
 ) -> None:
-    from app.database.mongodb import get_mongodb
+    from app.core.config import get_settings
+    from app.database.temp_database import open_database
 
-    db = get_mongodb().database
-    await db.jobs.delete_many({"sourceJobId": "pilot-us-geo-test"})
-    await db.jobs.insert_one(
+    settings = get_settings()
+    async with open_database(settings.mongo_db_name) as db:
+        await db.jobs.delete_many({"sourceJobId": "pilot-us-geo-test"})
+        await db.jobs.insert_one(
         {
             "source": JobSource.LINKEDIN.value,
             "sourceJobId": "pilot-us-geo-test",
@@ -29,7 +31,7 @@ async def test_us_search_job_invisible_under_country_code_when_geo_resolved_non_
             "data_provenance": JobDataProvenance.LIVE_API_VERIFIED.value,
             "workplace_type": WorkplaceType.ON_SITE.value,
         }
-    )
+        )
 
     app = create_app()
     transport = ASGITransport(app=app)
