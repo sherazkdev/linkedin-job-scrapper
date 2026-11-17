@@ -39,6 +39,8 @@ docker run --rm \
     tests/collection/test_linkedin_adapter_metrics.py \
     tests/collection/test_linkedin_adapter_offline.py \
     tests/collection/test_linkedin_offline_persistence_api.py \
+    tests/api/test_job_filters.py \
+    tests/api/test_country_vs_search_country_filter.py \
     -q --tb=short
 
 echo "PYTEST_LINKEDIN_OK"

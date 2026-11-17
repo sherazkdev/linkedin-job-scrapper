@@ -192,8 +192,8 @@ for i in $(seq 1 30); do
   sleep 2
 done
 for CC in "${COUNTRIES[@]}"; do
-  curl -sf "http://127.0.0.1:18097/api/v1/jobs?source=linkedin&country_code=${CC}&page_size=3" \
-    | python3 -c "import sys,json; d=json.load(sys.stdin); print('API', '${CC}', 'total=', d.get('data',{}).get('total',0))" || echo "API_FAIL ${CC}"
+  curl -sf "http://127.0.0.1:18097/api/v1/jobs?source=linkedin&search_country_code=${CC}&page_size=3" \
+    | python3 -c "import sys,json; d=json.load(sys.stdin); print('API search_market', '${CC}', 'total=', d.get('data',{}).get('total',0))" || echo "API_FAIL ${CC}"
 done
 
 log "Batch result lines:"
