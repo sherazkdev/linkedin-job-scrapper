@@ -30,6 +30,9 @@ async def test_us_search_job_invisible_under_country_code_when_geo_resolved_non_
             "status": JobStatus.ACTIVE.value,
             "data_provenance": JobDataProvenance.LIVE_API_VERIFIED.value,
             "workplace_type": WorkplaceType.ON_SITE.value,
+            "employment_type": "full_time",
+            "posted_at": "2026-11-17T00:00:00Z",
+            "last_seen_at": "2026-11-17T00:00:00Z",
         }
         )
 
