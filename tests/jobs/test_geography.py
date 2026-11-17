@@ -9,6 +9,7 @@ from app.modules.jobs.geography import resolve_geography
         ("PK", "Karachi, Pakistan", "PK", None),
         ("DE", "Berlin, Germany", "DE", None),
         ("US", "Austin, Texas, United States", "US", None),
+        ("US", "Tampa, FL", "US", None),
         ("GB", "London, United Kingdom", "GB", None),
         ("AE", "Dubai, United Arab Emirates", "AE", None),
         ("US", "Berlin, Germany", "DE", None),

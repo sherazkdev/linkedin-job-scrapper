@@ -4,6 +4,62 @@ import re
 from dataclasses import dataclass
 
 # ISO alpha-2 codes keyed by normalized tokens (country names, common cities).
+_US_STATE_ABBREV: frozenset[str] = frozenset(
+    {
+        "al",
+        "ak",
+        "az",
+        "ar",
+        "ca",
+        "co",
+        "ct",
+        "de",
+        "dc",
+        "fl",
+        "ga",
+        "hi",
+        "id",
+        "il",
+        "in",
+        "ia",
+        "ks",
+        "ky",
+        "la",
+        "me",
+        "md",
+        "ma",
+        "mi",
+        "mn",
+        "ms",
+        "mo",
+        "mt",
+        "ne",
+        "nv",
+        "nh",
+        "nj",
+        "nm",
+        "ny",
+        "nc",
+        "nd",
+        "oh",
+        "ok",
+        "or",
+        "pa",
+        "ri",
+        "sc",
+        "sd",
+        "tn",
+        "tx",
+        "ut",
+        "vt",
+        "va",
+        "wa",
+        "wv",
+        "wi",
+        "wy",
+    }
+)
+
 _TOKEN_TO_COUNTRY: dict[str, str] = {
     "pakistan": "PK",
     "karachi": "PK",
@@ -19,6 +75,8 @@ _TOKEN_TO_COUNTRY: dict[str, str] = {
     "austin": "US",
     "new york": "US",
     "san francisco": "US",
+    "tampa": "US",
+    "florida": "US",
     "united kingdom": "GB",
     "uk": "GB",
     "england": "GB",
@@ -134,6 +192,8 @@ def _resolve_country_from_text(location: str | None, city: str | None) -> str | 
             continue
         if token in _TOKEN_TO_COUNTRY:
             return _TOKEN_TO_COUNTRY[token]
+        if len(token) == 2 and token in _US_STATE_ABBREV:
+            return "US"
         for key, code in _TOKEN_TO_COUNTRY.items():
             if key in token or token in key:
                 return code
