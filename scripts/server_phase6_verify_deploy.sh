@@ -5,27 +5,26 @@ APP_DIR=/var/www/linkedin-job-scrapper
 cd "$APP_DIR"
 COMPOSE="docker compose -f compose.yaml -f compose.contabo-vps.yaml -p linkedin-scraper"
 PILOT_COMPOSE="docker compose -f compose.yaml -f compose.contabo-vps.yaml -f compose.contabo-pilot-api.yaml -p linkedin-scraper"
-TARGET_SHA="${1:-2a920cf}"
+TARGET_SHA="${1:-}"
 
 echo "STEP git_fetch"
 git fetch origin main
 ORIGIN_SHA=$(git rev-parse origin/main)
 echo "origin_main=${ORIGIN_SHA}"
 
-if ! git cat-file -t "${TARGET_SHA}" >/dev/null 2>&1; then
-  git fetch origin main
-fi
-if [ "$(git rev-parse "${TARGET_SHA}^{commit}")" != "$(git rev-parse origin/main)" ]; then
-  echo "WARN target_sha mismatch; using origin/main"
-  TARGET_SHA="${ORIGIN_SHA}"
-fi
-
 echo "STEP stash_review_only"
 git stash list | head -5 || true
 echo "NOTE not auto-applying stash (pre-phase4-pull may differ from origin)"
 
 CURRENT=$(git rev-parse HEAD)
-if [ "$CURRENT" != "$TARGET_SHA" ] && [ "$CURRENT" != "$ORIGIN_SHA" ]; then
+if [ -n "$TARGET_SHA" ]; then
+  if ! git cat-file -t "${TARGET_SHA}" >/dev/null 2>&1; then
+    git fetch origin main
+  fi
+  if [ "$CURRENT" != "$(git rev-parse "${TARGET_SHA}^{commit}")" ]; then
+    git merge --ff-only "${TARGET_SHA}^{commit}" || git pull --ff-only origin main
+  fi
+elif [ "$CURRENT" != "$ORIGIN_SHA" ]; then
   git pull --ff-only origin main
 fi
 DEPLOYED=$(git rev-parse HEAD)

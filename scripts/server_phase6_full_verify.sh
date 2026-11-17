@@ -2,7 +2,7 @@
 set -euo pipefail
 APP_DIR=/var/www/linkedin-job-scrapper
 cd "$APP_DIR"
-bash scripts/server_phase6_verify_deploy.sh 2a920cf
+bash scripts/server_phase6_verify_deploy.sh
 bash scripts/server_verify_session.sh
 docker exec linkedin-scraper-api-pilot python -m app.cli.promote_pilot validate
 docker exec linkedin-scraper-api-pilot python -m app.cli.promote_pilot reconcile
