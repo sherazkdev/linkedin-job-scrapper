@@ -21,7 +21,10 @@ echo "STEP enable_wave1_targets"
 $COMPOSE run --rm --no-deps worker-linkedin python -m app.cli.wave1_ops enable
 
 echo "STEP start_worker_beat"
-$COMPOSE --profile celery --profile celery-linkedin up -d --force-recreate worker-linkedin beat
+$COMPOSE --profile celery-linkedin up -d --force-recreate worker-linkedin
+$COMPOSE --profile celery --profile celery-linkedin up -d --no-deps beat
+docker stop linkedin-scraper-worker 2>/dev/null || true
+docker rm -f linkedin-scraper-worker 2>/dev/null || true
 
 sleep 8
 docker exec linkedin-scraper-worker-linkedin python -m app.cli.celery_ops ping
