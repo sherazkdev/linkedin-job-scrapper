@@ -5,6 +5,21 @@ APP_DIR=/var/www/linkedin-job-scrapper
 cd "$APP_DIR"
 COMPOSE="docker compose -f compose.yaml -f compose.contabo-vps.yaml -f compose.contabo-wave1.yaml -p linkedin-scraper"
 export GIT_TERMINAL_PROMPT=0
+WAVE1_CONTAINER=linkedin-scraper-worker-linkedin
+WAVE1_FAILED=0
+OBSERVER_PID=""
+
+wave1_activation_cleanup() {
+  if [ "$WAVE1_FAILED" -eq 1 ]; then
+    bash scripts/server_wave1_stop.sh activation_failed
+  fi
+}
+trap wave1_activation_cleanup EXIT
+
+wave1_fail() {
+  WAVE1_FAILED=1
+  exit "${1:-1}"
+}
 
 git pull --ff-only origin main
 echo "DEPLOYED_SHA=$(git rev-parse HEAD)"
@@ -23,20 +38,51 @@ START_ISO=$(date -u +%Y-%m-%dT%H:%M:%S+00:00)
 mkdir -p evidence/wave1_observation
 printf '%s\n' "{\"started_at\":\"${START_ISO}\"}" >evidence/wave1_observation/wave1_started_at.json
 
-echo "STEP start_worker_beat"
+echo "STEP start_worker_only"
 $COMPOSE --profile celery-linkedin up -d --force-recreate worker-linkedin
-$COMPOSE --profile celery --profile celery-linkedin up -d --no-deps beat
 docker stop linkedin-scraper-worker 2>/dev/null || true
 docker rm -f linkedin-scraper-worker 2>/dev/null || true
 
-sleep 8
-docker exec linkedin-scraper-worker-linkedin python -m app.cli.celery_ops ping
-docker exec linkedin-scraper-beat printenv CELERY_WORKER_MONGO_DB_NAME | grep -qx global_jobs_pilot
-docker exec linkedin-scraper-worker-linkedin printenv ALLOW_LIVE_LINKEDIN_COLLECTION | grep -qx true
+echo "STEP wait_worker_ready"
+READY=0
+for i in $(seq 1 40); do
+  if docker exec "$WAVE1_CONTAINER" python -m app.cli.celery_ops worker-ready --timeout 8; then
+    READY=1
+    echo "WORKER_READY poll=$i"
+    break
+  fi
+  if docker logs --tail 40 "$WAVE1_CONTAINER" 2>&1 | grep -qE 'linkedin-worker@[^ ]+ ready\.'; then
+    if docker exec "$WAVE1_CONTAINER" python -m app.cli.celery_ops worker-ready --timeout 12; then
+      READY=1
+      echo "WORKER_READY poll=$i log_marker=ready"
+      break
+    fi
+  fi
+  sleep 3
+done
+[ "$READY" -eq 1 ] || wave1_fail 10
+
+docker exec "$WAVE1_CONTAINER" printenv CELERY_WORKER_MONGO_DB_NAME | grep -qx global_jobs_pilot \
+  || wave1_fail 11
+docker exec "$WAVE1_CONTAINER" printenv ALLOW_LIVE_LINKEDIN_COLLECTION | grep -qx true \
+  || wave1_fail 12
 
 echo "STEP start_observer"
 chmod +x scripts/server_wave1_observer.sh scripts/server_wave1_stop.sh
 mkdir -p evidence/wave1_observation
 nohup bash scripts/server_wave1_observer.sh >evidence/wave1_observation/observer.log 2>&1 &
-echo "OBSERVER_PID=$!"
+OBSERVER_PID=$!
+echo "OBSERVER_PID=${OBSERVER_PID}"
+sleep 2
+kill -0 "$OBSERVER_PID" 2>/dev/null || wave1_fail 13
+
+echo "STEP start_beat"
+$COMPOSE --profile celery --profile celery-linkedin up -d --no-deps beat
+sleep 5
+docker ps --format '{{.Names}}' | grep -qx linkedin-scraper-beat || wave1_fail 14
+docker exec linkedin-scraper-beat printenv CELERY_WORKER_MONGO_DB_NAME | grep -qx global_jobs_pilot \
+  || wave1_fail 15
+
+trap - EXIT
+WAVE1_FAILED=0
 echo "WAVE1_ACTIVATED"

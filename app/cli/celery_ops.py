@@ -9,6 +9,7 @@ from uuid import uuid4
 from app.core.config import get_settings
 from app.core.logging import configure_logging
 from app.workers.celery_app import celery_app
+from app.workers.readiness import evaluate_worker_readiness
 from app.workers.redis_urls import resolve_celery_broker_url
 
 logger = logging.getLogger(__name__)
@@ -18,6 +19,11 @@ def _parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Celery operational utilities")
     sub = parser.add_subparsers(dest="command", required=True)
     sub.add_parser("ping", help="Worker availability via Celery inspect ping")
+    worker_ready = sub.add_parser(
+        "worker-ready",
+        help="Solo-safe readiness (ping, registered, or busy solo worker)",
+    )
+    worker_ready.add_argument("--timeout", type=float, default=8.0)
     sub.add_parser("stats", help="Queue depth and active tasks (sanitized)")
     inspect = sub.add_parser("inspect", help="Raw inspect snapshot (internal)")
     inspect.add_argument("action", choices=["active", "reserved", "scheduled", "stats"])
@@ -66,6 +72,21 @@ def main() -> None:
         ok = bool(response)
         print(json.dumps({"workers": list(response.keys()) if response else [], "ok": ok}))
         raise SystemExit(0 if ok else 1)
+
+    if args.command == "worker-ready":
+        timeout = max(float(args.timeout), 1.0)
+        inspector = celery_app.control.inspect(timeout=timeout)
+        ping = inspector.ping() if inspector else None
+        registered = inspector.registered() if inspector else None
+        active = inspector.active() if inspector else None
+        result = evaluate_worker_readiness(
+            ping=ping,
+            registered=registered,
+            active=active,
+            pool="solo",
+        )
+        print(json.dumps(result))
+        raise SystemExit(0 if result["ok"] else 1)
 
     if args.command == "stats":
         inspector = celery_app.control.inspect(timeout=5.0)

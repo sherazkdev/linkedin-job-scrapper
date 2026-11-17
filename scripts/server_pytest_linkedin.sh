@@ -45,6 +45,9 @@ docker run --rm \
     tests/api/test_country_vs_search_country_filter.py \
     tests/workers/test_fair_dispatch.py \
     tests/workers/test_target_eligibility.py \
+    tests/workers/test_worker_readiness.py \
+    tests/cli/test_celery_ops_worker_ready.py \
+    tests/scripts/test_wave1_activate_script.py \
     tests/collection/test_target_last_run_stats.py \
     tests/scheduling/test_rollout_plan.py \
     tests/scheduling/test_linkedin_daily_cap.py \
