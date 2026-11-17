@@ -85,7 +85,7 @@ async def collect_publication_metrics(
         sort=[("created_at", -1)],
     )
 
-    coverage_cursor = pilot_db[JOBS_COLLECTION].aggregate(
+    coverage_cursor = await pilot_db[JOBS_COLLECTION].aggregate(
         [
             {"$match": ELIGIBLE_QUERY},
             {"$group": {"_id": "$search_country_code", "count": {"$sum": 1}}},
