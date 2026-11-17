@@ -39,9 +39,16 @@ python -m app.cli.promote_pilot rollback --batch-id <id> --backup evidence/promo
 
 ## Rollback
 
-1. Audit document in `global_jobs.promotion_audit_batches`
+1. Audit document in `global_jobs.promotion_audit_batches` (includes `prior_production_document` per update)
 2. **Created** rows: delete where `promotion_batch_id` matches
-3. **Updated** rows: restore fields from backup JSON
+3. **Updated** rows: restore full **pre-promotion production** document from audit or `production_prior_documents` in backup JSON (not pilot-only fields)
+
+## Safety script (VPS, no apply)
+
+```bash
+bash scripts/server_promotion_safety.sh
+bash scripts/server_pytest_linkedin.sh
+```
 
 ## Wave 1
 
