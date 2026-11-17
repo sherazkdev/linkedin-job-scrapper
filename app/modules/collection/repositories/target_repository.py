@@ -162,15 +162,17 @@ class TargetRepository:
         await self._collection.update_one(
             identity,
             {
+                "$set": {
+                    "enabled": enabled,
+                    "priority": priority,
+                    "max_jobs_per_run": max_jobs_per_run,
+                },
                 "$setOnInsert": {
                     "source": source.value,
                     "country_code": code,
                     "country_name": name,
                     "keyword": kw,
                     "search_location": loc_key,
-                    "enabled": enabled,
-                    "priority": priority,
-                    "max_jobs_per_run": max_jobs_per_run,
                     "last_success_at": None,
                     "last_failure_at": None,
                     "last_run_at": None,
@@ -178,7 +180,7 @@ class TargetRepository:
                     "next_eligible_at": None,
                     "lock_owner": None,
                     "locked_until": None,
-                }
+                },
             },
             upsert=True,
         )

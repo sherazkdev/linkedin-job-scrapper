@@ -147,11 +147,19 @@ async def _enable(db_name: str) -> int:
                 priority=100,
                 max_jobs_per_run=WAVE1_MAX_JOBS,
             )
-        enabled = await database["collection_targets"].count_documents(
-            {"source": JobSource.LINKEDIN.value, "enabled": True}
-        )
+        wave_filter = {
+            "source": JobSource.LINKEDIN.value,
+            "enabled": True,
+            "keyword": WAVE1_KEYWORD,
+            "search_location": "",
+        }
+        enabled = await database["collection_targets"].count_documents(wave_filter)
+        enabled_codes = await database["collection_targets"].distinct("country_code", wave_filter)
     if enabled != WAVE1_MAX_TARGETS:
-        raise SystemExit(f"After enable expected {WAVE1_MAX_TARGETS} enabled, got {enabled}")
+        missing = sorted(set(countries) - {str(c) for c in enabled_codes})
+        raise SystemExit(
+            f"After enable expected {WAVE1_MAX_TARGETS} enabled, got {enabled}; missing={missing}"
+        )
     EVIDENCE_DIR.mkdir(parents=True, exist_ok=True)
     stamp = datetime.now(UTC)
     (EVIDENCE_DIR / "wave1_started_at.json").write_text(
