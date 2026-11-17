@@ -48,5 +48,9 @@ async def test_us_search_job_invisible_under_country_code_when_geo_resolved_non_
                 "/api/v1/jobs",
                 params={"source": "linkedin", "search_country_code": "US"},
             )
-    assert by_job.json()["data"]["total"] == 0
-    assert by_search.json()["data"]["total"] >= 1
+    try:
+        assert by_job.json()["data"]["total"] == 0
+        assert by_search.json()["data"]["total"] >= 1
+    finally:
+        async with open_database(settings.mongo_db_name) as db:
+            await db.jobs.delete_many({"sourceJobId": "pilot-us-geo-test"})
