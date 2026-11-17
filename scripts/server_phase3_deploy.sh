@@ -26,7 +26,7 @@ if docker ps -a --format '{{.Names}}' | grep -q linkedin-scraper-beat; then
 fi
 
 echo "STEP api_health"
-curl -fsS "http://127.0.0.1:${LINKEDIN_SCRAPER_API_PORT:-18095}/health" | head -c 500
+curl -fsS "http://127.0.0.1:${LINKEDIN_SCRAPER_API_PORT:-18095}/health/live" | head -c 500
 echo ""
 
 echo "PHASE3_DEPLOY_OK sha=${DEPLOYED_SHORT}"

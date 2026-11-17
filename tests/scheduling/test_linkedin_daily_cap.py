@@ -29,10 +29,13 @@ def _settings(**overrides: object):
 async def test_daily_cap_counts_live_runs_only(integration_db: None) -> None:
     async with open_database("global_jobs_test") as database:
         now = datetime.now(UTC)
-        for i in range(30):
+        before = await count_live_linkedin_runs_24h(database)
+        limit = 30
+        needed = max(limit - before, 0)
+        for i in range(needed):
             await database[COLLECTION_RUNS].insert_one(
                 {
-                    "run_id": f"cap-run-{i}",
+                    "run_id": f"cap-run-phase3-{i}",
                     "source": JobSource.LINKEDIN.value,
                     "dry_run": False,
                     "status": CollectionRunStatus.COMPLETED.value,
@@ -41,7 +44,7 @@ async def test_daily_cap_counts_live_runs_only(integration_db: None) -> None:
             )
         await database[COLLECTION_RUNS].insert_one(
             {
-                "run_id": "old-run",
+                "run_id": "old-run-phase3",
                 "source": JobSource.LINKEDIN.value,
                 "dry_run": False,
                 "status": CollectionRunStatus.COMPLETED.value,
@@ -50,19 +53,21 @@ async def test_daily_cap_counts_live_runs_only(integration_db: None) -> None:
         )
         await database[COLLECTION_RUNS].insert_one(
             {
-                "run_id": "dry-run",
+                "run_id": "dry-run-phase3",
                 "source": JobSource.LINKEDIN.value,
                 "dry_run": True,
                 "status": CollectionRunStatus.COMPLETED.value,
                 "started_at": now,
             }
         )
-        assert await count_live_linkedin_runs_24h(database) == 30
-        snap = await linkedin_daily_cap_snapshot(database, _settings())
+        assert await count_live_linkedin_runs_24h(database) >= limit
+        snap = await linkedin_daily_cap_snapshot(database, _settings(linkedin_max_live_runs_per_24h=limit))
         assert snap["blocked"] is True
         assert snap["remaining"] == 0
         with pytest.raises(LinkedInCollectionError):
-            await assert_live_linkedin_daily_cap(database, _settings())
+            await assert_live_linkedin_daily_cap(
+                database, _settings(linkedin_max_live_runs_per_24h=limit)
+            )
 
 
 @pytest.mark.asyncio

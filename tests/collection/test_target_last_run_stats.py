@@ -14,8 +14,8 @@ async def test_mark_success_persists_last_run_stats(integration_db: None) -> Non
         await repo.ensure_defaults()
         doc = await repo.try_acquire_lock(
             source=JobSource.FIXTURE,
-            country_code="GB",
-            keyword="software engineer",
+            country_code="DE",
+            keyword="backend engineer",
             owner="test-worker",
             lease_seconds=60,
         )
