@@ -12,6 +12,10 @@ async def test_mark_success_persists_last_run_stats(integration_db: None) -> Non
     async with open_database("global_jobs_test") as database:
         repo = TargetRepository(database)
         await repo.ensure_defaults()
+        await database["collection_targets"].update_one(
+            {"source": "fixture", "country_code": "DE", "keyword": "backend engineer"},
+            {"$set": {"lock_owner": None, "locked_until": None}},
+        )
         doc = await repo.try_acquire_lock(
             source=JobSource.FIXTURE,
             country_code="DE",

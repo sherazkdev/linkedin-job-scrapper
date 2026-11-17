@@ -1,4 +1,5 @@
 from datetime import UTC, datetime, timedelta
+from uuid import uuid4
 
 import pytest
 
@@ -32,10 +33,11 @@ async def test_daily_cap_counts_live_runs_only(integration_db: None) -> None:
         before = await count_live_linkedin_runs_24h(database)
         limit = 30
         needed = max(limit - before, 0)
+        tag = uuid4().hex[:12]
         for i in range(needed):
             await database[COLLECTION_RUNS].insert_one(
                 {
-                    "run_id": f"cap-run-phase3-{i}",
+                    "run_id": f"cap-run-phase3-{tag}-{i}",
                     "source": JobSource.LINKEDIN.value,
                     "dry_run": False,
                     "status": CollectionRunStatus.COMPLETED.value,
@@ -44,7 +46,7 @@ async def test_daily_cap_counts_live_runs_only(integration_db: None) -> None:
             )
         await database[COLLECTION_RUNS].insert_one(
             {
-                "run_id": "old-run-phase3",
+                "run_id": f"old-run-phase3-{tag}",
                 "source": JobSource.LINKEDIN.value,
                 "dry_run": False,
                 "status": CollectionRunStatus.COMPLETED.value,
@@ -53,7 +55,7 @@ async def test_daily_cap_counts_live_runs_only(integration_db: None) -> None:
         )
         await database[COLLECTION_RUNS].insert_one(
             {
-                "run_id": "dry-run-phase3",
+                "run_id": f"dry-run-phase3-{tag}",
                 "source": JobSource.LINKEDIN.value,
                 "dry_run": True,
                 "status": CollectionRunStatus.COMPLETED.value,
@@ -74,10 +76,11 @@ async def test_daily_cap_counts_live_runs_only(integration_db: None) -> None:
 async def test_daily_cap_ignored_when_live_off(integration_db: None) -> None:
     async with open_database("global_jobs_test") as database:
         now = datetime.now(UTC)
+        tag = uuid4().hex[:12]
         for i in range(40):
             await database[COLLECTION_RUNS].insert_one(
                 {
-                    "run_id": f"off-{i}",
+                    "run_id": f"off-{tag}-{i}",
                     "source": JobSource.LINKEDIN.value,
                     "dry_run": False,
                     "status": CollectionRunStatus.COMPLETED.value,
