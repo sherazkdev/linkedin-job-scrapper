@@ -347,20 +347,33 @@ class TargetRepository:
         )
         return await cursor.to_list(length=limit)
 
-    async def mark_success(self, target_id: Any, *, cooldown_seconds: int = 0) -> None:
+    async def mark_success(
+        self,
+        target_id: Any,
+        *,
+        cooldown_seconds: int = 0,
+        last_run_stats: dict[str, Any] | None = None,
+    ) -> None:
         now = datetime.now(UTC)
         next_eligible = now if cooldown_seconds <= 0 else now + timedelta(seconds=cooldown_seconds)
-        await self._collection.update_one(
-            {"_id": target_id},
-            {
-                "$set": {
-                    "last_success_at": now,
-                    "last_run_at": now,
-                    "next_eligible_at": next_eligible,
-                    "last_error_summary": None,
-                }
-            },
-        )
+        payload: dict[str, Any] = {
+            "last_success_at": now,
+            "last_run_at": now,
+            "next_eligible_at": next_eligible,
+            "last_error_summary": None,
+        }
+        if last_run_stats:
+            for key in (
+                "collected_count",
+                "created_count",
+                "updated_count",
+                "rejected_count",
+                "duration_seconds",
+                "run_id",
+            ):
+                if key in last_run_stats and last_run_stats[key] is not None:
+                    payload[f"last_run_{key}"] = last_run_stats[key]
+        await self._collection.update_one({"_id": target_id}, {"$set": payload})
 
     async def mark_failure(
         self,
@@ -369,6 +382,7 @@ class TargetRepository:
         error_summary: str | None = None,
         pause_seconds: int = 3600,
         disable_target: bool = False,
+        last_run_stats: dict[str, Any] | None = None,
     ) -> None:
         now = datetime.now(UTC)
         next_eligible = now + timedelta(seconds=max(pause_seconds, 0))
@@ -377,6 +391,11 @@ class TargetRepository:
             "last_run_at": now,
             "next_eligible_at": next_eligible,
         }
+        if last_run_stats:
+            if last_run_stats.get("duration_seconds") is not None:
+                payload["last_run_duration_seconds"] = last_run_stats["duration_seconds"]
+            if last_run_stats.get("run_id"):
+                payload["last_run_run_id"] = last_run_stats["run_id"]
         if error_summary:
             payload["last_error_summary"] = error_summary[:500]
         update: dict[str, Any] = {"$set": payload}

@@ -11,6 +11,7 @@ from app.modules.collection.repositories.checkpoint_repository import (
     normalize_search_location_key,
 )
 from app.modules.jobs.models.job import JobSource
+from app.workers.fair_dispatch import fair_country_round_robin
 from app.workers.policy import allowed_task_sources
 
 logger = logging.getLogger(__name__)
@@ -47,7 +48,13 @@ async def fetch_eligible_targets(
         repo = TargetRepository(database)
         await repo.ensure_defaults()
         dispatch_cap = limit if limit is not None else max(settings.celery_dispatch_max_per_tick, 1)
-        return await repo.list_eligible_targets(allowed_sources=allowed, limit=dispatch_cap)
+        fetch_cap = dispatch_cap
+        if settings.celery_dispatch_fair_country_coverage and dispatch_cap > 0:
+            fetch_cap = min(500, max(dispatch_cap * 40, dispatch_cap))
+        raw = await repo.list_eligible_targets(allowed_sources=allowed, limit=fetch_cap)
+        if settings.celery_dispatch_fair_country_coverage:
+            return fair_country_round_robin(raw, limit=dispatch_cap)
+        return raw[:dispatch_cap]
 
 
 def target_max_jobs(doc: dict[str, Any], settings: Settings) -> int:
@@ -57,12 +64,36 @@ def target_max_jobs(doc: dict[str, Any], settings: Settings) -> int:
     return settings.celery_collection_max_jobs_default
 
 
+async def _linkedin_daily_cap_blocked(settings: Settings) -> tuple[bool, dict[str, Any] | None]:
+    from app.modules.scheduling.linkedin_daily_cap import (
+        linkedin_daily_cap_snapshot,
+        live_linkedin_cap_enforced,
+    )
+
+    if not live_linkedin_cap_enforced(settings):
+        return False, None
+    db_name = settings.celery_worker_mongo_db_name
+    if (
+        db_name == settings.mongo_db_name
+        and not settings.allow_collection_production_db
+        and not db_name.endswith("_test")
+    ):
+        db_name = f"{settings.mongo_db_name}_test"
+    async with open_database(db_name) as database:
+        snapshot = await linkedin_daily_cap_snapshot(database, settings)
+    return bool(snapshot.get("blocked")), snapshot
+
+
 def dispatch_eligible_sync() -> dict[str, Any]:
     """Sync dispatcher: fetch targets in one event loop, enqueue tasks outside it."""
     settings = get_settings()
     targets = asyncio.run(fetch_eligible_targets(settings))
     queued: list[str] = []
     skipped_linkedin = 0
+    skipped_linkedin_daily_cap = 0
+    linkedin_daily_cap: dict[str, Any] | None = None
+
+    cap_blocked, linkedin_daily_cap = asyncio.run(_linkedin_daily_cap_blocked(settings))
 
     from app.workers.tasks import run_collection_task
 
@@ -73,6 +104,9 @@ def dispatch_eligible_sync() -> dict[str, Any]:
         source = JobSource(doc["source"])
         if source == JobSource.LINKEDIN and not settings.celery_allow_linkedin_tasks:
             skipped_linkedin += 1
+            continue
+        if source == JobSource.LINKEDIN and cap_blocked:
+            skipped_linkedin_daily_cap += 1
             continue
         loc_key = normalize_search_location_key(doc.get("search_location"))
         loc_suffix = f":{loc_key}" if loc_key else ""
@@ -114,4 +148,6 @@ def dispatch_eligible_sync() -> dict[str, Any]:
         "queued_count": len(queued),
         "queued_keys": queued,
         "skipped_linkedin": skipped_linkedin,
+        "skipped_linkedin_daily_cap": skipped_linkedin_daily_cap,
+        "linkedin_daily_cap": linkedin_daily_cap,
     }

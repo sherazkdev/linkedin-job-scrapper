@@ -102,7 +102,27 @@ def main() -> None:
         raise SystemExit(0)
 
     if args.command == "pilot-dispatch-once":
+        import asyncio
+
+        from app.database.temp_database import open_database
+        from app.modules.scheduling.linkedin_daily_cap import (
+            assert_live_linkedin_daily_cap,
+            live_linkedin_cap_enforced,
+        )
         from app.workers.tasks import run_collection_task
+
+        if args.source == "linkedin" and live_linkedin_cap_enforced(settings):
+
+            async def _check_cap() -> None:
+                db_name = settings.celery_worker_mongo_db_name
+                async with open_database(db_name) as database:
+                    await assert_live_linkedin_daily_cap(database, settings)
+
+            try:
+                asyncio.run(_check_cap())
+            except Exception as exc:
+                print(json.dumps({"ok": False, "error": str(exc)}))
+                raise SystemExit(22) from exc
 
         suffix = uuid4().hex[:12]
         task_id = (

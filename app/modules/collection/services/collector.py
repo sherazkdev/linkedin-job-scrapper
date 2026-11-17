@@ -142,6 +142,7 @@ class JobCollector:
             dry_run=False,
             search_location=search_location,
         )
+        run_started = time.monotonic()
 
         try:
             result = await self._fetch_and_process(
@@ -154,8 +155,19 @@ class JobCollector:
                 data_provenance=data_provenance,
                 search_location=search_location,
             )
+            duration_seconds = round(time.monotonic() - run_started, 2)
+            stats_dump = stats.model_dump()
             await self._targets.mark_success(
-                target_id, cooldown_seconds=self._target_cooldown_seconds
+                target_id,
+                cooldown_seconds=self._target_cooldown_seconds,
+                last_run_stats={
+                    "collected_count": stats_dump.get("collected_count"),
+                    "created_count": stats_dump.get("created_count"),
+                    "updated_count": stats_dump.get("updated_count"),
+                    "rejected_count": stats_dump.get("rejected_count"),
+                    "duration_seconds": duration_seconds,
+                    "run_id": run.run_id,
+                },
             )
             await self._run_service.complete(
                 run.run_id,
@@ -188,11 +200,16 @@ class JobCollector:
                     exc.state.value,
                     disable_target,
                 )
+            duration_seconds = round(time.monotonic() - run_started, 2)
             await self._targets.mark_failure(
                 target_id,
                 error_summary=error_summary,
                 pause_seconds=pause_seconds,
                 disable_target=disable_target,
+                last_run_stats={
+                    "duration_seconds": duration_seconds,
+                    "run_id": run.run_id,
+                },
             )
             await self._run_service.complete(
                 run.run_id,

@@ -10,6 +10,8 @@ from app.database.collection_indexes import COLLECTION_RUNS, COLLECTION_TARGETS
 from app.database.indexes import JOBS_COLLECTION
 from app.modules.collection.models.enums import CollectionRunStatus
 from app.modules.collection.repositories.target_repository import TargetRepository
+from app.modules.scheduling.linkedin_daily_cap import linkedin_daily_cap_snapshot
+from app.modules.scheduling.rollout import estimate_daily_throughput, scheduling_architecture_snapshot
 from app.workers.policy import allowed_task_sources
 
 
@@ -83,6 +85,16 @@ async def build_operations_snapshot(database: AsyncDatabase[Any]) -> dict[str, A
         ):
             stats_totals[key] += int(run.get(field) or 0)
 
+    scheduling = scheduling_architecture_snapshot(settings)
+    try:
+        throughput = estimate_daily_throughput(settings)
+    except FileNotFoundError:
+        throughput = None
+    try:
+        linkedin_cap = await linkedin_daily_cap_snapshot(database, settings)
+    except Exception:
+        linkedin_cap = None
+
     return {
         "generated_at": now.isoformat(),
         "jobs": {
@@ -101,6 +113,14 @@ async def build_operations_snapshot(database: AsyncDatabase[Any]) -> dict[str, A
                 (sum(durations_ms) / len(durations_ms)) if durations_ms else None
             ),
             "last_success_per_target": last_success[:25],
+        },
+        "scheduling": {
+            **scheduling,
+            "throughput_estimate": throughput,
+            "linkedin_daily_cap": linkedin_cap,
+            "scheduling_lag_hint": (
+                "eligible_pending minus recent completions; use celery_ops queue_depth between ticks"
+            ),
         },
     }
 

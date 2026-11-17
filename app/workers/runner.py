@@ -11,6 +11,7 @@ from app.modules.collection.linkedin.errors import LinkedInCollectionError
 from app.modules.collection.repositories.target_repository import TargetRepository
 from app.modules.collection.services.collector import CollectionLockError
 from app.modules.jobs.models.job import JobDataProvenance, JobSource
+from app.modules.scheduling.linkedin_daily_cap import assert_live_linkedin_daily_cap
 from app.workers.policy import assert_source_allowed
 
 logger = logging.getLogger(__name__)
@@ -53,6 +54,8 @@ async def _collect_async(
     else:
         provenance = JobDataProvenance.SYNTHETIC_FIXTURE
     async with open_database(db_name) as database:
+        if source == JobSource.LINKEDIN:
+            await assert_live_linkedin_daily_cap(database, settings)
         target_repo = TargetRepository(database)
         if source == JobSource.FIXTURE:
             await target_repo.ensure_defaults()

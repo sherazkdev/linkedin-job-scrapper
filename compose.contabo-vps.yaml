@@ -15,7 +15,7 @@ name: linkedin-scraper
 services:
   api:
     container_name: linkedin-scraper-api
-    ports:
+    ports: !override
       - "127.0.0.1:${LINKEDIN_SCRAPER_API_PORT:-18095}:8000"
 
   api-test:

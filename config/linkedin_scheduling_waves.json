@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "purpose": "Staged worldwide LinkedIn collection rollout (configuration only — does not enable targets or Beat).",
+  "manifest_reference": "config/global_jobs_40_countries_50_keywords_manifest.json",
+  "measurements": {
+    "source": "Phase 2 pilot batch (5 countries, max_jobs=1–5)",
+    "seconds_per_run_p50": 35,
+    "seconds_per_run_p90": 90,
+    "seconds_per_run_conservative_planning": 60,
+    "linkedin_worker_concurrency_recommended": 1,
+    "dispatch_max_per_tick_recommended": 1,
+    "beat_interval_seconds_recommended": 120,
+    "target_cooldown_seconds_recommended": 3600,
+    "recommended_operational_runs_per_day": 30
+  },
+  "waves": [
+    {
+      "id": 0,
+      "name": "pilot_hold",
+      "description": "Keep existing pilot targets only; Beat and live LinkedIn OFF.",
+      "max_enabled_linkedin_targets": 5,
+      "approval_required": false
+    },
+    {
+      "id": 1,
+      "name": "global_software_engineer",
+      "description": "40 countries × keyword software engineer (country-wide search).",
+      "keywords": ["software engineer"],
+      "max_enabled_linkedin_targets": 40,
+      "approval_required": true
+    },
+    {
+      "id": 2,
+      "name": "tier_a_keywords",
+      "description": "Top 5 high-signal keywords across all 40 countries.",
+      "keywords": [
+        "software engineer",
+        "data engineer",
+        "product manager",
+        "devops engineer",
+        "machine learning engineer"
+      ],
+      "max_enabled_linkedin_targets": 200,
+      "approval_required": true
+    },
+    {
+      "id": 3,
+      "name": "half_manifest",
+      "description": "25 keywords × 40 countries.",
+      "max_enabled_linkedin_targets": 1000,
+      "approval_required": true
+    },
+    {
+      "id": 4,
+      "name": "full_manifest",
+      "description": "Full 2000 manifest pairs — only after sustained error rate and LinkedIn health checks.",
+      "max_enabled_linkedin_targets": 2000,
+      "approval_required": true
+    }
+  ],
+  "readiness_criteria": [
+    "VPS pytest linkedin suite green on deployed SHA",
+    "Pilot DB job count unchanged or monotonically grown (no destructive migration)",
+    "Redis queue depth stable (<5) between Beat ticks under load test",
+    "Failed-run rate <5% over 24h in active wave",
+    "No VERIFICATION_REQUIRED / AUTHENTICATION_REQUIRED spikes in last 24h",
+    "Worker memory and CPU within VPS budget (documented in PHASE_3 doc)"
+  ],
+  "rollback_steps": [
+    "Set ALLOW_LIVE_LINKEDIN_COLLECTION=false and CELERY_ALLOW_LINKEDIN_TASKS=false on worker",
+    "Stop beat container or remove celery profile",
+    "Disable enabled LinkedIn collection_targets beyond pilot hold (operator CLI)",
+    "Purge stale Redis collection queue only if no tasks should complete (optional)",
+    "Preserve global_jobs_pilot and production global_jobs DBs — no drop"
+  ]
+}

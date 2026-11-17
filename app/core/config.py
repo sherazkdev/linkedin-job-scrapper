@@ -197,6 +197,17 @@ class Settings(BaseSettings):
         default=None,
         alias="CELERY_DISPATCH_SOURCE_ALLOWLIST",
     )
+    celery_dispatch_fair_country_coverage: bool = Field(
+        default=True,
+        alias="CELERY_DISPATCH_FAIR_COUNTRY_COVERAGE",
+    )
+    linkedin_max_live_runs_per_24h: int = Field(
+        default=30,
+        ge=0,
+        le=500,
+        alias="LINKEDIN_MAX_LIVE_RUNS_PER_24H",
+        description="Hard cap on live LinkedIn collection runs started in any rolling 24h window.",
+    )
 
     internal_ops_token: str | None = Field(default=None, alias="INTERNAL_OPS_TOKEN")
     job_stale_after_days: int = Field(
