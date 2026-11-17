@@ -11,6 +11,7 @@ from pathlib import Path
 from app.core.config import Settings, get_settings
 from app.core.logging import configure_logging
 from app.database.temp_database import open_database
+from app.modules.promotion.monitoring import collect_publication_metrics
 from app.modules.promotion.pilot_to_production import (
     PRODUCTION_DB_NAME,
     PILOT_DB_NAME,
@@ -24,6 +25,11 @@ from app.modules.promotion.pilot_to_production import (
     validate_eligible_jobs,
     write_backup,
 )
+from app.modules.promotion.publication_sync import (
+    analyze_publication_sync,
+    apply_production_deprecations,
+)
+from app.modules.promotion.sync_lock import promotion_sync_lock
 
 logger = logging.getLogger(__name__)
 
@@ -43,6 +49,26 @@ def _parse_args() -> argparse.Namespace:
     rollback = sub.add_parser("rollback", help="Rollback a promotion batch in production")
     rollback.add_argument("--batch-id", required=True)
     rollback.add_argument("--backup", type=Path, required=True)
+    sub.add_parser(
+        "reconcile",
+        help="Pilot vs production sync plan (create/update/deprecate counts, no writes)",
+    )
+    sub.add_parser("monitor", help="Freshness, sync lag, collection failures (read-only)")
+    dep = sub.add_parser(
+        "deprecate-stale",
+        help="Apply STALE to prod jobs not in pilot eligibility (requires ALLOW_…_PROMOTION)",
+    )
+    dep.add_argument("--dry-run", action="store_true", help="Print IDs only, no writes")
+    sync = sub.add_parser(
+        "sync-apply",
+        help="Locked apply of eligible pilot jobs (requires ALLOW_…_PROMOTION; optional deprecate)",
+    )
+    sync.add_argument("--backup", type=Path, default=None)
+    sync.add_argument(
+        "--deprecate",
+        action="store_true",
+        help="Also apply safe deprecations from reconcile plan",
+    )
     return parser.parse_args()
 
 
@@ -141,6 +167,101 @@ async def _run(args: argparse.Namespace) -> int:
                 prod, batch_id=args.batch_id, backup_path=args.backup
             )
             print(json.dumps(result, indent=2))
+            return 0
+
+        if args.command == "reconcile":
+            report = await analyze_publication_sync(pilot, prod, enforce_db_names=True)
+            report["pilot_db"] = pilot_db_name
+            report["production_db"] = prod_db_name
+            report["promotion_apply_allowed"] = settings.allow_pilot_to_production_promotion
+            print(json.dumps(report, indent=2, default=str))
+            return 0
+
+        if args.command == "monitor":
+            report = await collect_publication_metrics(pilot_db=pilot, production_db=prod)
+            report["pilot_db"] = pilot_db_name
+            report["production_db"] = prod_db_name
+            print(json.dumps(report, indent=2, default=str))
+            return 0
+
+        if args.command == "deprecate-stale":
+            plan = await analyze_publication_sync(pilot, prod, enforce_db_names=True)
+            ids = plan.get("sync_plan", {}).get("would_deprecate_ids") or []
+            if args.dry_run:
+                print(
+                    json.dumps(
+                        {
+                            "would_deprecate_count": len(ids),
+                            "ids": ids,
+                            "reasons": plan.get("sync_plan", {}).get("would_deprecate_reasons"),
+                        },
+                        indent=2,
+                    )
+                )
+                return 0
+            _assert_promotion_allowed(settings)
+            try:
+                with promotion_sync_lock():
+                    batch_id = new_batch_id()
+                    result = await apply_production_deprecations(
+                        prod, source_job_ids=ids, batch_id=batch_id
+                    )
+            except BlockingIOError as exc:
+                raise SystemExit(str(exc)) from exc
+            print(json.dumps(result, indent=2, default=str))
+            return 0
+
+        if args.command == "sync-apply":
+            _assert_promotion_allowed(settings)
+            plan = await analyze_publication_sync(pilot, prod, enforce_db_names=True)
+            validation = plan.get("validation") or {}
+            if not validation.get("validation_ok", True):
+                raise SystemExit("Refused sync-apply: pilot validation failed")
+            docs = await fetch_eligible(pilot)
+            if not docs:
+                raise SystemExit("Refused sync-apply: no eligible pilot jobs")
+            try:
+                with promotion_sync_lock():
+                    batch_id = new_batch_id()
+                    ids = [str(d["sourceJobId"]) for d in docs if d.get("sourceJobId")]
+                    prod_prior = await fetch_production_snapshots(prod, ids)
+                    backup_path = args.backup or DEFAULT_BACKUP_DIR / f"{batch_id}.json"
+                    await write_backup(
+                        docs,
+                        backup_path,
+                        batch_id=batch_id,
+                        production_prior_docs=prod_prior,
+                        meta={"type": "sync_apply"},
+                    )
+                    apply_result = await apply_promotion(
+                        pilot_db=pilot,
+                        production_db=prod,
+                        batch_id=batch_id,
+                        docs=docs,
+                        enforce_db_names=True,
+                    )
+                    apply_result["backup_path"] = str(backup_path)
+                    dep_result = None
+                    if args.deprecate:
+                        dep_ids = plan.get("sync_plan", {}).get("would_deprecate_ids") or []
+                        if dep_ids:
+                            dep_batch = new_batch_id()
+                            dep_result = await apply_production_deprecations(
+                                prod, source_job_ids=dep_ids, batch_id=dep_batch
+                            )
+                    print(
+                        json.dumps(
+                            {
+                                "batch_id": batch_id,
+                                "apply": apply_result,
+                                "deprecation": dep_result,
+                            },
+                            indent=2,
+                            default=str,
+                        )
+                    )
+            except BlockingIOError as exc:
+                raise SystemExit(str(exc)) from exc
             return 0
 
     return 1

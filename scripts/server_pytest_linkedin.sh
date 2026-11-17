@@ -48,6 +48,9 @@ docker run --rm \
     tests/scheduling/test_rollout_plan.py \
     tests/scheduling/test_linkedin_daily_cap.py \
     tests/promotion/test_pilot_to_production.py \
+    tests/promotion/test_publication_sync_pipeline.py \
+    tests/promotion/test_deprecation_safety.py \
+    tests/api/test_jobs_list_contract.py \
     -q --tb=short
 
 echo "PYTEST_LINKEDIN_OK"
