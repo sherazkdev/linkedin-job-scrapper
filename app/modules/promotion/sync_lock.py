@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import fcntl
 import os
 from contextlib import contextmanager
 from pathlib import Path
@@ -20,11 +21,9 @@ def promotion_sync_lock(
     lock_path = path or DEFAULT_LOCK_PATH
     lock_path.parent.mkdir(parents=True, exist_ok=True)
     with open(lock_path, "a+", encoding="utf-8") as handle:
+        flag = fcntl.LOCK_EX if blocking else (fcntl.LOCK_EX | fcntl.LOCK_NB)
         try:
-            if blocking:
-                os.flock(handle.fileno(), os.LOCK_EX)
-            else:
-                os.flock(handle.fileno(), os.LOCK_EX | os.LOCK_NB)
+            fcntl.flock(handle.fileno(), flag)
         except OSError as exc:
             raise BlockingIOError(
                 "Another promotion sync is in progress; refused overlapping apply"
@@ -34,4 +33,4 @@ def promotion_sync_lock(
         try:
             yield
         finally:
-            os.flock(handle.fileno(), os.LOCK_UN)
+            fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
