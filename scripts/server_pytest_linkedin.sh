@@ -48,6 +48,7 @@ docker run --rm \
     tests/workers/test_worker_readiness.py \
     tests/cli/test_celery_ops_worker_ready.py \
     tests/scripts/test_wave1_activate_script.py \
+    tests/scripts/test_production_ops_scripts.py \
     tests/collection/test_target_last_run_stats.py \
     tests/scheduling/test_rollout_plan.py \
     tests/scheduling/test_linkedin_daily_cap.py \
