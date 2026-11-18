@@ -30,14 +30,19 @@ docker exec linkedin-scraper-api printenv MONGO_DB_NAME | grep -qx global_jobs \
 docker exec linkedin-scraper-api-pilot printenv MONGO_DB_NAME | grep -qx global_jobs_pilot \
   || { log "ERROR pilot api db"; exit 2; }
 
-docker exec linkedin-scraper-api-pilot python -m app.cli.promote_pilot reconcile \
-  >"$RECONCILE_JSON" || { log "ERROR reconcile failed"; exit 3; }
+docker exec -e LOG_LEVEL=ERROR linkedin-scraper-api-pilot \
+  python -m app.cli.promote_pilot reconcile >"$RECONCILE_JSON" 2>/dev/null \
+  || { log "ERROR reconcile failed"; exit 3; }
 
 read -r VALIDATION_OK CREATE UPDATE DEPRECATE <<EOF
 $(python3 -c "
 import json
 from pathlib import Path
-d=json.loads(Path('$RECONCILE_JSON').read_text(encoding='utf-8'))
+raw = Path('$RECONCILE_JSON').read_text(encoding='utf-8')
+start = raw.find('{')
+if start < 0:
+    raise SystemExit('no_json')
+d=json.loads(raw[start:])
 v=d.get('validation') or {}
 sp=d.get('sync_plan') or {}
 print(int(bool(v.get('validation_ok'))), int(sp.get('would_create_count') or 0), int(sp.get('would_update_count') or 0), int(sp.get('would_deprecate_count') or 0))
@@ -59,9 +64,10 @@ BACKUP="evidence/promotion_backups/scheduled-${STAMP}.json"
 log "STEP sync_apply backup=${BACKUP}"
 docker exec \
   -e ALLOW_PILOT_TO_PRODUCTION_PROMOTION=true \
+  -e LOG_LEVEL=ERROR \
   linkedin-scraper-api-pilot \
   python -m app.cli.promote_pilot sync-apply --backup "$BACKUP" \
-  >>"$LOG" 2>&1 || { log "ERROR sync_apply failed"; exit 5; }
+  >>"$LOG" 2>&1 || { log "ERROR sync_apply failed"; tail -20 "$LOG"; exit 5; }
 
 log "STEP public_api_verify"
 bash scripts/server_public_api_verify_promotion.sh >>"$LOG" 2>&1 || { log "ERROR public verify failed"; exit 6; }
