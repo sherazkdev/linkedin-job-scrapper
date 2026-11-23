@@ -4,7 +4,7 @@
 
 - `linkedin:authentication_required` on collection runs
 - Observer / Wave stop for auth failures
-- `python -m app.cli.linkedin_session status` shows missing, unreadable, or zero cookies
+- `python -m app.cli.linkedin_session status` shows poor `offline_quality` (missing, corrupt, empty, or unlikely_authenticated)
 
 ## What failures mean
 
@@ -31,9 +31,10 @@ docker exec linkedin-scraper-worker-linkedin python -m app.cli.linkedin_session 
 2. On a **trusted workstation**, sign in to LinkedIn in a supported browser with the service account.
 3. Export Playwright storage state to `storage_state.json` (project session transfer tooling — `scripts/vps_session_transfer.py` when configured).
 4. Copy into Docker volume `linkedin_scraper_linkedin_auth` at `/data/linkedin/storage_state.json` with correct ownership for `browseruser`/`workeruser`.
-5. Re-run `server_verify_session.sh` — expect `cookie_count` &gt; 0, `readable: true`.
-6. Run a **single** permitted pilot collect (`server_pilot_once.sh` pattern) — **only after explicit approval** to resume live collection.
-7. If another `authentication_required` occurs, **do not** loop retries; stop and re-inspect session/challenge.
+5. Re-run `server_verify_session.sh` and `python -m app.cli.linkedin_session status --json` — expect `offline_quality=likely_authenticated` (cookie count alone is not proof of access).
+6. Optional one-shot online check (explicit consent): `status --verify-online --confirm-live-network`.
+7. Run a **single** permitted pilot collect (`server_pilot_once.sh` pattern) — **only after explicit approval** to resume live collection.
+8. If another `authentication_required` occurs, **do not** loop retries; stop and re-inspect session/challenge. Copy `session_epoch_at.json` to `evidence/wave1_observation/` after refresh to reset observer auth-fail windows.
 
 ## Wave 1 auth failure timeline (reference)
 

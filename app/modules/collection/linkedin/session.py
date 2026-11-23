@@ -7,6 +7,10 @@ from pathlib import Path
 from typing import Any
 
 from app.modules.collection.linkedin.errors import LinkedInCollectionError, LinkedInFailureState
+from app.modules.collection.linkedin.session_validation import (
+    OfflineSessionQuality,
+    inspect_offline_storage_state,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -19,6 +23,24 @@ class LinkedInSessionStatus:
     cookie_count: int
     updated_at: datetime | None
     message: str
+    offline_quality: str
+    has_li_at: bool
+    online_verified: bool
+    claims_authenticated: bool
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "exists": self.exists,
+            "path": self.path,
+            "readable": self.readable,
+            "cookie_count": self.cookie_count,
+            "updated_at": self.updated_at.isoformat() if self.updated_at else None,
+            "message": self.message,
+            "offline_quality": self.offline_quality,
+            "has_li_at": self.has_li_at,
+            "online_verified": self.online_verified,
+            "claims_authenticated": self.claims_authenticated,
+        }
 
 
 class LinkedInSessionStore:
@@ -48,49 +70,45 @@ class LinkedInSessionStore:
         logger.info("LinkedIn session state removed")
         return True
 
-    def status(self) -> LinkedInSessionStatus:
-        if not self._path.exists():
-            return LinkedInSessionStatus(
-                exists=False,
-                path=str(self._path),
-                readable=False,
-                cookie_count=0,
-                updated_at=None,
-                message="No stored session. Manual login required.",
-            )
-        try:
-            raw = self._path.read_text(encoding="utf-8")
-            payload: dict[str, Any] = json.loads(raw)
-            cookies = payload.get("cookies", [])
-            mtime = datetime.fromtimestamp(self._path.stat().st_mtime, tz=UTC)
-            return LinkedInSessionStatus(
-                exists=True,
-                path=str(self._path),
-                readable=True,
-                cookie_count=len(cookies),
-                updated_at=mtime,
-                message="Stored session present.",
-            )
-        except (OSError, json.JSONDecodeError):
-            return LinkedInSessionStatus(
-                exists=True,
-                path=str(self._path),
-                readable=False,
-                cookie_count=0,
-                updated_at=None,
-                message="Session file unreadable or corrupt.",
-            )
+    def status(self, *, online_verified: bool = False) -> LinkedInSessionStatus:
+        report = inspect_offline_storage_state(self._path)
+        claims = (
+            report.quality == OfflineSessionQuality.LIKELY_AUTHENTICATED and online_verified
+        )
+        msg = report.message
+        if report.exists and not online_verified:
+            msg += " (offline only — cookie count does not prove live access)"
+        if online_verified and report.quality != OfflineSessionQuality.LIKELY_AUTHENTICATED:
+            msg = "Online check completed but offline file quality is insufficient."
+            claims = False
+        return LinkedInSessionStatus(
+            exists=report.exists,
+            path=report.path,
+            readable=report.readable,
+            cookie_count=report.cookie_count,
+            updated_at=report.updated_at,
+            message=msg,
+            offline_quality=report.quality.value,
+            has_li_at=report.has_li_at,
+            online_verified=online_verified,
+            claims_authenticated=claims,
+        )
 
     def require_session(self) -> Path:
-        status = self.status()
-        if not status.exists or not status.readable:
+        report = inspect_offline_storage_state(self._path)
+        if not report.exists or not report.readable:
             raise LinkedInCollectionError(
                 LinkedInFailureState.AUTHENTICATION_REQUIRED,
                 "LinkedIn authentication required (no valid storage state).",
             )
-        if status.cookie_count == 0:
+        if report.quality in {OfflineSessionQuality.EMPTY, OfflineSessionQuality.CORRUPT}:
             raise LinkedInCollectionError(
                 LinkedInFailureState.SESSION_EXPIRED,
-                "LinkedIn session appears empty.",
+                "LinkedIn session file empty or corrupt.",
+            )
+        if report.quality == OfflineSessionQuality.UNLIKELY_AUTHENTICATED:
+            raise LinkedInCollectionError(
+                LinkedInFailureState.AUTHENTICATION_REQUIRED,
+                "LinkedIn session missing auth cookies (login likely incomplete).",
             )
         return self._path

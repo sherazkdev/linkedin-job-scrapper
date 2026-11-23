@@ -6,6 +6,7 @@ import random
 from celery import Task
 
 from app.core.config import get_settings
+from app.modules.collection.linkedin.auth_circuit import decision_from_linkedin_error
 from app.modules.collection.linkedin.errors import LinkedInCollectionError
 from app.modules.collection.services.collector import CollectionLockError
 from app.workers.celery_app import celery_app
@@ -86,10 +87,13 @@ def run_collection_task(
         )
         raise
     except LinkedInCollectionError as exc:
+        circuit = decision_from_linkedin_error(exc)
         logger.error(
-            "LinkedIn collection failed state=%s retryable=%s",
+            "LinkedIn collection failed state=%s retryable=%s circuit=%s pause=%s",
             exc.state.value,
             exc.retryable,
+            circuit.mode.value,
+            circuit.pause_live_requests,
         )
         raise RuntimeError(f"linkedin:{exc.state.value}") from exc
     except Exception as exc:
