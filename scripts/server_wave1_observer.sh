@@ -46,9 +46,18 @@ const used=pilot.collection_runs.countDocuments({
 });
 print(JSON.stringify({cap_used:used,cap_limit:30,cap_blocked:used>=30}));
 ")
+  SESSION_EPOCH_FILE=evidence/wave1_observation/session_epoch_at.json
+  AUTH_SINCE="new Date(Date.now()-${AUTH_WINDOW_SECS}*1000)"
+  if [ -f "$SESSION_EPOCH_FILE" ]; then
+    EPOCH_AT=$(python3 -c "import json,sys; d=json.load(open(sys.argv[1])); print(d.get('session_epoch_at',''))" "$SESSION_EPOCH_FILE" 2>/dev/null || true)
+    if [ -n "$EPOCH_AT" ]; then
+      AUTH_SINCE="new Date('${EPOCH_AT}')"
+      log "AUTH_WINDOW using session_epoch_at=${EPOCH_AT}"
+    fi
+  fi
   AUTH_FAILS=$(mongo_eval "
 const pilot=db.getSiblingDB('${PILOT_DB}');
-const since=new Date(Date.now()-${AUTH_WINDOW_SECS}*1000);
+const since=${AUTH_SINCE};
 print(pilot.collection_runs.countDocuments({
   source:'linkedin',dry_run:false,started_at:{\$gte:since},status:'failed',
   \$or:[

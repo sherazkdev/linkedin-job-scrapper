@@ -10,6 +10,8 @@ def _require_scripts() -> None:
     needed = [
         _REPO / "scripts/server_wave1_observer.sh",
         _REPO / "scripts/server_publication_sync_scheduled.sh",
+        _REPO / "scripts/server_job_expiry_scheduled.sh",
+        _REPO / "scripts/server_publication_lifecycle_scheduled.sh",
         _REPO / "scripts/server_install_production_ops_cron.sh",
     ]
     if not all(p.is_file() for p in needed):
@@ -39,3 +41,19 @@ def test_production_ops_cron_schedule(_require_scripts: None) -> None:
     assert "30 */6 * * *" in text
     assert "server_wave1_observer_check.sh" in text
     assert "server_publication_sync_scheduled.sh" in text
+
+
+def test_job_expiry_scheduled_gates(_require_scripts: None) -> None:
+    text = (_REPO / "scripts/server_job_expiry_scheduled.sh").read_text(encoding="utf-8")
+    assert "ALLOW_SCHEDULED_JOB_EXPIRY" in text
+    assert "flock" in text
+    assert "expire-public" in text
+    assert "JOB_EXPIRY_APPLY" in text
+
+
+def test_lifecycle_sync_scheduled_gates(_require_scripts: None) -> None:
+    text = (_REPO / "scripts/server_publication_lifecycle_scheduled.sh").read_text(encoding="utf-8")
+    assert "lifecycle-preview" in text
+    assert "ALLOW_SCHEDULED_LIFECYCLE_PUBLICATION" in text
+    assert "ALLOW_MASS_LIFECYCLE_DEPRECATION" in text
+    assert "flock" in text

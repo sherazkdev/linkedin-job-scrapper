@@ -146,10 +146,8 @@ def main() -> None:
                 raise SystemExit(22) from exc
 
         suffix = uuid4().hex[:12]
-        task_id = (
-            f"pilot-{args.source}-{args.country_code}-{args.keyword.replace(' ', '_')}"
-            f"-{suffix}"
-        )
+        slug_kw = str(args.keyword).strip().lower().replace(" ", "_")
+        task_id = f"pilot-{args.source}-{args.country_code}-{slug_kw}-{suffix}"
         run_collection_task.apply_async(
             kwargs={
                 "source": args.source,

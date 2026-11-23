@@ -227,6 +227,31 @@ class Settings(BaseSettings):
         alias="JOB_STALE_AFTER_DAYS",
         description="0 disables automatic stale listing; operator CLI only",
     )
+    job_public_listing_max_age_days: int = Field(
+        default=7,
+        ge=0,
+        le=90,
+        alias="JOB_PUBLIC_LISTING_MAX_AGE_DAYS",
+        description="Hide active jobs from default public API after this many days (posted_at or first_seen_at).",
+    )
+    linkedin_max_jobs_per_run_hard_cap: int = Field(
+        default=15,
+        ge=1,
+        le=50,
+        alias="LINKEDIN_MAX_JOBS_PER_RUN_HARD_CAP",
+        description="Upper bound for per-target max_jobs_per_run on live LinkedIn dispatch.",
+    )
+    collection_no_new_jobs_alert_hours: int = Field(
+        default=48,
+        ge=1,
+        alias="COLLECTION_NO_NEW_JOBS_ALERT_HOURS",
+    )
+    job_expiry_batch_size: int = Field(
+        default=200,
+        ge=1,
+        le=2000,
+        alias="JOB_EXPIRY_BATCH_SIZE",
+    )
 
     @field_validator("log_level")
     @classmethod

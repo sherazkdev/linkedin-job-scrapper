@@ -58,7 +58,11 @@ def escape_regex(value: str) -> str:
     return re.escape(value)
 
 
-def build_mongo_query(filters: JobListFilters) -> dict:
+def build_mongo_query(
+    filters: JobListFilters,
+    *,
+    public_listing_max_age_days: int | None = None,
+) -> dict:
     """Build a safe MongoDB filter (no user-controlled operators)."""
     clauses: list[dict] = []
 
@@ -112,16 +116,34 @@ def build_mongo_query(filters: JobListFilters) -> dict:
     elif filters.data_provenance is not None:
         clauses.append({"data_provenance": filters.data_provenance.value})
 
+    if (
+        public_listing_max_age_days is not None
+        and public_listing_max_age_days > 0
+        and (filters.status or JobStatus.ACTIVE) == JobStatus.ACTIVE
+    ):
+        from app.modules.jobs.public_visibility import mongo_public_max_age_clause
+
+        clauses.append(mongo_public_max_age_clause(max_age_days=public_listing_max_age_days))
+
     if len(clauses) == 1:
         return clauses[0]
     return {"$and": clauses}
 
 
 def sort_spec(sort: JobSort) -> list[tuple[str, int]]:
+    """Deterministic ordering with stable pagination tie-breaker."""
     mapping = {
-        JobSort.POSTED_AT_DESC: [("posted_at", -1)],
-        JobSort.POSTED_AT_ASC: [("posted_at", 1)],
-        JobSort.LAST_SEEN_DESC: [("last_seen_at", -1)],
-        JobSort.TITLE_ASC: [("title", 1)],
+        JobSort.POSTED_AT_DESC: [
+            ("posted_at", -1),
+            ("first_seen_at", -1),
+            ("sourceJobId", -1),
+        ],
+        JobSort.POSTED_AT_ASC: [
+            ("posted_at", 1),
+            ("first_seen_at", 1),
+            ("sourceJobId", 1),
+        ],
+        JobSort.LAST_SEEN_DESC: [("last_seen_at", -1), ("sourceJobId", -1)],
+        JobSort.TITLE_ASC: [("title", 1), ("sourceJobId", 1)],
     }
     return mapping[sort]

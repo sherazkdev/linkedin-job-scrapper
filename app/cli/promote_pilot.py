@@ -25,9 +25,11 @@ from app.modules.promotion.pilot_to_production import (
     validate_eligible_jobs,
     write_backup,
 )
+from app.modules.promotion.lifecycle_sync_safety import assess_deprecation_plan
 from app.modules.promotion.publication_sync import (
     analyze_publication_sync,
     apply_production_deprecations,
+    fetch_production_published,
 )
 from app.modules.promotion.sync_lock import promotion_sync_lock
 
@@ -59,6 +61,11 @@ def _parse_args() -> argparse.Namespace:
         help="Apply STALE to prod jobs not in pilot eligibility (requires ALLOW_…_PROMOTION)",
     )
     dep.add_argument("--dry-run", action="store_true", help="Print IDs only, no writes")
+    dep.add_argument(
+        "--allow-mass-deprecation",
+        action="store_true",
+        help="Override mass-expiry guard for scheduled lifecycle propagation",
+    )
     sync = sub.add_parser(
         "sync-apply",
         help="Locked apply of eligible pilot jobs (requires ALLOW_…_PROMOTION; optional deprecate)",
@@ -68,6 +75,15 @@ def _parse_args() -> argparse.Namespace:
         "--deprecate",
         action="store_true",
         help="Also apply safe deprecations from reconcile plan",
+    )
+    sync.add_argument(
+        "--allow-mass-deprecation",
+        action="store_true",
+        help="Override mass-expiry guard (scheduled lifecycle propagation only)",
+    )
+    sub.add_parser(
+        "lifecycle-preview",
+        help="Expiry-driven deprecation plan + mass-expiry safety assessment (read-only)",
     )
     return parser.parse_args()
 
@@ -184,9 +200,35 @@ async def _run(args: argparse.Namespace) -> int:
             print(json.dumps(report, indent=2, default=str))
             return 0
 
+        if args.command == "lifecycle-preview":
+            plan = await analyze_publication_sync(pilot, prod, enforce_db_names=True)
+            published = await fetch_production_published(prod)
+            safety = assess_deprecation_plan(
+                plan.get("sync_plan") or {},
+                production_published_count=len(published),
+            )
+            print(
+                json.dumps(
+                    {
+                        "sync_plan": plan.get("sync_plan"),
+                        "lifecycle_safety": safety,
+                        "validation": plan.get("validation"),
+                    },
+                    indent=2,
+                    default=str,
+                )
+            )
+            return 0
+
         if args.command == "deprecate-stale":
             plan = await analyze_publication_sync(pilot, prod, enforce_db_names=True)
             ids = plan.get("sync_plan", {}).get("would_deprecate_ids") or []
+            reasons_rows = plan.get("sync_plan", {}).get("would_deprecate_reasons") or []
+            reasons_by_id = {
+                str(row["sourceJobId"]): str(row["reason"])
+                for row in reasons_rows
+                if row.get("sourceJobId") and row.get("reason")
+            }
             if args.dry_run:
                 print(
                     json.dumps(
@@ -200,11 +242,24 @@ async def _run(args: argparse.Namespace) -> int:
                 )
                 return 0
             _assert_promotion_allowed(settings)
+            published = await fetch_production_published(prod)
+            safety = assess_deprecation_plan(
+                plan.get("sync_plan") or {},
+                production_published_count=len(published),
+            )
+            if safety["requires_explicit_mass_approval"] and not args.allow_mass_deprecation:
+                raise SystemExit(
+                    "Refused deprecate-stale: mass lifecycle deprecation — "
+                    "run lifecycle-preview and pass --allow-mass-deprecation after approval"
+                )
             try:
                 with promotion_sync_lock():
                     batch_id = new_batch_id()
                     result = await apply_production_deprecations(
-                        prod, source_job_ids=ids, batch_id=batch_id
+                        prod,
+                        source_job_ids=ids,
+                        batch_id=batch_id,
+                        reasons_by_id=reasons_by_id,
                     )
             except BlockingIOError as exc:
                 raise SystemExit(str(exc)) from exc
@@ -244,10 +299,32 @@ async def _run(args: argparse.Namespace) -> int:
                     dep_result = None
                     if args.deprecate:
                         dep_ids = plan.get("sync_plan", {}).get("would_deprecate_ids") or []
+                        reasons_rows = plan.get("sync_plan", {}).get("would_deprecate_reasons") or []
+                        reasons_by_id = {
+                            str(row["sourceJobId"]): str(row["reason"])
+                            for row in reasons_rows
+                            if row.get("sourceJobId") and row.get("reason")
+                        }
+                        published = await fetch_production_published(prod)
+                        safety = assess_deprecation_plan(
+                            plan.get("sync_plan") or {},
+                            production_published_count=len(published),
+                        )
+                        if (
+                            safety["requires_explicit_mass_approval"]
+                            and not args.allow_mass_deprecation
+                        ):
+                            raise SystemExit(
+                                "Refused sync-apply --deprecate: mass lifecycle deprecation "
+                                "requires --allow-mass-deprecation"
+                            )
                         if dep_ids:
                             dep_batch = new_batch_id()
                             dep_result = await apply_production_deprecations(
-                                prod, source_job_ids=dep_ids, batch_id=dep_batch
+                                prod,
+                                source_job_ids=dep_ids,
+                                batch_id=dep_batch,
+                                reasons_by_id=reasons_by_id,
                             )
                     print(
                         json.dumps(

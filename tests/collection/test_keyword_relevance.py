@@ -27,3 +27,13 @@ def test_title_match_is_case_insensitive() -> None:
 
 def test_plural_token_variant_matches_singular_keyword() -> None:
     assert title_matches_keyword("Solutions Architect", "solution architect")
+
+
+def test_backend_engineer_matches_backend_developer_keyword() -> None:
+    assert title_matches_keyword("Backend Engineer", "backend developer")
+    assert title_matches_keyword("Frontend Developer", "frontend engineer")
+
+
+def test_full_stack_role_synonyms() -> None:
+    assert title_matches_keyword("Full Stack Engineer", "full stack developer")
+    assert not title_matches_keyword("Account Executive", "software engineer")

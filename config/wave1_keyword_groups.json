@@ -1,0 +1,39 @@
+{
+  "groups": {
+    "software_core": {
+      "description": "Wave 1 primary software roles — one keyword per country at a time",
+      "keywords": ["software engineer"],
+      "default_max_jobs_per_run": 5,
+      "priority": 100
+    },
+    "software_expanded_10": {
+      "description": "Ramp trial batch size 10 for high-yield keywords",
+      "keywords": [
+        "backend developer",
+        "frontend developer",
+        "full stack developer",
+        "python developer",
+        "devops engineer"
+      ],
+      "default_max_jobs_per_run": 10,
+      "priority": 110
+    },
+    "software_expanded_15": {
+      "description": "Higher batch only after operational verification",
+      "keywords": ["data engineer", "mobile developer"],
+      "default_max_jobs_per_run": 15,
+      "priority": 120
+    },
+    "product_design_pm": {
+      "keywords": ["product manager", "ui/ux designer", "data analyst"],
+      "default_max_jobs_per_run": 5,
+      "priority": 90
+    },
+    "part_time_internships": {
+      "keywords": ["part-time jobs", "internships"],
+      "default_max_jobs_per_run": 5,
+      "priority": 80,
+      "note": "Employment type inferred from listing body, not keyword alone."
+    }
+  }
+}

@@ -1,8 +1,10 @@
 from math import ceil
 from typing import Any
 
+from app.core.config import get_settings
 from app.core.exceptions import AppError, NotFoundError
-from app.modules.jobs.models.job import JobDataProvenance, JobDocument
+from app.modules.jobs.public_visibility import is_publicly_listable
+from app.modules.jobs.models.job import JobDataProvenance, JobDocument, JobStatus
 from app.modules.jobs.provenance import infer_provenance_from_job_document
 from app.modules.jobs.repositories.job_repository import JobRepository
 from app.modules.jobs.schemas.filters import JobListFilters
@@ -76,6 +78,10 @@ class JobService:
         doc = await self._repository.get_by_id(job_id)
         if doc is None:
             raise NotFoundError("Job not found")
+        settings = get_settings()
+        max_age = settings.job_public_listing_max_age_days
+        if max_age > 0 and not is_publicly_listable(doc, max_age_days=max_age):
+            raise NotFoundError("Job not found")
         return _doc_to_response(doc)
 
     async def list_jobs(
@@ -88,10 +94,17 @@ class JobService:
                 "country_unknown cannot be combined with country_code",
                 code="validation_error",
             )
+        settings = get_settings()
+        max_age = (
+            settings.job_public_listing_max_age_days
+            if filters.status == JobStatus.ACTIVE
+            else None
+        )
         items, total = await self._repository.search_jobs(
             filters=filters,
             page=pagination.page,
             page_size=pagination.page_size,
+            public_listing_max_age_days=max_age,
         )
         total_pages = max(1, ceil(total / pagination.page_size)) if pagination.page_size else 1
         has_next = pagination.page < total_pages

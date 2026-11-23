@@ -29,3 +29,9 @@ def test_wave1_activate_uses_worker_ready_not_ping_only(wave1_activate_script: s
 def test_wave1_activate_failure_cleanup_trap(wave1_activate_script: str) -> None:
     assert "server_wave1_stop.sh activation_failed" in wave1_activate_script
     assert "trap wave1_activation_cleanup EXIT" in wave1_activate_script
+
+
+def test_wave1_activate_uses_enable_group_not_legacy_enable(wave1_activate_script: str) -> None:
+    assert "enable-group" in wave1_activate_script
+    assert "WAVE1_ENABLE_GROUP" in wave1_activate_script
+    assert "wave1_ops enable" not in wave1_activate_script.replace("enable-group", "")

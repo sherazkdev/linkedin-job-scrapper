@@ -29,7 +29,11 @@ def test_build_mongo_query_country_code_normalization() -> None:
 
 
 def test_sort_spec_posted_at_desc() -> None:
-    assert sort_spec(JobSort.POSTED_AT_DESC) == [("posted_at", -1)]
+    assert sort_spec(JobSort.POSTED_AT_DESC) == [
+        ("posted_at", -1),
+        ("first_seen_at", -1),
+        ("sourceJobId", -1),
+    ]
 
 
 def test_integrator_contract_fields_documented() -> None:

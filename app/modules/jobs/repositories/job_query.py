@@ -4,7 +4,9 @@ from typing import Any
 from bson import ObjectId
 from pymongo.asynchronous.collection import AsyncCollection
 
+from app.core.config import get_settings
 from app.modules.jobs.models.job import JobStatus
+from app.modules.jobs.public_visibility import mongo_public_active_match
 from app.modules.jobs.schemas.filters import JobListFilters, build_mongo_query, sort_spec
 
 LIST_PROJECTION = {
@@ -34,14 +36,27 @@ class JobQueryRepository:
     def __init__(self, collection: AsyncCollection[Any]) -> None:
         self._collection = collection
 
+    def _public_max_age_days(self) -> int:
+        return max(0, int(get_settings().job_public_listing_max_age_days))
+
     async def search_jobs(
         self,
         *,
         filters: JobListFilters,
         page: int,
         page_size: int,
+        public_listing_max_age_days: int | None = None,
     ) -> tuple[list[dict[str, Any]], int]:
-        query = build_mongo_query(filters)
+        max_age = (
+            public_listing_max_age_days
+            if public_listing_max_age_days is not None
+            else (
+                self._public_max_age_days()
+                if (filters.status or JobStatus.ACTIVE) == JobStatus.ACTIVE
+                else None
+            )
+        )
+        query = build_mongo_query(filters, public_listing_max_age_days=max_age)
         total = await self._collection.count_documents(query)
         skip = (page - 1) * page_size
         cursor = (
@@ -59,7 +74,7 @@ class JobQueryRepository:
         return await self._collection.find_one({"_id": ObjectId(job_id)})
 
     async def aggregate_stats(self) -> dict[str, Any]:
-        active = {"status": JobStatus.ACTIVE.value}
+        active = mongo_public_active_match(max_age_days=self._public_max_age_days())
         total_active = await self._collection.count_documents(active)
         remote_active = await self._collection.count_documents(
             {
@@ -94,7 +109,7 @@ class JobQueryRepository:
         }
 
     async def list_countries(self) -> dict[str, list[dict[str, int | str]]]:
-        active = {"status": JobStatus.ACTIVE.value}
+        active = mongo_public_active_match(max_age_days=self._public_max_age_days())
         job_countries = await self._group_count(active, "$country_code", exclude_null=True)
         search_markets = await self._group_count(active, "$search_country_code", exclude_null=True)
         return {

@@ -60,8 +60,14 @@ async def fetch_eligible_targets(
 def target_max_jobs(doc: dict[str, Any], settings: Settings) -> int:
     configured = doc.get("max_jobs_per_run")
     if isinstance(configured, int) and configured > 0:
-        return min(configured, 500)
-    return settings.celery_collection_max_jobs_default
+        cap = configured
+    else:
+        cap = settings.celery_collection_max_jobs_default
+    if str(doc.get("source") or "") == JobSource.LINKEDIN.value:
+        cap = min(cap, settings.linkedin_max_jobs_per_run_hard_cap)
+        if settings.allow_live_linkedin_collection:
+            cap = min(cap, settings.linkedin_max_live_jobs_per_run)
+    return min(int(cap), 500)
 
 
 async def _linkedin_daily_cap_blocked(settings: Settings) -> tuple[bool, dict[str, Any] | None]:

@@ -10,6 +10,8 @@ from app.database.collection_indexes import COLLECTION_RUNS, COLLECTION_TARGETS
 from app.database.indexes import JOBS_COLLECTION
 from app.modules.collection.models.enums import CollectionRunStatus
 from app.modules.collection.repositories.target_repository import TargetRepository
+from app.modules.operations.collection_status import resolve_collection_status
+from app.modules.operations.throughput import aggregate_daily_throughput
 from app.modules.scheduling.linkedin_daily_cap import linkedin_daily_cap_snapshot
 from app.modules.scheduling.rollout import estimate_daily_throughput, scheduling_architecture_snapshot
 from app.workers.policy import allowed_task_sources
@@ -94,6 +96,14 @@ async def build_operations_snapshot(database: AsyncDatabase[Any]) -> dict[str, A
         linkedin_cap = await linkedin_daily_cap_snapshot(database, settings)
     except Exception:
         linkedin_cap = None
+    try:
+        throughput_actual = await aggregate_daily_throughput(database, window_hours=24)
+    except Exception:
+        throughput_actual = None
+    try:
+        collection_status = await resolve_collection_status(database, settings)
+    except Exception:
+        collection_status = None
 
     return {
         "generated_at": now.isoformat(),
@@ -109,6 +119,10 @@ async def build_operations_snapshot(database: AsyncDatabase[Any]) -> dict[str, A
             "pending_eligible_targets": pending,
             "dispatch_sample_eligible": len(eligible),
             "recent_run_stats": stats_totals,
+            "recent_run_stats_note": (
+                "created/updated/unchanged/rejected are per-run adapter outcomes; "
+                "see throughput_actual_24h.unique_jobs_created for new documents"
+            ),
             "recent_avg_duration_ms": (
                 (sum(durations_ms) / len(durations_ms)) if durations_ms else None
             ),
@@ -117,11 +131,13 @@ async def build_operations_snapshot(database: AsyncDatabase[Any]) -> dict[str, A
         "scheduling": {
             **scheduling,
             "throughput_estimate": throughput,
+            "throughput_actual_24h": throughput_actual,
             "linkedin_daily_cap": linkedin_cap,
             "scheduling_lag_hint": (
                 "eligible_pending minus recent completions; use celery_ops queue_depth between ticks"
             ),
         },
+        "collection_status": collection_status,
     }
 
 

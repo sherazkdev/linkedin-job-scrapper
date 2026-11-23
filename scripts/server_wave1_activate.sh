@@ -33,10 +33,36 @@ docker stop linkedin-scraper-worker 2>/dev/null || true
 docker rm -f linkedin-scraper-worker 2>/dev/null || true
 
 echo "STEP enable_wave1_targets"
-$COMPOSE run --rm --no-deps worker-linkedin python -m app.cli.wave1_ops enable
+WAVE1_ENABLE_GROUP="${WAVE1_ENABLE_GROUP:-software_core}"
+WAVE1_MAX_JOBS_PER_RUN="${WAVE1_MAX_JOBS_PER_RUN:-}"
+ENABLE_CMD=(python -m app.cli.wave1_ops enable-group --group "${WAVE1_ENABLE_GROUP}")
+if [ -n "${WAVE1_MAX_JOBS_PER_RUN}" ]; then
+  ENABLE_CMD+=(--max-jobs "${WAVE1_MAX_JOBS_PER_RUN}")
+fi
+$COMPOSE run --rm --no-deps worker-linkedin "${ENABLE_CMD[@]}"
 START_ISO=$(date -u +%Y-%m-%dT%H:%M:%S+00:00)
 mkdir -p evidence/wave1_observation
 printf '%s\n' "{\"started_at\":\"${START_ISO}\"}" >evidence/wave1_observation/wave1_started_at.json
+python3 -c "
+import json, os
+from pathlib import Path
+Path('evidence/wave1_observation').mkdir(parents=True, exist_ok=True)
+act = Path('evidence/wave1_observation/wave1_activation.json')
+if act.is_file():
+    data = json.loads(act.read_text(encoding='utf-8'))
+else:
+    data = {}
+data.update({
+    'activated_at': '${START_ISO}',
+    'group': os.environ.get('WAVE1_ENABLE_GROUP', 'software_core'),
+    'max_jobs_per_run_override': os.environ.get('WAVE1_MAX_JOBS_PER_RUN') or None,
+})
+act.write_text(json.dumps(data, indent=2), encoding='utf-8')
+"
+echo "WAVE1_TARGETS group=${WAVE1_ENABLE_GROUP} max_jobs=${WAVE1_MAX_JOBS_PER_RUN:-<group_default>}"
+if [ -f evidence/wave1_observation/wave1_activation.json ]; then
+  cat evidence/wave1_observation/wave1_activation.json
+fi
 
 echo "STEP start_worker_only"
 $COMPOSE --profile celery-linkedin up -d --force-recreate worker-linkedin

@@ -1,5 +1,15 @@
 """Reject jobs whose title does not match significant search-keyword tokens."""
 
+# Deterministic equivalences (engineer ↔ developer, etc.) — tested in unit tests.
+_ROLE_EQUIVALENCE_GROUPS: tuple[frozenset[str], ...] = (
+    frozenset({"engineer", "developer", "dev"}),
+    frozenset({"frontend", "front-end"}),
+    frozenset({"backend", "back-end"}),
+    frozenset({"fullstack", "full-stack"}),
+    frozenset({"nodejs", "node.js"}),
+    frozenset({"ui/ux", "ui", "ux"}),
+)
+
 
 def significant_keyword_tokens(keyword: str) -> list[str]:
     if keyword.strip() == "*":
@@ -7,11 +17,21 @@ def significant_keyword_tokens(keyword: str) -> list[str]:
     return [t for part in keyword.lower().split() if len(t := part.strip()) >= 3]
 
 
+def _equivalence_variants(token: str) -> set[str]:
+    token_l = token.lower()
+    variants = {token_l}
+    if len(token_l) > 3 and token_l.endswith("s"):
+        variants.add(token_l[:-1])
+    for group in _ROLE_EQUIVALENCE_GROUPS:
+        if token_l in group:
+            variants |= group
+    return variants
+
+
 def _token_in_title(token: str, title_lower: str) -> bool:
-    if token in title_lower:
-        return True
-    if len(token) > 3 and token.endswith("s") and token[:-1] in title_lower:
-        return True
+    for variant in _equivalence_variants(token):
+        if variant in title_lower:
+            return True
     return False
 
 
@@ -28,4 +48,15 @@ def title_matches_keyword(title: str | None, keyword: str) -> bool:
     tokens = significant_keyword_tokens(keyword)
     if not tokens:
         return True
+    # Compound roles: allow engineer/developer swap when keyword includes those tokens.
+    role_swap = {"engineer", "developer", "dev"}
+    if any(t in role_swap for t in tokens):
+        alt_phrases = []
+        if "engineer" in tokens:
+            alt_phrases.append(kw_l.replace("engineer", "developer"))
+        if "developer" in tokens or "dev" in tokens:
+            alt_phrases.append(kw_l.replace("developer", "engineer").replace(" dev ", " engineer "))
+        for phrase in alt_phrases:
+            if phrase and phrase in title_lower:
+                return True
     return all(_token_in_title(token, title_lower) for token in tokens)

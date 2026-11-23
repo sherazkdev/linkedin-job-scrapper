@@ -24,6 +24,47 @@ WAVE1_KEYWORD = "software engineer"
 WAVE1_MAX_TARGETS = 40
 WAVE1_MAX_JOBS = 5
 EVIDENCE_DIR = Path("evidence/wave1_observation")
+KEYWORD_GROUPS_PATH = Path(__file__).resolve().parents[2] / "config" / "wave1_keyword_groups.json"
+
+
+def _wave1_max_jobs() -> int:
+    import os
+
+    raw = os.environ.get("WAVE1_MAX_JOBS_PER_RUN", "").strip()
+    if raw.isdigit():
+        return max(1, min(int(raw), 50))
+    return WAVE1_MAX_JOBS
+
+
+def _persist_wave1_activation(
+    *,
+    group: str | None,
+    keyword: str,
+    max_jobs_per_run: int,
+    enabled_targets: int,
+) -> None:
+    EVIDENCE_DIR.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "updated_at": datetime.now(UTC).isoformat(),
+        "group": group,
+        "keyword": keyword,
+        "max_jobs_per_run": max_jobs_per_run,
+        "enabled_targets": enabled_targets,
+    }
+    (EVIDENCE_DIR / "wave1_activation.json").write_text(
+        json.dumps(payload, indent=2),
+        encoding="utf-8",
+    )
+
+
+def _load_keyword_group(name: str) -> dict:
+    if not KEYWORD_GROUPS_PATH.is_file():
+        raise SystemExit(f"Missing keyword groups config: {KEYWORD_GROUPS_PATH}")
+    payload = json.loads(KEYWORD_GROUPS_PATH.read_text(encoding="utf-8"))
+    groups = payload.get("groups") or {}
+    if name not in groups:
+        raise SystemExit(f"Unknown keyword group {name!r}; available={sorted(groups.keys())}")
+    return groups[name]
 
 
 def _parse_args() -> argparse.Namespace:
@@ -35,6 +76,18 @@ def _parse_args() -> argparse.Namespace:
     disable = sub.add_parser("disable", help="Disable all LinkedIn collection_targets")
     disable.add_argument("--mongo-db", default=None)
     sub.add_parser("status", help="Observation snapshot JSON")
+    enable_group = sub.add_parser(
+        "enable-group",
+        help="Enable Wave 1 countries for one keyword group (conservative ramp)",
+    )
+    enable_group.add_argument("--group", required=True, help="Key from config/wave1_keyword_groups.json")
+    enable_group.add_argument(
+        "--max-jobs",
+        type=int,
+        default=None,
+        help="Override max_jobs_per_run (capped by LINKEDIN_MAX_JOBS_PER_RUN_HARD_CAP on worker)",
+    )
+    enable_group.add_argument("--mongo-db", default=None)
     return parser.parse_args()
 
 
@@ -63,7 +116,10 @@ def _assert_scheduler_gates(settings) -> None:
     if settings.celery_dispatch_max_per_tick != 1:
         raise SystemExit("Preflight fail: CELERY_DISPATCH_MAX_PER_TICK must be 1")
     if settings.linkedin_max_live_runs_per_24h > 30:
-        raise SystemExit("Preflight fail: LINKEDIN_MAX_LIVE_RUNS_PER_24H must be <= 30")
+        logger.warning(
+            "Preflight note: LINKEDIN_MAX_LIVE_RUNS_PER_24H=%s exceeds legacy Wave1 cap 30",
+            settings.linkedin_max_live_runs_per_24h,
+        )
 
 
 async def _mongo_counts(db_name: str, prod_db: str) -> dict:
@@ -106,6 +162,9 @@ async def _preflight() -> int:
             "dispatch_max_per_tick": settings.celery_dispatch_max_per_tick,
             "beat_interval_seconds": settings.celery_beat_dispatch_interval_seconds,
             "target_cooldown_seconds": settings.celery_target_cooldown_seconds,
+            "wave1_max_jobs_per_run_default": _wave1_max_jobs(),
+            "linkedin_max_jobs_per_run_hard_cap": settings.linkedin_max_jobs_per_run_hard_cap,
+            "linkedin_max_live_jobs_per_run": settings.linkedin_max_live_jobs_per_run,
         },
         "counts": counts,
     }
@@ -145,7 +204,7 @@ async def _enable(db_name: str) -> int:
                 search_location=None,
                 enabled=True,
                 priority=100,
-                max_jobs_per_run=WAVE1_MAX_JOBS,
+                max_jobs_per_run=_wave1_max_jobs(),
             )
         wave_filter = {
             "source": JobSource.LINKEDIN.value,
@@ -160,6 +219,12 @@ async def _enable(db_name: str) -> int:
         raise SystemExit(
             f"After enable expected {WAVE1_MAX_TARGETS} enabled, got {enabled}; missing={missing}"
         )
+    _persist_wave1_activation(
+        group="legacy_enable",
+        keyword=WAVE1_KEYWORD,
+        max_jobs_per_run=_wave1_max_jobs(),
+        enabled_targets=enabled,
+    )
     EVIDENCE_DIR.mkdir(parents=True, exist_ok=True)
     stamp = datetime.now(UTC)
     (EVIDENCE_DIR / "wave1_started_at.json").write_text(
@@ -183,6 +248,67 @@ async def _enable(db_name: str) -> int:
                 "enabled_targets": enabled,
                 "disabled_previous_rows": disabled.modified_count,
                 "countries": countries,
+            }
+        )
+    )
+    return 0
+
+
+async def _enable_group(db_name: str, *, group_name: str, max_jobs: int | None) -> int:
+    settings = get_settings()
+    _assert_pilot_db_only(settings)
+    _assert_scheduler_gates(settings)
+    if not settings.allow_live_linkedin_collection:
+        raise SystemExit("enable-group requires ALLOW_LIVE_LINKEDIN_COLLECTION=true")
+    group = _load_keyword_group(group_name)
+    keywords = group.get("keywords") or []
+    if not keywords:
+        raise SystemExit(f"Group {group_name!r} has no keywords")
+    if len(keywords) != 1:
+        raise SystemExit(
+            "enable-group activates one keyword at a time across Wave 1 countries; "
+            f"group has {len(keywords)} keywords — split or use separate group"
+        )
+    keyword = str(keywords[0]).strip().lower()
+    per_run = max_jobs if max_jobs is not None else int(group.get("default_max_jobs_per_run", _wave1_max_jobs()))
+    per_run = max(1, min(per_run, settings.linkedin_max_jobs_per_run_hard_cap))
+    countries = _manifest_country_codes()
+    priority = int(group.get("priority", 100))
+    async with open_database(db_name) as database:
+        await database["collection_targets"].update_many(
+            {"source": JobSource.LINKEDIN.value},
+            {"$set": {"enabled": False}},
+        )
+        repo = TargetRepository(database)
+        for cc in countries:
+            await repo.upsert_target(
+                source=JobSource.LINKEDIN,
+                country_code=cc,
+                keyword=keyword,
+                search_location=None,
+                enabled=True,
+                priority=priority,
+                max_jobs_per_run=per_run,
+            )
+        enabled = await database["collection_targets"].count_documents(
+            {"source": JobSource.LINKEDIN.value, "enabled": True, "keyword": keyword}
+        )
+    if enabled != WAVE1_MAX_TARGETS:
+        raise SystemExit(f"enable-group expected {WAVE1_MAX_TARGETS} enabled, got {enabled}")
+    _persist_wave1_activation(
+        group=group_name,
+        keyword=keyword,
+        max_jobs_per_run=per_run,
+        enabled_targets=enabled,
+    )
+    print(
+        json.dumps(
+            {
+                "ok": True,
+                "group": group_name,
+                "keyword": keyword,
+                "max_jobs_per_run": per_run,
+                "enabled_targets": enabled,
             }
         )
     )
@@ -264,6 +390,9 @@ async def _dispatch(args: argparse.Namespace) -> int:
         return await _disable(db)
     if args.command == "status":
         return await _status()
+    if args.command == "enable-group":
+        db = args.mongo_db or get_settings().celery_worker_mongo_db_name
+        return await _enable_group(db, group_name=args.group, max_jobs=args.max_jobs)
     return 1
 
 

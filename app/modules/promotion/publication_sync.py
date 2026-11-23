@@ -146,13 +146,21 @@ async def apply_production_deprecations(
     source_job_ids: list[str],
     batch_id: str,
     reason: str = "pilot_no_longer_eligible",
+    reasons_by_id: dict[str, str] | None = None,
 ) -> dict[str, Any]:
     """Mark production LinkedIn jobs stale when pilot no longer lists them as eligible."""
     if not source_job_ids:
         return {"batch_id": batch_id, "deprecated_count": 0, "deprecated_ids": []}
     now = datetime.now(UTC)
     deprecated: list[str] = []
+    applied_reasons: list[dict[str, str]] = []
     for sid in source_job_ids:
+        item_reason = (reasons_by_id or {}).get(sid, reason)
+        target_status = JobStatus.STALE.value
+        if item_reason.startswith("pilot_status_expired") or item_reason == "public_listing_max_age":
+            target_status = JobStatus.EXPIRED.value
+        elif item_reason.startswith("pilot_status_closed"):
+            target_status = JobStatus.CLOSED.value
         result = await production_db[JOBS_COLLECTION].update_one(
             {
                 "source": JobSource.LINKEDIN.value,
@@ -162,15 +170,16 @@ async def apply_production_deprecations(
             },
             {
                 "$set": {
-                    "status": JobStatus.STALE.value,
+                    "status": target_status,
                     "unpublished_at": now,
-                    "unpublish_reason": reason,
+                    "unpublish_reason": item_reason,
                     "deprecation_batch_id": batch_id,
                 }
             },
         )
         if result.modified_count:
             deprecated.append(sid)
+            applied_reasons.append({"sourceJobId": sid, "reason": item_reason})
     await production_db[PROMOTION_AUDIT_COLLECTION].insert_one(
         {
             "batch_id": batch_id,
@@ -179,6 +188,7 @@ async def apply_production_deprecations(
             "deprecated_count": len(deprecated),
             "deprecated_ids": deprecated,
             "reason": reason,
+            "reasons": applied_reasons,
         }
     )
     return {

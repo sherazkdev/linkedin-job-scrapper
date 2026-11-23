@@ -99,8 +99,12 @@ class JobRepository:
         filters: JobListFilters,
         page: int,
         page_size: int,
+        public_listing_max_age_days: int | None = None,
     ) -> tuple[list[dict[str, Any]], int]:
-        query = build_mongo_query(filters)
+        query = build_mongo_query(
+            filters,
+            public_listing_max_age_days=public_listing_max_age_days,
+        )
         total = await self._collection.count_documents(query)
         skip = (page - 1) * page_size
         cursor = (
