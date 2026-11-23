@@ -6,11 +6,17 @@ Anonymous-device subscribers use server-issued bearer credentials. Tokens are sh
 
 | Variable | Default | Meaning |
 |----------|---------|---------|
-| `ALERTS_API_ENABLED` | `true` | Expose `/api/v1/alerts/*` |
+| `ALERTS_API_ENABLED` | `false` | Expose `/api/v1/alerts/*` (fail-closed by default) |
 | `ALERTS_MATCHING_ENABLED` | `false` | Match on job persist (off until rollout) |
 | `ALERTS_DIGEST_ENABLED` | `false` | Allow manual `/digest/run` and Celery digest task |
 | `ALERTS_PUSH_ENABLED` | `false` | Push provider (not configured) |
 | `ALERTS_REGISTER_MAX_PER_IP` | `30` | Registrations per IP per hour (0=off) |
+
+## Daily digest policy
+
+One **subscriber-level** schedule (`digest_timezone`, `digest_local_time`, `digest_max_jobs` in
+`alert_digest_state`). Saved searches only opt in with `digest_enabled` to include their filters.
+`POST /digest/preview` does not enforce clock time or idempotency claims; `POST /digest/run` does.
 
 ## City filter limitation
 
@@ -48,7 +54,8 @@ Response:
 
 ### Daily digest (manual)
 
-- `POST /api/v1/alerts/digest/run` — requires `ALERTS_DIGEST_ENABLED=true`
+- `POST /api/v1/alerts/digest/preview` — testing only (no delivery claim)
+- `POST /api/v1/alerts/digest/run` — requires `ALERTS_DIGEST_ENABLED=true` and local time due
 
 ## MongoDB collections
 

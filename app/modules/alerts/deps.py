@@ -12,6 +12,7 @@ from app.api.deps import get_db
 from app.core.config import Settings, get_settings
 from app.modules.alerts.repositories import (
     AlertSubscriberRepository,
+    DigestDeliveryRepository,
     DigestStateRepository,
     NotificationRepository,
     SavedSearchRepository,
@@ -29,6 +30,7 @@ def require_alerts_api(settings: Annotated[Settings, Depends(get_settings)]) -> 
 
 
 async def get_current_subscriber_id(
+    _settings: Annotated[Settings, Depends(require_alerts_api)],
     credentials: Annotated[HTTPAuthorizationCredentials | None, Security(_bearer)],
     db: Annotated[AsyncDatabase[Any], Depends(get_db)],
 ) -> str:
@@ -58,6 +60,12 @@ def get_notification_repo(db: Annotated[AsyncDatabase[Any], Depends(get_db)]) ->
 
 def get_digest_repo(db: Annotated[AsyncDatabase[Any], Depends(get_db)]) -> DigestStateRepository:
     return DigestStateRepository(db)
+
+
+def get_digest_delivery_repo(
+    db: Annotated[AsyncDatabase[Any], Depends(get_db)],
+) -> DigestDeliveryRepository:
+    return DigestDeliveryRepository(db)
 
 
 def get_job_repo(db: Annotated[AsyncDatabase[Any], Depends(get_db)]) -> JobRepository:

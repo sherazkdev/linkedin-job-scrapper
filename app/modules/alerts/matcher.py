@@ -67,11 +67,22 @@ def job_matches_saved_search(
     return True
 
 
-def event_key_for_outcome(*, created: bool, reactivated: bool) -> str:
-    from app.modules.alerts.constants import EVENT_NEW_JOB, EVENT_REACTIVATED
+def event_key_for_outcome(
+    *,
+    created: bool,
+    updated: bool,
+    reactivated: bool,
+) -> str | None:
+    from app.modules.alerts.constants import (
+        EVENT_JOB_UPDATED,
+        EVENT_NEW_JOB,
+        EVENT_REACTIVATED,
+    )
 
     if created:
         return EVENT_NEW_JOB
     if reactivated:
         return EVENT_REACTIVATED
-    return EVENT_NEW_JOB
+    if updated:
+        return EVENT_JOB_UPDATED
+    return None

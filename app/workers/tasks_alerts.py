@@ -10,6 +10,7 @@ from app.database.temp_database import open_database
 from app.modules.alerts.digest import DailyDigestService
 from app.modules.alerts.processor import AlertProcessor
 from app.modules.alerts.repositories import (
+    DigestDeliveryRepository,
     DigestStateRepository,
     NotificationRepository,
     SavedSearchRepository,
@@ -62,6 +63,7 @@ def run_daily_digest_task(subscriber_id: str) -> dict:
                 searches=SavedSearchRepository(database),
                 notifications=NotificationRepository(database),
                 digest_state=DigestStateRepository(database),
+                digest_delivery=DigestDeliveryRepository(database),
                 jobs=JobRepository(database),
                 settings=settings,
             )

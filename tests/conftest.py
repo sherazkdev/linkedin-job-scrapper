@@ -17,6 +17,10 @@ def pytest_configure() -> None:
     else:
         os.environ.setdefault("MONGO_DB_NAME", "global_jobs_test")
     os.environ.setdefault("REDIS_URL", "redis://:change_me_redis_password@redis:6379/0")
+    if os.environ.get("RUN_INTEGRATION") == "1":
+        os.environ.setdefault("ALERTS_API_ENABLED", "true")
+        os.environ.setdefault("ALERTS_INTEGRATION_TEST_MODE", "true")
+        os.environ.setdefault("ALERTS_DIGEST_ENABLED", "true")
     from app.core.config import get_settings
 
     get_settings.cache_clear()

@@ -31,7 +31,8 @@ def create_app() -> FastAPI:
     app.include_router(health.router)
     app.include_router(jobs.router)
     app.include_router(countries.router)
-    app.include_router(alerts_routes.router)
+    if settings.alerts_api_enabled:
+        app.include_router(alerts_routes.router)
     app.include_router(internal_ops.router)
     return app
 

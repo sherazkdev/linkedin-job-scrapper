@@ -1,0 +1,17 @@
+# Explicit alert feature flags for VPS (production API off; pilot overlay extends api-pilot).
+services:
+  api:
+    environment:
+      ALERTS_API_ENABLED: "false"
+      ALERTS_MATCHING_ENABLED: "false"
+      ALERTS_DIGEST_ENABLED: "false"
+      ALERTS_PUSH_ENABLED: "false"
+
+  api-pilot:
+    environment:
+      ALERTS_API_ENABLED: "true"
+      ALERTS_MATCHING_ENABLED: "false"
+      ALERTS_DIGEST_ENABLED: "true"
+      ALERTS_PUSH_ENABLED: "false"
+      ALERTS_INTEGRATION_TEST_MODE: "true"
+      ALERTS_RATE_LIMIT_TRUST_X_REAL_IP: "true"

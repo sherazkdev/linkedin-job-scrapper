@@ -4,6 +4,7 @@ from typing import Any
 from pymongo.asynchronous.database import AsyncDatabase
 
 from app.modules.alerts.constants import (
+    ALERT_DIGEST_DELIVERIES,
     ALERT_DIGEST_STATE,
     ALERT_NOTIFICATIONS,
     ALERT_SUBSCRIBERS,
@@ -42,4 +43,12 @@ async def ensure_alert_indexes(database: AsyncDatabase[Any]) -> None:
 
     digest = database[ALERT_DIGEST_STATE]
     await digest.create_index([("subscriber_id", 1)], unique=True, name="uniq_digest_subscriber")
+
+    deliveries = database[ALERT_DIGEST_DELIVERIES]
+    await deliveries.create_index(
+        [("subscriber_id", 1), ("digest_key", 1)],
+        unique=True,
+        name="uniq_digest_delivery_claim",
+    )
+
     logger.info("MongoDB alert indexes ensured")

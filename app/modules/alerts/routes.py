@@ -9,6 +9,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response,
 from app.core.config import Settings
 from app.modules.alerts.deps import (
     get_current_subscriber_id,
+    get_digest_delivery_repo,
     get_digest_repo,
     get_job_repo,
     get_notification_repo,
@@ -16,9 +17,12 @@ from app.modules.alerts.deps import (
     get_subscriber_repo,
     require_alerts_api,
 )
+from app.modules.alerts.constants import TEST_SUBSCRIBER_TAG
 from app.modules.alerts.digest import DailyDigestService
+from app.modules.alerts.request_context import client_ip_for_rate_limit
 from app.modules.alerts.repositories import (
     AlertSubscriberRepository,
+    DigestDeliveryRepository,
     DigestStateRepository,
     NotificationRepository,
     SavedSearchRepository,
@@ -82,7 +86,7 @@ async def _enforce_register_rate_limit(
 ) -> None:
     if settings.alerts_register_max_per_ip <= 0:
         return
-    client_ip = request.client.host if request.client else "unknown"
+    client_ip = client_ip_for_rate_limit(request, settings)
     key = f"{REGISTER_RATE_KEY}:{client_ip}"
     try:
         count = await redis_wrap.client.incr(key)
@@ -96,6 +100,11 @@ async def _enforce_register_rate_limit(
     except HTTPException:
         raise
     except Exception:
+        if settings.alerts_register_fail_closed_on_redis_error:
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail="Registration temporarily unavailable",
+            ) from None
         return
 
 
@@ -115,7 +124,12 @@ async def register_subscriber(
     await _enforce_register_rate_limit(request, settings, redis_wrap)
     token = issue_bearer_token()
     subscriber_id = new_subscriber_id()
-    await repo.create(subscriber_id=subscriber_id, token_hash=hash_bearer_token(token))
+    purpose = TEST_SUBSCRIBER_TAG if settings.alerts_integration_test_mode else None
+    await repo.create(
+        subscriber_id=subscriber_id,
+        token_hash=hash_bearer_token(token),
+        purpose=purpose,
+    )
     return SubscriberRegisterOut(subscriber_id=subscriber_id, bearer_token=token)
 
 
@@ -134,7 +148,10 @@ async def create_search(
     subscriber_id: Annotated[str, Depends(get_current_subscriber_id)],
     repo: Annotated[SavedSearchRepository, Depends(get_search_repo)],
 ) -> SavedSearchOut:
-    doc = await repo.create(subscriber_id=subscriber_id, payload=body.model_dump())
+    try:
+        doc = await repo.create(subscriber_id=subscriber_id, payload=body.model_dump())
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
     return _search_out(doc)
 
 
@@ -262,6 +279,28 @@ async def dismiss_notification(
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
+@router.post("/digest/preview")
+async def run_digest_preview(
+    settings: Annotated[Settings, Depends(require_digest_enabled)],
+    subscriber_id: Annotated[str, Depends(get_current_subscriber_id)],
+    searches: Annotated[SavedSearchRepository, Depends(get_search_repo)],
+    notifications: Annotated[NotificationRepository, Depends(get_notification_repo)],
+    digest_state: Annotated[DigestStateRepository, Depends(get_digest_repo)],
+    digest_delivery: Annotated[DigestDeliveryRepository, Depends(get_digest_delivery_repo)],
+    jobs: Annotated[JobRepository, Depends(get_job_repo)],
+) -> dict[str, Any]:
+    """Preview digest contents without claiming delivery idempotency or enforcing clock time."""
+    svc = DailyDigestService(
+        searches=searches,
+        notifications=notifications,
+        digest_state=digest_state,
+        digest_delivery=digest_delivery,
+        jobs=jobs,
+        settings=settings,
+    )
+    return await svc.run_for_subscriber(subscriber_id, preview=True)
+
+
 @router.post("/digest/run")
 async def run_digest_once(
     settings: Annotated[Settings, Depends(require_digest_enabled)],
@@ -269,14 +308,16 @@ async def run_digest_once(
     searches: Annotated[SavedSearchRepository, Depends(get_search_repo)],
     notifications: Annotated[NotificationRepository, Depends(get_notification_repo)],
     digest_state: Annotated[DigestStateRepository, Depends(get_digest_repo)],
+    digest_delivery: Annotated[DigestDeliveryRepository, Depends(get_digest_delivery_repo)],
     jobs: Annotated[JobRepository, Depends(get_job_repo)],
 ) -> dict[str, Any]:
-    """Manual/idempotent digest trigger (no Beat). Requires ALERTS_DIGEST_ENABLED."""
+    """Idempotent scheduled digest for current local day (no Beat). Requires ALERTS_DIGEST_ENABLED."""
     svc = DailyDigestService(
         searches=searches,
         notifications=notifications,
         digest_state=digest_state,
+        digest_delivery=digest_delivery,
         jobs=jobs,
         settings=settings,
     )
-    return await svc.run_for_subscriber(subscriber_id)
+    return await svc.run_for_subscriber(subscriber_id, preview=False)

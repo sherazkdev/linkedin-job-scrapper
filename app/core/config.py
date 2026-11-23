@@ -252,7 +252,7 @@ class Settings(BaseSettings):
         ge=1,
         alias="COLLECTION_NO_NEW_JOBS_ALERT_HOURS",
     )
-    alerts_api_enabled: bool = Field(default=True, alias="ALERTS_API_ENABLED")
+    alerts_api_enabled: bool = Field(default=False, alias="ALERTS_API_ENABLED")
     alerts_matching_enabled: bool = Field(
         default=False,
         alias="ALERTS_MATCHING_ENABLED",
@@ -266,6 +266,21 @@ class Settings(BaseSettings):
         le=500,
         alias="ALERTS_REGISTER_MAX_PER_IP",
         description="Max anonymous subscriber registrations per client IP per hour (0=off).",
+    )
+    alerts_rate_limit_trust_x_real_ip: bool = Field(
+        default=False,
+        alias="ALERTS_RATE_LIMIT_TRUST_X_REAL_IP",
+        description="When true, use X-Real-IP for registration rate limit (set only behind trusted Nginx).",
+    )
+    alerts_register_fail_closed_on_redis_error: bool = Field(
+        default=True,
+        alias="ALERTS_REGISTER_FAIL_CLOSED_ON_REDIS_ERROR",
+        description="Reject registration when Redis is unavailable and rate limiting is enabled.",
+    )
+    alerts_integration_test_mode: bool = Field(
+        default=False,
+        alias="ALERTS_INTEGRATION_TEST_MODE",
+        description="Tag new subscribers for safe integration cleanup (pilot only).",
     )
     job_expiry_batch_size: int = Field(
         default=200,

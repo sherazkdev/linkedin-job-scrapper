@@ -1,10 +1,13 @@
 """API schemas for job alerts."""
 
+from __future__ import annotations
+
 from datetime import datetime
 from typing import Any
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
+from app.modules.alerts.timezone_validators import validate_digest_local_time, validate_iana_timezone
 from app.modules.jobs.models.job import EmploymentType
 
 
@@ -33,6 +36,24 @@ class SavedSearchCreate(BaseModel):
     def upper_country(cls, v: str | None) -> str | None:
         return v.upper() if v else None
 
+    @field_validator("digest_timezone")
+    @classmethod
+    def validate_tz(cls, v: str) -> str:
+        return validate_iana_timezone(v)
+
+    @field_validator("digest_local_time")
+    @classmethod
+    def validate_clock(cls, v: str | None) -> str | None:
+        if v is None:
+            return None
+        return validate_digest_local_time(v)
+
+    @model_validator(mode="after")
+    def digest_requires_clock(self) -> SavedSearchCreate:
+        if self.digest_enabled and not self.digest_local_time:
+            raise ValueError("digest_local_time is required when digest_enabled is true")
+        return self
+
 
 class SavedSearchUpdate(BaseModel):
     q: str | None = Field(default=None, max_length=200)
@@ -45,6 +66,20 @@ class SavedSearchUpdate(BaseModel):
     digest_local_time: str | None = Field(default=None, pattern=r"^\d{2}:\d{2}$")
     digest_timezone: str | None = Field(default=None, max_length=64)
     digest_max_jobs: int | None = Field(default=None, ge=1, le=50)
+
+    @field_validator("digest_timezone")
+    @classmethod
+    def validate_tz(cls, v: str | None) -> str | None:
+        if v is None:
+            return None
+        return validate_iana_timezone(v)
+
+    @field_validator("digest_local_time")
+    @classmethod
+    def validate_clock(cls, v: str | None) -> str | None:
+        if v is None:
+            return None
+        return validate_digest_local_time(v)
 
 
 class SavedSearchOut(BaseModel):

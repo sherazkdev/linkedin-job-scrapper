@@ -12,25 +12,40 @@ from pymongo.asynchronous.database import AsyncDatabase
 from pymongo.errors import DuplicateKeyError
 
 from app.modules.alerts.constants import (
+    ALERT_DIGEST_DELIVERIES,
     ALERT_DIGEST_STATE,
     ALERT_NOTIFICATIONS,
     ALERT_SUBSCRIBERS,
     SAVED_JOB_SEARCHES,
+    TEST_SUBSCRIBER_TAG,
 )
+from app.modules.alerts.digest_schedule import DigestSchedule, schedule_conflicts
 
 
 class AlertSubscriberRepository:
     def __init__(self, database: AsyncDatabase[Any]) -> None:
         self._col: AsyncCollection[Any] = database[ALERT_SUBSCRIBERS]
 
-    async def create(self, *, subscriber_id: str, token_hash: str) -> dict[str, Any]:
+    async def create(
+        self,
+        *,
+        subscriber_id: str,
+        token_hash: str,
+        purpose: str | None = None,
+    ) -> dict[str, Any]:
         doc = {
             "subscriber_id": subscriber_id,
             "token_hash": token_hash,
             "created_at": datetime.now(UTC),
         }
+        if purpose:
+            doc["purpose"] = purpose
         await self._col.insert_one(doc)
         return doc
+
+    async def delete_integration_test_subscribers(self) -> int:
+        result = await self._col.delete_many({"purpose": TEST_SUBSCRIBER_TAG})
+        return result.deleted_count
 
     async def find_by_token_hash(self, token_hash: str) -> dict[str, Any] | None:
         return await self._col.find_one({"token_hash": token_hash})
@@ -39,6 +54,25 @@ class AlertSubscriberRepository:
 class SavedSearchRepository:
     def __init__(self, database: AsyncDatabase[Any]) -> None:
         self._col: AsyncCollection[Any] = database[SAVED_JOB_SEARCHES]
+        self._digest_state = DigestStateRepository(database)
+
+    async def _sync_digest_schedule(
+        self,
+        *,
+        subscriber_id: str,
+        payload: dict[str, Any],
+    ) -> None:
+        if not payload.get("digest_enabled"):
+            return
+        schedule = DigestSchedule(
+            timezone=str(payload.get("digest_timezone") or "UTC"),
+            local_time=str(payload.get("digest_local_time") or "09:00"),
+            max_jobs=int(payload.get("digest_max_jobs") or 10),
+        )
+        await self._digest_state.upsert_schedule_if_compatible(
+            subscriber_id=subscriber_id,
+            schedule=schedule,
+        )
 
     async def create(self, *, subscriber_id: str, payload: dict[str, Any]) -> dict[str, Any]:
         now = datetime.now(UTC)
@@ -66,6 +100,11 @@ class SavedSearchRepository:
             "updated_at": now,
         }
         await self._col.insert_one(doc)
+        try:
+            await self._sync_digest_schedule(subscriber_id=subscriber_id, payload=doc)
+        except ValueError:
+            await self._col.delete_one({"search_id": doc["search_id"]})
+            raise
         return doc
 
     async def list_for_subscriber(self, subscriber_id: str) -> list[dict[str, Any]]:
@@ -83,11 +122,14 @@ class SavedSearchRepository:
         updates: dict[str, Any],
     ) -> dict[str, Any] | None:
         updates["updated_at"] = datetime.now(UTC)
-        return await self._col.find_one_and_update(
+        doc = await self._col.find_one_and_update(
             {"subscriber_id": subscriber_id, "search_id": search_id},
             {"$set": updates},
             return_document=True,
         )
+        if doc is not None and updates.get("digest_enabled"):
+            await self._sync_digest_schedule(subscriber_id=subscriber_id, payload=doc)
+        return doc
 
     async def delete_owned(self, *, subscriber_id: str, search_id: str) -> bool:
         result = await self._col.delete_one({"subscriber_id": subscriber_id, "search_id": search_id})
@@ -99,9 +141,19 @@ class SavedSearchRepository:
 
     async def list_digest_enabled(self) -> list[dict[str, Any]]:
         cursor = self._col.find(
-            {"enabled": True, "digest_enabled": True, "alerts_enabled": True},
+            {
+                "enabled": True,
+                "digest_enabled": True,
+                "alerts_enabled": True,
+            },
         )
         return await cursor.to_list(length=10_000)
+
+    async def delete_for_subscribers(self, subscriber_ids: list[str]) -> int:
+        if not subscriber_ids:
+            return 0
+        result = await self._col.delete_many({"subscriber_id": {"$in": subscriber_ids}})
+        return result.deleted_count
 
 
 class NotificationRepository:
@@ -197,6 +249,39 @@ class DigestStateRepository:
     async def get(self, subscriber_id: str) -> dict[str, Any] | None:
         return await self._col.find_one({"subscriber_id": subscriber_id})
 
+    async def upsert_schedule_if_compatible(
+        self,
+        *,
+        subscriber_id: str,
+        schedule: DigestSchedule,
+    ) -> None:
+        existing = await self.get(subscriber_id)
+        now = datetime.now(UTC)
+        if existing:
+            prior = DigestSchedule(
+                timezone=str(existing.get("digest_timezone") or "UTC"),
+                local_time=str(existing.get("digest_local_time") or "09:00"),
+                max_jobs=int(existing.get("digest_max_jobs") or 10),
+            )
+            if schedule_conflicts(prior, schedule):
+                raise ValueError(
+                    "Digest schedule conflicts with existing subscriber digest "
+                    f"(tz={prior.timezone} time={prior.local_time} max={prior.max_jobs})"
+                )
+        await self._col.update_one(
+            {"subscriber_id": subscriber_id},
+            {
+                "$set": {
+                    "digest_timezone": schedule.timezone,
+                    "digest_local_time": schedule.local_time,
+                    "digest_max_jobs": schedule.max_jobs,
+                    "updated_at": now,
+                },
+                "$setOnInsert": {"subscriber_id": subscriber_id, "created_at": now},
+            },
+            upsert=True,
+        )
+
     async def upsert_sent(self, *, subscriber_id: str, digest_key: str) -> None:
         now = datetime.now(UTC)
         await self._col.update_one(
@@ -211,8 +296,28 @@ class DigestStateRepository:
             upsert=True,
         )
 
-    async def already_sent(self, *, subscriber_id: str, digest_key: str) -> bool:
-        doc = await self.get(subscriber_id)
-        if not doc:
+
+class DigestDeliveryRepository:
+    """Atomic once-per-local-day digest claims (safe under concurrent workers)."""
+
+    def __init__(self, database: AsyncDatabase[Any]) -> None:
+        self._col: AsyncCollection[Any] = database[ALERT_DIGEST_DELIVERIES]
+
+    async def try_claim(self, *, subscriber_id: str, digest_key: str) -> bool:
+        now = datetime.now(UTC)
+        doc = {
+            "subscriber_id": subscriber_id,
+            "digest_key": digest_key,
+            "claimed_at": now,
+        }
+        try:
+            await self._col.insert_one(doc)
+            return True
+        except DuplicateKeyError:
             return False
-        return str(doc.get("last_digest_key") or "") == digest_key
+
+    async def delete_for_subscribers(self, subscriber_ids: list[str]) -> int:
+        if not subscriber_ids:
+            return 0
+        result = await self._col.delete_many({"subscriber_id": {"$in": subscriber_ids}})
+        return result.deleted_count

@@ -42,8 +42,13 @@ class AlertProcessor:
             JobUpsertOutcome.UNCHANGED,
         }:
             return 0
-        created = outcome == JobUpsertOutcome.CREATED
-        event_key = event_key_for_outcome(created=created, reactivated=reactivated)
+        event_key = event_key_for_outcome(
+            created=outcome == JobUpsertOutcome.CREATED,
+            updated=outcome == JobUpsertOutcome.UPDATED,
+            reactivated=reactivated,
+        )
+        if event_key is None:
+            return 0
         if job_doc.get("_id") is not None:
             job_id = str(job_doc["_id"])
         else:
