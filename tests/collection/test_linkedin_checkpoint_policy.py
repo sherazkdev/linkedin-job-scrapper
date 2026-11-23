@@ -8,12 +8,20 @@ from app.modules.collection.linkedin.adapter import _build_search_url
 from app.modules.collection.linkedin.pagination import LINKEDIN_SEARCH_PAGE_SIZE
 
 
-def test_prepare_resets_stale_page_index_keeps_processed_ids() -> None:
+def test_prepare_resets_stale_page_index_drops_stored_processed_ids() -> None:
     stored = {"page_index": 8, "processed_ids": ["123", "456"], "keyword": "software engineer"}
     prepared = prepare_linkedin_run_checkpoint(stored, ignore_stored=False)
     assert prepared is not None
     assert prepared["page_index"] == 0
-    assert prepared["processed_ids"] == ["123", "456"]
+    assert prepared["processed_ids"] == []
+
+
+def test_persist_does_not_store_reloadable_skip_list() -> None:
+    adapter_ck = {"page_index": 2, "processed_ids": [f"id{i}" for i in range(100)]}
+    saved = persist_linkedin_run_checkpoint(adapter_ck)
+    assert saved["page_index"] == 0
+    assert "processed_ids" not in saved
+    assert saved["processed_ids_last_run_count"] == 100
 
 
 def test_prepare_ignore_clears_checkpoint() -> None:
@@ -25,7 +33,8 @@ def test_persist_never_advance_page_index() -> None:
     adapter_ck = {"page_index": 9, "processed_ids": ["a", "b"], "keyword": "se"}
     saved = persist_linkedin_run_checkpoint(adapter_ck)
     assert saved["page_index"] == 0
-    assert saved["processed_ids"] == ["a", "b"]
+    assert saved["processed_ids_last_run_count"] == 2
+    assert "processed_ids" not in saved
 
 
 def test_stale_offset_would_skip_newest_without_policy() -> None:

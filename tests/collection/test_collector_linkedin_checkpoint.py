@@ -55,6 +55,7 @@ async def test_fetch_and_process_linkedin_load_applies_fresh_page_policy() -> No
     checkpoints.save.assert_awaited_once()
     saved_ck = checkpoints.save.await_args.kwargs["checkpoint"]
     assert saved_ck["page_index"] == 0
+    assert "processed_ids" not in saved_ck
 
 
 @pytest.mark.asyncio
@@ -63,7 +64,9 @@ async def test_second_independent_run_still_page_zero() -> None:
     first = prepare_linkedin_run_checkpoint(stored, ignore_stored=False)
     from app.modules.collection.linkedin.checkpoint_policy import persist_linkedin_run_checkpoint
 
-    after_run = persist_linkedin_run_checkpoint({"page_index": 2, "processed_ids": ["1", "2"]})
+    after_run = persist_linkedin_run_checkpoint(
+        {"page_index": 2, "processed_ids": ["1", "2"], "keyword": "se"}
+    )
     second = prepare_linkedin_run_checkpoint(after_run, ignore_stored=False)
     assert first is not None and second is not None
     assert first["page_index"] == 0

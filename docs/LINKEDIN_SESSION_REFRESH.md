@@ -2,7 +2,7 @@
 
 ## LinkedIn SERP checkpoints
 
-Independent collection runs always start at SERP offset **0** (newest jobs). Pagination within one run may continue to page 1, 2, etc. Persisted `page_index` is reset after each run; use `python -m app.cli.collect --ignore-checkpoint` to drop stored `processed_ids` for one-shot pilots.
+Independent collection runs always start at SERP offset **0** (newest jobs). Pagination within one run may continue to page 1, 2, etc. Persisted `page_index` is reset after each run. Stored checkpoint does not reload `processed_ids` — job refresh uses Mongo `(source, sourceJobId)` upserts. Use `--ignore-checkpoint` to omit loading the checkpoint document entirely.
 
 ## When to use
 
