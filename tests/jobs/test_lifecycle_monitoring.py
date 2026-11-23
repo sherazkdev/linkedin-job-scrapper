@@ -53,7 +53,7 @@ async def test_reactivate_on_unchanged_seen(integration_db: None) -> None:
             {"$set": {"status": JobStatus.STALE.value}},
         )
         observe = job.model_copy(update={"last_seen_at": now})
-        outcome_doc, outcome = await repo.upsert_job_tracked(observe)
+        outcome_doc, outcome, _reactivated = await repo.upsert_job_tracked(observe)
         assert outcome in {JobUpsertOutcome.UNCHANGED, JobUpsertOutcome.UPDATED}
         assert outcome_doc["status"] == JobStatus.ACTIVE.value
 

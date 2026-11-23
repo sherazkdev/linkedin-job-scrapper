@@ -25,6 +25,11 @@ class JobListFilters(BaseModel):
     search_country_code: str | None = Field(default=None, min_length=2, max_length=2)
     country_unknown: bool | None = None
     q: str | None = Field(default=None, max_length=200)
+    city: str | None = Field(
+        default=None,
+        max_length=120,
+        description="Case-insensitive exact match on structured city field when present on jobs.",
+    )
     source: JobSource | None = None
     employment_type: EmploymentType | None = None
     workplace_type: WorkplaceType | None = None
@@ -99,6 +104,10 @@ def build_mongo_query(
     if filters.posted_within_days is not None:
         cutoff = datetime.now(UTC) - timedelta(days=filters.posted_within_days)
         clauses.append({"posted_at": {"$gte": cutoff}})
+
+    if filters.city:
+        pattern = escape_regex(filters.city.strip())
+        clauses.append({"city": {"$regex": f"^{pattern}$", "$options": "i"}})
 
     if filters.q:
         pattern = escape_regex(filters.q)

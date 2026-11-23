@@ -165,7 +165,9 @@ class JobRepository:
             return value.replace(tzinfo=UTC)
         return value.astimezone(UTC)
 
-    async def upsert_job_tracked(self, job: JobDocument) -> tuple[dict[str, Any], JobUpsertOutcome]:
+    async def upsert_job_tracked(
+        self, job: JobDocument
+    ) -> tuple[dict[str, Any], JobUpsertOutcome, bool]:
         now = datetime.now(UTC)
         payload = job.to_mongo()
         filter_doc = {"source": payload["source"], "sourceJobId": payload["sourceJobId"]}
@@ -174,18 +176,19 @@ class JobRepository:
         if existing is None:
             doc, created = await self.upsert_job(job)
             if not created:
-                return doc, JobUpsertOutcome.UPDATED
-            return doc, JobUpsertOutcome.CREATED
+                return doc, JobUpsertOutcome.UPDATED, False
+            return doc, JobUpsertOutcome.CREATED, False
 
         if not self._content_changed(existing, payload):
+            reactivated = existing.get("status") in _REACTIVATE_STATUSES
             touch: dict[str, Any] = {"last_seen_at": now}
-            if existing.get("status") in _REACTIVATE_STATUSES:
+            if reactivated:
                 touch["status"] = JobStatus.ACTIVE.value
             await self._collection.update_one(filter_doc, {"$set": touch})
             refreshed = await self._collection.find_one(filter_doc)
             if refreshed is None:
                 raise RuntimeError("Job disappeared after touch update")
-            return refreshed, JobUpsertOutcome.UNCHANGED
+            return refreshed, JobUpsertOutcome.UNCHANGED, reactivated
 
         set_fields = {
             k: v
@@ -199,9 +202,10 @@ class JobRepository:
             await self._collection.update_one(filter_doc, {"$set": set_fields})
         except DuplicateKeyError:
             doc, _ = await self.upsert_job(job)
-            return doc, JobUpsertOutcome.UPDATED
+            return doc, JobUpsertOutcome.UPDATED, False
 
         updated = await self._collection.find_one(filter_doc)
         if updated is None:
             raise RuntimeError("Job not found after content update")
-        return updated, JobUpsertOutcome.UPDATED
+        was_reactivated = existing.get("status") in _REACTIVATE_STATUSES
+        return updated, JobUpsertOutcome.UPDATED, was_reactivated

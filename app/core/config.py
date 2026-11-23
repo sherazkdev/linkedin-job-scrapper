@@ -252,6 +252,21 @@ class Settings(BaseSettings):
         ge=1,
         alias="COLLECTION_NO_NEW_JOBS_ALERT_HOURS",
     )
+    alerts_api_enabled: bool = Field(default=True, alias="ALERTS_API_ENABLED")
+    alerts_matching_enabled: bool = Field(
+        default=False,
+        alias="ALERTS_MATCHING_ENABLED",
+        description="Run saved-search matching on job persist (off in production until rollout).",
+    )
+    alerts_digest_enabled: bool = Field(default=False, alias="ALERTS_DIGEST_ENABLED")
+    alerts_push_enabled: bool = Field(default=False, alias="ALERTS_PUSH_ENABLED")
+    alerts_register_max_per_ip: int = Field(
+        default=30,
+        ge=0,
+        le=500,
+        alias="ALERTS_REGISTER_MAX_PER_IP",
+        description="Max anonymous subscriber registrations per client IP per hour (0=off).",
+    )
     job_expiry_batch_size: int = Field(
         default=200,
         ge=1,

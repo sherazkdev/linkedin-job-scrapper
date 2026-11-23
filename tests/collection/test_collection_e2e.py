@@ -100,7 +100,7 @@ async def test_first_seen_preserved_on_update(integration_db: None) -> None:
             last_seen_at=datetime.now(UTC),
             status=JobStatus.ACTIVE,
         )
-        updated, outcome = await repo.upsert_job_tracked(job)
+        updated, outcome, _reactivated = await repo.upsert_job_tracked(job)
         assert outcome.value == "updated"
         assert updated["first_seen_at"] == first_seen
 

@@ -20,6 +20,20 @@ PUBLIC_BOARD_SOURCES = frozenset({JobSource.GREENHOUSE, JobSource.LEVER, JobSour
 MARKET_SEARCH_SOURCES = frozenset({JobSource.ADZUNA})
 
 
+def _build_persistence(database: AsyncDatabase[Any], settings: Settings) -> JobPersistenceService:
+    alert_processor = None
+    if settings.alerts_matching_enabled:
+        from app.modules.alerts.processor import AlertProcessor
+        from app.modules.alerts.repositories import NotificationRepository, SavedSearchRepository
+
+        alert_processor = AlertProcessor(
+            searches=SavedSearchRepository(database),
+            notifications=NotificationRepository(database),
+            settings=settings,
+        )
+    return JobPersistenceService(JobRepository(database), alert_processor=alert_processor)
+
+
 def _linkedin_live_adapter_timeout_seconds(settings: Settings) -> int:
     from app.modules.collection.linkedin.pagination import LINKEDIN_SEARCH_PAGE_SIZE
 
@@ -162,7 +176,7 @@ def build_collector(
     return JobCollector(
         adapter=adapter,
         normalizer=JobNormalizer(source),
-        persistence=JobPersistenceService(JobRepository(database)),
+        persistence=_build_persistence(database, settings),
         run_service=CollectionRunService(RunRepository(database)),
         checkpoint_repository=CheckpointRepository(database),
         target_repository=TargetRepository(database),

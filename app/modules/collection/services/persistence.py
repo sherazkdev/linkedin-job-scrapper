@@ -1,4 +1,5 @@
 import logging
+from typing import Any
 
 from app.modules.collection.models.enums import JobUpsertOutcome
 from app.modules.collection.models.stats import CollectionStats
@@ -9,14 +10,26 @@ logger = logging.getLogger(__name__)
 
 
 class JobPersistenceService:
-    def __init__(self, repository: JobRepository) -> None:
+    def __init__(
+        self,
+        repository: JobRepository,
+        *,
+        alert_processor: Any | None = None,
+    ) -> None:
         self._repository = repository
+        self._alert_processor = alert_processor
 
     async def persist_jobs(self, jobs: list[JobDocument]) -> CollectionStats:
         stats = CollectionStats()
         for job in jobs:
             try:
-                _, outcome = await self._repository.upsert_job_tracked(job)
+                doc, outcome, reactivated = await self._repository.upsert_job_tracked(job)
+                if self._alert_processor is not None:
+                    await self._alert_processor.process_job_persisted(
+                        doc,
+                        outcome=outcome,
+                        reactivated=reactivated,
+                    )
             except Exception:
                 logger.exception(
                     "Job persistence failed source=%s source_job_id=%s",

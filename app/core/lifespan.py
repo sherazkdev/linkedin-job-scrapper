@@ -6,6 +6,7 @@ from fastapi import FastAPI
 
 from app.core.config import Settings, get_settings
 from app.core.logging import configure_logging
+from app.database.alert_indexes import ensure_alert_indexes
 from app.database.collection_indexes import ensure_collection_indexes
 from app.database.indexes import ensure_job_indexes
 from app.database.mongodb import get_mongodb
@@ -39,6 +40,8 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         mongodb.database,
         migrate_target_search_location=settings.allow_collection_target_index_migration,
     )
+    if settings.alerts_api_enabled:
+        await ensure_alert_indexes(mongodb.database)
 
     app.state.mongodb = mongodb
     app.state.redis = redis_client

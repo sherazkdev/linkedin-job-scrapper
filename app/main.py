@@ -6,6 +6,7 @@ from app.core.config import get_settings
 from app.core.exceptions import register_exception_handlers
 from app.core.lifespan import lifespan
 from app.core.middleware import SecurityHeadersMiddleware
+from app.modules.alerts import routes as alerts_routes
 from app.modules.jobs.routes import countries, jobs
 
 
@@ -24,12 +25,13 @@ def create_app() -> FastAPI:
             CORSMiddleware,
             allow_origins=origins,
             allow_credentials=True,
-            allow_methods=["GET", "HEAD", "OPTIONS"],
+            allow_methods=["GET", "HEAD", "OPTIONS", "POST", "PATCH", "DELETE"],
             allow_headers=["*"],
         )
     app.include_router(health.router)
     app.include_router(jobs.router)
     app.include_router(countries.router)
+    app.include_router(alerts_routes.router)
     app.include_router(internal_ops.router)
     return app
 
