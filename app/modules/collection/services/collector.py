@@ -6,6 +6,10 @@ from typing import Any
 
 from app.modules.collection.adapters.base import JobSourceAdapter
 from app.modules.collection.http.errors import PublicBoardCollectionError
+from app.modules.collection.linkedin.checkpoint_policy import (
+    persist_linkedin_run_checkpoint,
+    prepare_linkedin_run_checkpoint,
+)
 from app.modules.collection.linkedin.errors import LinkedInCollectionError, LinkedInFailureState
 from app.modules.collection.models.enums import CollectionRunStatus
 from app.modules.collection.models.stats import CollectionStats
@@ -75,6 +79,7 @@ class JobCollector:
         run_owner: str,
         data_provenance: JobDataProvenance | None = None,
         search_location: str | None = None,
+        linkedin_ignore_checkpoint: bool = False,
     ) -> dict[str, Any]:
         country_code = country_code.upper()
         keyword = keyword.strip().lower()
@@ -90,6 +95,7 @@ class JobCollector:
                 stats=stats,
                 data_provenance=data_provenance,
                 search_location=search_location,
+                linkedin_ignore_checkpoint=linkedin_ignore_checkpoint,
             )
             return {"run_id": None, "dry_run": True, "stats": stats.model_dump(), **result}
 
@@ -154,6 +160,7 @@ class JobCollector:
                 stats=stats,
                 data_provenance=data_provenance,
                 search_location=search_location,
+                linkedin_ignore_checkpoint=linkedin_ignore_checkpoint,
             )
             duration_seconds = round(time.monotonic() - run_started, 2)
             stats_dump = stats.model_dump()
@@ -270,15 +277,23 @@ class JobCollector:
         stats: CollectionStats,
         data_provenance: JobDataProvenance | None = None,
         search_location: str | None = None,
+        linkedin_ignore_checkpoint: bool = False,
     ) -> dict[str, Any]:
         checkpoint = None
         if persist:
-            checkpoint = await self._checkpoints.load(
+            stored = await self._checkpoints.load(
                 source=source,
                 country_code=country_code,
                 keyword=keyword,
                 search_location=search_location,
             )
+            if source == JobSource.LINKEDIN:
+                checkpoint = prepare_linkedin_run_checkpoint(
+                    stored,
+                    ignore_stored=linkedin_ignore_checkpoint,
+                )
+            else:
+                checkpoint = stored
         adapter_result = await self._fetch_with_retries(
             country_code=country_code,
             keyword=keyword,
@@ -322,12 +337,17 @@ class JobCollector:
                 "collection phase=mongo_persist event=end duration_ms=%s",
                 int((time.monotonic() - persist_started) * 1000),
             )
+        checkpoint_out = adapter_result.checkpoint
+        if persist:
+            checkpoint_out = adapter_result.checkpoint
+            if source == JobSource.LINKEDIN:
+                checkpoint_out = persist_linkedin_run_checkpoint(adapter_result.checkpoint)
             ck_started = time.monotonic()
             await self._checkpoints.save(
                 source=source,
                 country_code=country_code,
                 keyword=keyword,
-                checkpoint=adapter_result.checkpoint,
+                checkpoint=checkpoint_out,
                 search_location=search_location,
             )
             logger.info(
@@ -337,7 +357,7 @@ class JobCollector:
         stats.merge(persistence_stats)
 
         return {
-            "checkpoint": adapter_result.checkpoint,
+            "checkpoint": checkpoint_out,
             "has_more": adapter_result.has_more,
             "normalized": len(normalized_jobs),
             "adapter_metrics": adapter_metrics,

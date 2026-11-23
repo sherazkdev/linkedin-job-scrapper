@@ -96,6 +96,12 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help="LinkedIn search location override (e.g. 'Islamabad, Pakistan')",
     )
     parser.add_argument(
+        "--ignore-checkpoint",
+        action="store_true",
+        dest="ignore_checkpoint",
+        help="LinkedIn only: start at SERP page 0 with no stored processed_ids",
+    )
+    parser.add_argument(
         "--market-search-offline",
         dest="market_search_offline",
         default=None,
@@ -321,6 +327,9 @@ async def run_collect(argv: list[str] | None = None) -> int:
                 run_owner=args.run_owner,
                 data_provenance=data_provenance,
                 search_location=args.location,
+                linkedin_ignore_checkpoint=bool(
+                    args.ignore_checkpoint and source == JobSource.LINKEDIN
+                ),
             )
         finally:
             await collector.shutdown()
