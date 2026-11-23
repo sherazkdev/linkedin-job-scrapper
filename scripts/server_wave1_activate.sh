@@ -3,7 +3,8 @@
 set -euo pipefail
 APP_DIR=/var/www/linkedin-job-scrapper
 cd "$APP_DIR"
-COMPOSE="docker compose -f compose.yaml -f compose.contabo-vps.yaml -f compose.contabo-wave1.yaml -p linkedin-scraper"
+# shellcheck source=lib_compose.sh
+. scripts/lib_compose.sh
 export GIT_TERMINAL_PROMPT=0
 WAVE1_CONTAINER=linkedin-scraper-worker-linkedin
 WAVE1_FAILED=0
@@ -26,7 +27,7 @@ echo "DEPLOYED_SHA=$(git rev-parse HEAD)"
 
 bash scripts/server_wave1_preflight.sh
 
-$COMPOSE build worker-linkedin
+"${COMPOSE[@]}" build worker-linkedin
 
 echo "STEP stop_generic_worker"
 docker stop linkedin-scraper-worker 2>/dev/null || true
@@ -39,7 +40,7 @@ ENABLE_CMD=(python -m app.cli.wave1_ops enable-group --group "${WAVE1_ENABLE_GRO
 if [ -n "${WAVE1_MAX_JOBS_PER_RUN}" ]; then
   ENABLE_CMD+=(--max-jobs "${WAVE1_MAX_JOBS_PER_RUN}")
 fi
-$COMPOSE run --rm --no-deps worker-linkedin "${ENABLE_CMD[@]}"
+"${COMPOSE[@]}" run --rm --no-deps worker-linkedin "${ENABLE_CMD[@]}"
 START_ISO=$(date -u +%Y-%m-%dT%H:%M:%S+00:00)
 mkdir -p evidence/wave1_observation
 printf '%s\n' "{\"started_at\":\"${START_ISO}\"}" >evidence/wave1_observation/wave1_started_at.json
@@ -65,7 +66,7 @@ if [ -f evidence/wave1_observation/wave1_activation.json ]; then
 fi
 
 echo "STEP start_worker_only"
-$COMPOSE --profile celery-linkedin up -d --force-recreate worker-linkedin
+"${COMPOSE[@]}" --profile celery-linkedin up -d --force-recreate worker-linkedin
 docker stop linkedin-scraper-worker 2>/dev/null || true
 docker rm -f linkedin-scraper-worker 2>/dev/null || true
 
@@ -103,7 +104,7 @@ sleep 2
 kill -0 "$OBSERVER_PID" 2>/dev/null || wave1_fail 13
 
 echo "STEP start_beat"
-$COMPOSE --profile celery --profile celery-linkedin up -d --no-deps beat
+"${COMPOSE[@]}" --profile celery --profile celery-linkedin up -d --no-deps beat
 sleep 5
 docker ps --format '{{.Names}}' | grep -qx linkedin-scraper-beat || wave1_fail 14
 docker exec linkedin-scraper-beat printenv CELERY_WORKER_MONGO_DB_NAME | grep -qx global_jobs_pilot \

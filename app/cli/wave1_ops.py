@@ -39,7 +39,7 @@ def _wave1_max_jobs() -> int:
 def _persist_wave1_activation(
     *,
     group: str | None,
-    keyword: str,
+    keywords: list[str],
     max_jobs_per_run: int,
     enabled_targets: int,
 ) -> None:
@@ -47,7 +47,8 @@ def _persist_wave1_activation(
     payload = {
         "updated_at": datetime.now(UTC).isoformat(),
         "group": group,
-        "keyword": keyword,
+        "keywords": keywords,
+        "keyword": keywords[0] if len(keywords) == 1 else None,
         "max_jobs_per_run": max_jobs_per_run,
         "enabled_targets": enabled_targets,
     }
@@ -221,7 +222,7 @@ async def _enable(db_name: str) -> int:
         )
     _persist_wave1_activation(
         group="legacy_enable",
-        keyword=WAVE1_KEYWORD,
+        keywords=[WAVE1_KEYWORD],
         max_jobs_per_run=_wave1_max_jobs(),
         enabled_targets=enabled,
     )
@@ -254,6 +255,11 @@ async def _enable(db_name: str) -> int:
     return 0
 
 
+def _normalized_keywords(group: dict) -> list[str]:
+    raw = group.get("keywords") or []
+    return [str(k).strip().lower() for k in raw if str(k).strip()]
+
+
 async def _enable_group(db_name: str, *, group_name: str, max_jobs: int | None) -> int:
     settings = get_settings()
     _assert_pilot_db_only(settings)
@@ -261,43 +267,52 @@ async def _enable_group(db_name: str, *, group_name: str, max_jobs: int | None) 
     if not settings.allow_live_linkedin_collection:
         raise SystemExit("enable-group requires ALLOW_LIVE_LINKEDIN_COLLECTION=true")
     group = _load_keyword_group(group_name)
-    keywords = group.get("keywords") or []
+    keywords = _normalized_keywords(group)
     if not keywords:
         raise SystemExit(f"Group {group_name!r} has no keywords")
-    if len(keywords) != 1:
-        raise SystemExit(
-            "enable-group activates one keyword at a time across Wave 1 countries; "
-            f"group has {len(keywords)} keywords — split or use separate group"
-        )
-    keyword = str(keywords[0]).strip().lower()
     per_run = max_jobs if max_jobs is not None else int(group.get("default_max_jobs_per_run", _wave1_max_jobs()))
     per_run = max(1, min(per_run, settings.linkedin_max_jobs_per_run_hard_cap))
+    if per_run > settings.linkedin_max_live_jobs_per_run and not settings.linkedin_honor_target_batch_sizes:
+        raise SystemExit(
+            f"Refusing enable-group: max_jobs_per_run={per_run} exceeds "
+            f"LINKEDIN_MAX_LIVE_JOBS_PER_RUN={settings.linkedin_max_live_jobs_per_run}. "
+            "Set LINKEDIN_HONOR_TARGET_BATCH_SIZES=true on worker for explicit 10/15 trial."
+        )
     countries = _manifest_country_codes()
-    priority = int(group.get("priority", 100))
+    base_priority = int(group.get("priority", 100))
+    expected_enabled = len(countries) * len(keywords)
+    max_allowed = int(group.get("max_enabled_targets") or expected_enabled)
+    if expected_enabled > max_allowed:
+        raise SystemExit(
+            f"Group would enable {expected_enabled} targets; max_enabled_targets={max_allowed}"
+        )
     async with open_database(db_name) as database:
         await database["collection_targets"].update_many(
             {"source": JobSource.LINKEDIN.value},
             {"$set": {"enabled": False}},
         )
         repo = TargetRepository(database)
-        for cc in countries:
-            await repo.upsert_target(
-                source=JobSource.LINKEDIN,
-                country_code=cc,
-                keyword=keyword,
-                search_location=None,
-                enabled=True,
-                priority=priority,
-                max_jobs_per_run=per_run,
-            )
+        for kw_index, keyword in enumerate(keywords):
+            # Stagger priority so fair country dispatch rotates keywords over time.
+            kw_priority = base_priority - kw_index
+            for cc in countries:
+                await repo.upsert_target(
+                    source=JobSource.LINKEDIN,
+                    country_code=cc,
+                    keyword=keyword,
+                    search_location=None,
+                    enabled=True,
+                    priority=kw_priority,
+                    max_jobs_per_run=per_run,
+                )
         enabled = await database["collection_targets"].count_documents(
-            {"source": JobSource.LINKEDIN.value, "enabled": True, "keyword": keyword}
+            {"source": JobSource.LINKEDIN.value, "enabled": True}
         )
-    if enabled != WAVE1_MAX_TARGETS:
-        raise SystemExit(f"enable-group expected {WAVE1_MAX_TARGETS} enabled, got {enabled}")
+    if enabled != expected_enabled:
+        raise SystemExit(f"enable-group expected {expected_enabled} enabled, got {enabled}")
     _persist_wave1_activation(
         group=group_name,
-        keyword=keyword,
+        keywords=keywords,
         max_jobs_per_run=per_run,
         enabled_targets=enabled,
     )
@@ -306,9 +321,11 @@ async def _enable_group(db_name: str, *, group_name: str, max_jobs: int | None) 
             {
                 "ok": True,
                 "group": group_name,
-                "keyword": keyword,
+                "keywords": keywords,
                 "max_jobs_per_run": per_run,
                 "enabled_targets": enabled,
+                "countries": len(countries),
+                "honor_target_batch_sizes": settings.linkedin_honor_target_batch_sizes,
             }
         )
     )

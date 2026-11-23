@@ -93,6 +93,12 @@ class Settings(BaseSettings):
     linkedin_max_live_jobs_per_run: int = Field(
         default=5,
         alias="LINKEDIN_MAX_LIVE_JOBS_PER_RUN",
+        description="Default soft ceiling per run when honor-target trial mode is off.",
+    )
+    linkedin_honor_target_batch_sizes: bool = Field(
+        default=False,
+        alias="LINKEDIN_HONOR_TARGET_BATCH_SIZES",
+        description="When true, dispatcher uses target max_jobs_per_run up to hard cap (10/15 trials).",
     )
     linkedin_filter_past_24_hours: bool = Field(
         default=True,

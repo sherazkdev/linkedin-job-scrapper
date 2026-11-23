@@ -151,11 +151,17 @@ async def run_collect(argv: list[str] | None = None) -> int:
                         "Live LinkedIn collection requires --confirm-live on the command line "
                         "in addition to ALLOW_LIVE_LINKEDIN_COLLECTION=true."
                     )
+                from app.workers.linkedin_batch_cap import resolve_linkedin_max_jobs_per_run
+
+                effective = resolve_linkedin_max_jobs_per_run(args.max_jobs, settings)
                 logger.warning(
-                    "Live LinkedIn mode acknowledged by operator; max jobs capped to %s",
+                    "Live LinkedIn mode acknowledged by operator; max jobs effective=%s "
+                    "(honor_target=%s soft_cap=%s)",
+                    effective,
+                    settings.linkedin_honor_target_batch_sizes,
                     settings.linkedin_max_live_jobs_per_run,
                 )
-                args.max_jobs = min(args.max_jobs, settings.linkedin_max_live_jobs_per_run)
+                args.max_jobs = effective
         elif linkedin_offline is None:
             raise SystemExit(
                 "LinkedIn collection requires offline HTML fixtures "

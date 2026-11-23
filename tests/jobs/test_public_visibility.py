@@ -76,10 +76,19 @@ async def test_expiry_idempotent(integration_db: None) -> None:
         preview = await svc.apply_public_listing_expiry(max_age_days=7, dry_run=True, limit=50)
         assert preview["candidates"] >= 1
         first = await svc.apply_public_listing_expiry(
-            max_age_days=7, dry_run=False, limit=50, batch_id="b1"
+            max_age_days=7,
+            dry_run=False,
+            limit=50,
+            batch_id="b1",
+            all_batches=True,
         )
         second = await svc.apply_public_listing_expiry(
-            max_age_days=7, dry_run=False, limit=50, batch_id="b2"
+            max_age_days=7,
+            dry_run=False,
+            limit=50,
+            batch_id="b2",
+            all_batches=True,
         )
         assert first["updated"] >= 1
         assert second["updated"] == 0
+        assert first["candidates_remaining"] == 0

@@ -1,87 +1,125 @@
-# Collection integration deploy (LinkedIn only)
+# Production deploy — LinkedIn scraper (no live collection until auth restored)
 
-## Throughput expectations (corrected)
+## Throughput (corrected)
 
-With **30 live runs/day** and up to **15 jobs/run**, the theoretical upper bound is **450 fetched records per day** before deduplication, relevance rejection, and duplicate handling. **300–500 new unique jobs/day is a goal, not a guarantee.**
+**30 live runs/day × 15 jobs/run = ≤450 fetched records/day** (before dedup/filters). **300–500 unique new jobs/day is not guaranteed.**
 
-## Compose usage (VPS)
+## Compose (required file order)
 
-Always use the **full stack** of files — do not deploy with a single override in isolation:
+Containers when project `linkedin-scraper` is up on Contabo:
+
+| Service       | Container name                  |
+|---------------|---------------------------------|
+| Production API| `linkedin-scraper-api`          |
+| Pilot API     | `linkedin-scraper-api-pilot`    |
+| MongoDB       | `linkedin-scraper-mongodb`      |
+| Redis         | `linkedin-scraper-redis`        |
+| LinkedIn worker | `linkedin-scraper-worker-linkedin` |
+| Beat          | `linkedin-scraper-beat`         |
 
 ```bash
 cd /var/www/linkedin-job-scrapper
-COMPOSE="docker compose -f compose.yaml -f compose.contabo-vps.yaml -f compose.contabo-wave1.yaml -p linkedin-scraper"
+source scripts/lib_compose.sh
+"${COMPOSE[@]}" config --services   # verify api, api-pilot, mongodb, redis, worker-linkedin, beat
 ```
 
-**Do not** run `docker volume prune`, `down -v`, or other destructive volume operations in production.
+## Cron timezone
 
-## Wave 1 activation (when auth is restored and operator approves)
-
-Do **not** activate while LinkedIn reports authentication/verification failures.
+Crontab installed by `server_install_production_ops_cron.sh` sets **`CRON_TZ=UTC`**. VPS local offset may differ — confirm:
 
 ```bash
-export WAVE1_ENABLE_GROUP=software_core      # or software_expanded_10, etc.
-export WAVE1_MAX_JOBS_PER_RUN=10             # optional; capped by worker env
-bash scripts/server_wave1_activate.sh
+timedatectl
+crontab -l | head -1
 ```
 
-Activation uses `wave1_ops enable-group` and writes `evidence/wave1_observation/wave1_activation.json`.
+| UTC (cron)   | Job                                      |
+|--------------|------------------------------------------|
+| `*/10 * * * *` | Observer watchdog                     |
+| `30 */6 * * *` | Publication upsert sync (no deprecate) |
+| `0 */6 * * *`  | Read-only monitor                     |
+| `15 3 * * *`   | Job expiry (pilot apply only by default) |
+| `45 3 * * 0`   | Lifecycle publication (gated)            |
 
-After manual session refresh, reset auth counting:
-
-```bash
-date -u +%Y-%m-%dT%H:%M:%SZ | xargs -I{} printf '{"session_epoch_at":"{}"}\n' > evidence/wave1_observation/session_epoch_at.json
-```
-
-## Job expiry (daily)
-
-Dry-run (default in CLI; cron uses apply when enabled):
+## Copy-paste deploy procedure (code + APIs only — **do not** activate Wave 1)
 
 ```bash
-ALLOW_SCHEDULED_JOB_EXPIRY=true JOB_EXPIRY_APPLY=false bash scripts/server_job_expiry_scheduled.sh
-```
+cd /var/www/linkedin-job-scrapper
+source scripts/lib_compose.sh
+export DEPLOY_SHA=REPLACE_WITH_VERIFIED_SHA
 
-Apply (marks `status=expired`, no deletes):
+git fetch origin
+git checkout "$DEPLOY_SHA"
+git rev-parse HEAD
 
-```bash
-ALLOW_SCHEDULED_JOB_EXPIRY=true JOB_EXPIRY_APPLY=true bash scripts/server_job_expiry_scheduled.sh
-```
+"${COMPOSE[@]}" build api api-pilot
+"${COMPOSE[@]}" up -d mongodb redis
+"${COMPOSE[@]}" up -d api api-pilot
+docker ps --format 'table {{.Names}}\t{{.Status}}' | grep linkedin-scraper
 
-## Pilot→production lifecycle propagation
+# Preview seven-day impact (read-only, both DBs)
+ALLOW_SCHEDULED_JOB_EXPIRY=true \
+  JOB_EXPIRY_APPLY_PILOT=false JOB_EXPIRY_PRODUCTION_APPLY=false \
+  bash scripts/server_job_expiry_scheduled.sh
+ls -1t evidence/job_lifecycle/expiry_preview_*.json | head -1 | xargs cat
 
-Preview only:
-
-```bash
 docker exec linkedin-scraper-api-pilot python -m app.cli.promote_pilot lifecycle-preview
 ```
 
-Scheduled (deprecate only when gates allow; mass wave requires explicit approval):
+### First production expiry wave (operator approval only)
 
 ```bash
-ALLOW_SCHEDULED_LIFECYCLE_PUBLICATION=true bash scripts/server_publication_lifecycle_scheduled.sh
+bash scripts/server_mongo_backup_jobs.sh global_jobs_pilot
+bash scripts/server_mongo_backup_jobs.sh global_jobs
+
+ALLOW_SCHEDULED_JOB_EXPIRY=true \
+  JOB_EXPIRY_APPLY_PILOT=true JOB_EXPIRY_PRODUCTION_APPLY=true \
+  bash scripts/server_job_expiry_scheduled.sh
+
+# Optional: propagate expired pilot rows to production (mass gate may block — see lifecycle-preview)
+ALLOW_SCHEDULED_LIFECYCLE_PUBLICATION=true \
+  ALLOW_PILOT_TO_PRODUCTION_PROMOTION=true \
+  ALLOW_MASS_LIFECYCLE_DEPRECATION=true \
+  bash scripts/server_publication_lifecycle_scheduled.sh
 ```
 
-First wave when most catalog is &gt;7 days old:
+### Post-deploy API checks
 
 ```bash
-ALLOW_SCHEDULED_LIFECYCLE_PUBLICATION=true ALLOW_MASS_LIFECYCLE_DEPRECATION=true \
-  ALLOW_PILOT_TO_PRODUCTION_PROMOTION=true bash scripts/server_publication_lifecycle_scheduled.sh
+curl -fsS https://jobsfinder.batteryanimation2.com/api/v1/jobs/stats | python3 -m json.tool
+curl -fsS "https://jobsfinder.batteryanimation2.com/api/v1/jobs?page=1&page_size=5" | python3 -m json.tool
+curl -fsS https://jobsfinder.batteryanimation2.com/api/v1/jobs/countries | python3 -m json.tool
 ```
 
-**Never** run `promote_pilot sync-apply --deprecate` manually without `lifecycle-preview`, backup, and locks.
+After expiry, expect **`total_active`** and list **`total`** to drop for jobs older than seven days; sorting remains **newest `posted_at` / `first_seen_at` first**.
 
-## Rollback (code)
+## 10/15 job trials (when auth restored — separate step)
+
+On worker only after explicit approval, set in `compose.contabo-wave1.yaml` (or env):
+
+- `LINKEDIN_HONOR_TARGET_BATCH_SIZES=true`
+- Keep `LINKEDIN_MAX_LIVE_JOBS_PER_RUN=5` unless intentionally raising the default soft cap
+
+```bash
+export WAVE1_ENABLE_GROUP=software_expanded_10
+export WAVE1_MAX_JOBS_PER_RUN=10
+# bash scripts/server_wave1_activate.sh   # ONLY after session refresh + operator sign-off
+```
+
+Default without honor flag: targets configured for 10/15 still dispatch **max 5** jobs/run.
+
+## Rollback
 
 ```bash
 cd /var/www/linkedin-job-scrapper
-git fetch origin
-git checkout <previous_sha>
-$COMPOSE build api api-pilot worker-linkedin
-$COMPOSE up -d api api-pilot
+source scripts/lib_compose.sh
+git checkout 2d0b1f4
+"${COMPOSE[@]}" build api api-pilot
+"${COMPOSE[@]}" up -d api api-pilot
+# Restore Mongo from evidence/mongo_backups/*/ if expiry was applied in error
 ```
 
-Restore Mongo from `evidence/promotion_backups/` promotion backups if lifecycle apply was wrong.
+**Do not** use `docker compose down -v` or volume prune.
 
 ## Job alerts
 
-`app/modules/alerts/` is **foundation only** — no subscriber persistence API, no push credentials, no device delivery. Not production-ready for notifications.
+`app/modules/alerts/` — **incomplete** (no subscriber DB, no push delivery).

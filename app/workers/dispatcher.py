@@ -12,6 +12,7 @@ from app.modules.collection.repositories.checkpoint_repository import (
 )
 from app.modules.jobs.models.job import JobSource
 from app.workers.fair_dispatch import fair_country_round_robin
+from app.workers.linkedin_batch_cap import resolve_linkedin_max_jobs_per_run
 from app.workers.policy import allowed_task_sources
 
 logger = logging.getLogger(__name__)
@@ -64,9 +65,7 @@ def target_max_jobs(doc: dict[str, Any], settings: Settings) -> int:
     else:
         cap = settings.celery_collection_max_jobs_default
     if str(doc.get("source") or "") == JobSource.LINKEDIN.value:
-        cap = min(cap, settings.linkedin_max_jobs_per_run_hard_cap)
-        if settings.allow_live_linkedin_collection:
-            cap = min(cap, settings.linkedin_max_live_jobs_per_run)
+        return resolve_linkedin_max_jobs_per_run(int(cap), settings)
     return min(int(cap), 500)
 
 

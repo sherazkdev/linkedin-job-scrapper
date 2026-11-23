@@ -37,6 +37,7 @@ def test_publication_sync_no_auto_deprecate(_require_scripts: None) -> None:
 
 def test_production_ops_cron_schedule(_require_scripts: None) -> None:
     text = (_REPO / "scripts/server_install_production_ops_cron.sh").read_text(encoding="utf-8")
+    assert "CRON_TZ=UTC" in text
     assert "*/10 * * * *" in text
     assert "30 */6 * * *" in text
     assert "server_wave1_observer_check.sh" in text
@@ -47,8 +48,9 @@ def test_job_expiry_scheduled_gates(_require_scripts: None) -> None:
     text = (_REPO / "scripts/server_job_expiry_scheduled.sh").read_text(encoding="utf-8")
     assert "ALLOW_SCHEDULED_JOB_EXPIRY" in text
     assert "flock" in text
-    assert "expire-public" in text
-    assert "JOB_EXPIRY_APPLY" in text
+    assert "expire-preview" in text
+    assert "JOB_EXPIRY_PRODUCTION_APPLY" in text
+    assert "server_mongo_backup_jobs.sh" in text
 
 
 def test_lifecycle_sync_scheduled_gates(_require_scripts: None) -> None:

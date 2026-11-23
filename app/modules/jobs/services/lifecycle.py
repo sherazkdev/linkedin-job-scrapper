@@ -84,6 +84,45 @@ class JobLifecycleService:
                 break
         return out
 
+    async def count_public_expiry_candidates(
+        self,
+        *,
+        max_age_days: int,
+        source: str | None = None,
+    ) -> dict[str, Any]:
+        if max_age_days <= 0:
+            return {"active_total": 0, "candidates": 0}
+        clock = datetime.now(UTC)
+        cutoff = clock - timedelta(days=max_age_days)
+        match: dict[str, Any] = {"status": JobStatus.ACTIVE.value}
+        if source:
+            match["source"] = source
+        active_total = await self._jobs.count_documents(match)
+        cursor = self._jobs.find(
+            match,
+            projection={"sourceJobId": 1, "title": 1, "posted_at": 1, "first_seen_at": 1},
+        )
+        candidates = 0
+        samples: list[dict[str, Any]] = []
+        async for doc in cursor:
+            anchor = effective_public_listing_date(doc)
+            if anchor is None or anchor < cutoff:
+                candidates += 1
+                if len(samples) < 10:
+                    samples.append(
+                        {
+                            "sourceJobId": doc.get("sourceJobId"),
+                            "title": doc.get("title"),
+                            "anchor": anchor.isoformat() if anchor else None,
+                        }
+                    )
+        return {
+            "active_total": active_total,
+            "candidates": candidates,
+            "max_age_days": max_age_days,
+            "sample_candidates": samples,
+        }
+
     async def apply_public_listing_expiry(
         self,
         *,
@@ -92,44 +131,65 @@ class JobLifecycleService:
         dry_run: bool = True,
         limit: int = 200,
         batch_id: str | None = None,
+        all_batches: bool = False,
     ) -> dict[str, Any]:
         """
         Mark jobs EXPIRED when public display age exceeds max_age_days.
         Uses posted_at, else first_seen_at. Does not use last_seen_at.
         Idempotent: already-expired rows are skipped.
         """
-        candidates = await self.list_public_expiry_candidates(
-            max_age_days=max_age_days,
-            source=source,
-            limit=limit,
-        )
-        if dry_run or not candidates:
+        if dry_run:
+            preview = await self.count_public_expiry_candidates(
+                max_age_days=max_age_days,
+                source=source,
+            )
             return {
-                "dry_run": dry_run,
-                "candidates": len(candidates),
+                "dry_run": True,
+                "candidates": int(preview["candidates"]),
+                "active_total": int(preview["active_total"]),
                 "updated": 0,
                 "batch_id": batch_id,
                 "reason_code": "public_listing_max_age",
+                "sample_candidates": preview.get("sample_candidates"),
             }
         now = datetime.now(UTC)
-        updated = 0
-        for doc in candidates:
-            result = await self._jobs.update_one(
-                {"_id": doc["_id"], "status": JobStatus.ACTIVE.value},
-                {
-                    "$set": {
-                        "status": JobStatus.EXPIRED.value,
-                        "expired_at": now,
-                        "expiry_reason": "public_listing_max_age",
-                        "expiry_batch_id": batch_id,
-                    }
-                },
+        total_updated = 0
+        batches = 0
+        while True:
+            candidates = await self.list_public_expiry_candidates(
+                max_age_days=max_age_days,
+                source=source,
+                limit=limit,
             )
-            updated += int(result.modified_count)
+            if not candidates:
+                break
+            batch_updated = 0
+            for doc in candidates:
+                result = await self._jobs.update_one(
+                    {"_id": doc["_id"], "status": JobStatus.ACTIVE.value},
+                    {
+                        "$set": {
+                            "status": JobStatus.EXPIRED.value,
+                            "expired_at": now,
+                            "expiry_reason": "public_listing_max_age",
+                            "expiry_batch_id": batch_id,
+                        }
+                    },
+                )
+                batch_updated += int(result.modified_count)
+            total_updated += batch_updated
+            batches += 1
+            if not all_batches or batch_updated == 0:
+                break
+        preview = await self.count_public_expiry_candidates(
+            max_age_days=max_age_days,
+            source=source,
+        )
         return {
             "dry_run": False,
-            "candidates": len(candidates),
-            "updated": updated,
+            "candidates_remaining": int(preview["candidates"]),
+            "updated": total_updated,
+            "batches_processed": batches,
             "batch_id": batch_id,
             "reason_code": "public_listing_max_age",
         }

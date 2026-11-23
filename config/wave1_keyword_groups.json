@@ -4,6 +4,7 @@
       "description": "Wave 1 primary software roles — one keyword per country at a time",
       "keywords": ["software engineer"],
       "default_max_jobs_per_run": 5,
+      "max_enabled_targets": 40,
       "priority": 100
     },
     "software_expanded_10": {
@@ -16,22 +17,26 @@
         "devops engineer"
       ],
       "default_max_jobs_per_run": 10,
+      "max_enabled_targets": 200,
       "priority": 110
     },
     "software_expanded_15": {
       "description": "Higher batch only after operational verification",
       "keywords": ["data engineer", "mobile developer"],
       "default_max_jobs_per_run": 15,
+      "max_enabled_targets": 80,
       "priority": 120
     },
     "product_design_pm": {
       "keywords": ["product manager", "ui/ux designer", "data analyst"],
       "default_max_jobs_per_run": 5,
+      "max_enabled_targets": 120,
       "priority": 90
     },
     "part_time_internships": {
       "keywords": ["part-time jobs", "internships"],
       "default_max_jobs_per_run": 5,
+      "max_enabled_targets": 80,
       "priority": 80,
       "note": "Employment type inferred from listing body, not keyword alone."
     }
