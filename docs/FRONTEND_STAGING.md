@@ -9,15 +9,15 @@ cd /var/www/linkedin-job-scrapper
 bash scripts/_vps_frontend_staging_deploy.sh
 ```
 
-Compose overlay: `compose.contabo-frontend-staging.yaml` (port **127.0.0.1:3001**).
+Compose overlay: `compose.contabo-frontend-staging.yaml` (port **127.0.0.1:3010**).
 
 ## Local access via SSH tunnel
 
 ```bash
-ssh -L 3001:127.0.0.1:3001 -L 18097:127.0.0.1:18097 user@your-vps
+ssh -L 3010:127.0.0.1:3010 -L 18097:127.0.0.1:18097 user@your-vps
 ```
 
-Open http://localhost:3001 — `APP_URL` on the server must match what the browser uses for CSRF (`http://127.0.0.1:3001` when tunneling to 3001).
+Open http://localhost:3010 — `APP_URL` on the server must match what the browser uses for CSRF (`http://127.0.0.1:3010` when tunneling to 3010).
 
 ## Safety
 
