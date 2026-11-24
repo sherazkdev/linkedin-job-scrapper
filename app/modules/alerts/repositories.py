@@ -56,19 +56,38 @@ class SavedSearchRepository:
         self._col: AsyncCollection[Any] = database[SAVED_JOB_SEARCHES]
         self._digest_state = DigestStateRepository(database)
 
+    def _schedule_from_payload(self, payload: dict[str, Any]) -> DigestSchedule | None:
+        if not payload.get("digest_enabled"):
+            return None
+        return DigestSchedule(
+            timezone=str(payload.get("digest_timezone") or "UTC"),
+            local_time=str(payload.get("digest_local_time") or "09:00"),
+            max_jobs=int(payload.get("digest_max_jobs") or 10),
+        )
+
+    async def _validate_digest_schedule(
+        self,
+        *,
+        subscriber_id: str,
+        payload: dict[str, Any],
+    ) -> None:
+        schedule = self._schedule_from_payload(payload)
+        if schedule is None:
+            return
+        await self._digest_state.assert_schedule_compatible(
+            subscriber_id=subscriber_id,
+            schedule=schedule,
+        )
+
     async def _sync_digest_schedule(
         self,
         *,
         subscriber_id: str,
         payload: dict[str, Any],
     ) -> None:
-        if not payload.get("digest_enabled"):
+        schedule = self._schedule_from_payload(payload)
+        if schedule is None:
             return
-        schedule = DigestSchedule(
-            timezone=str(payload.get("digest_timezone") or "UTC"),
-            local_time=str(payload.get("digest_local_time") or "09:00"),
-            max_jobs=int(payload.get("digest_max_jobs") or 10),
-        )
         await self._digest_state.upsert_schedule_if_compatible(
             subscriber_id=subscriber_id,
             schedule=schedule,
@@ -99,12 +118,12 @@ class SavedSearchRepository:
             "created_at": now,
             "updated_at": now,
         }
-        await self._col.insert_one(doc)
         try:
-            await self._sync_digest_schedule(subscriber_id=subscriber_id, payload=doc)
+            await self._validate_digest_schedule(subscriber_id=subscriber_id, payload=doc)
         except ValueError:
-            await self._col.delete_one({"search_id": doc["search_id"]})
             raise
+        await self._col.insert_one(doc)
+        await self._sync_digest_schedule(subscriber_id=subscriber_id, payload=doc)
         return doc
 
     async def list_for_subscriber(self, subscriber_id: str) -> list[dict[str, Any]]:
@@ -121,13 +140,21 @@ class SavedSearchRepository:
         search_id: str,
         updates: dict[str, Any],
     ) -> dict[str, Any] | None:
-        updates["updated_at"] = datetime.now(UTC)
+        existing = await self.get_owned(subscriber_id=subscriber_id, search_id=search_id)
+        if existing is None:
+            return None
+        merged = {**existing, **updates}
+        merged["updated_at"] = datetime.now(UTC)
+        try:
+            await self._validate_digest_schedule(subscriber_id=subscriber_id, payload=merged)
+        except ValueError:
+            raise
         doc = await self._col.find_one_and_update(
             {"subscriber_id": subscriber_id, "search_id": search_id},
-            {"$set": updates},
+            {"$set": updates | {"updated_at": merged["updated_at"]}},
             return_document=True,
         )
-        if doc is not None and updates.get("digest_enabled"):
+        if doc is not None:
             await self._sync_digest_schedule(subscriber_id=subscriber_id, payload=doc)
         return doc
 
@@ -249,25 +276,34 @@ class DigestStateRepository:
     async def get(self, subscriber_id: str) -> dict[str, Any] | None:
         return await self._col.find_one({"subscriber_id": subscriber_id})
 
-    async def upsert_schedule_if_compatible(
+    async def assert_schedule_compatible(
         self,
         *,
         subscriber_id: str,
         schedule: DigestSchedule,
     ) -> None:
         existing = await self.get(subscriber_id)
-        now = datetime.now(UTC)
-        if existing:
-            prior = DigestSchedule(
-                timezone=str(existing.get("digest_timezone") or "UTC"),
-                local_time=str(existing.get("digest_local_time") or "09:00"),
-                max_jobs=int(existing.get("digest_max_jobs") or 10),
+        if not existing:
+            return
+        prior = DigestSchedule(
+            timezone=str(existing.get("digest_timezone") or "UTC"),
+            local_time=str(existing.get("digest_local_time") or "09:00"),
+            max_jobs=int(existing.get("digest_max_jobs") or 10),
+        )
+        if schedule_conflicts(prior, schedule):
+            raise ValueError(
+                "Digest schedule conflicts with existing subscriber digest "
+                f"(tz={prior.timezone} time={prior.local_time} max={prior.max_jobs})"
             )
-            if schedule_conflicts(prior, schedule):
-                raise ValueError(
-                    "Digest schedule conflicts with existing subscriber digest "
-                    f"(tz={prior.timezone} time={prior.local_time} max={prior.max_jobs})"
-                )
+
+    async def upsert_schedule_if_compatible(
+        self,
+        *,
+        subscriber_id: str,
+        schedule: DigestSchedule,
+    ) -> None:
+        await self.assert_schedule_compatible(subscriber_id=subscriber_id, schedule=schedule)
+        now = datetime.now(UTC)
         await self._col.update_one(
             {"subscriber_id": subscriber_id},
             {
@@ -297,24 +333,84 @@ class DigestStateRepository:
         )
 
 
+_STALE_PROCESSING_SECONDS = 1800
+
+
 class DigestDeliveryRepository:
-    """Atomic once-per-local-day digest claims (safe under concurrent workers)."""
+    """Per-day digest delivery lifecycle: processing → completed | failed (retries allowed)."""
 
     def __init__(self, database: AsyncDatabase[Any]) -> None:
         self._col: AsyncCollection[Any] = database[ALERT_DIGEST_DELIVERIES]
 
-    async def try_claim(self, *, subscriber_id: str, digest_key: str) -> bool:
+    async def try_begin_processing(self, *, subscriber_id: str, digest_key: str) -> bool:
         now = datetime.now(UTC)
+        existing = await self._col.find_one(
+            {"subscriber_id": subscriber_id, "digest_key": digest_key}
+        )
+        if existing:
+            status = str(existing.get("status") or "")
+            if status == "completed":
+                return False
+            if status == "processing":
+                started = existing.get("started_at")
+                if isinstance(started, datetime):
+                    age = (now - started.astimezone(UTC)).total_seconds()
+                    if age < _STALE_PROCESSING_SECONDS:
+                        return False
+                await self._col.update_one(
+                    {"_id": existing["_id"], "status": "processing"},
+                    {"$set": {"status": "failed", "failed_at": now, "error": "stale_processing"}},
+                )
+            if status in {"failed", "processing"}:
+                updated = await self._col.update_one(
+                    {
+                        "subscriber_id": subscriber_id,
+                        "digest_key": digest_key,
+                        "status": {"$in": ["failed", "processing"]},
+                    },
+                    {"$set": {"status": "processing", "started_at": now}},
+                )
+                return updated.modified_count == 1
+            return False
         doc = {
             "subscriber_id": subscriber_id,
             "digest_key": digest_key,
-            "claimed_at": now,
+            "status": "processing",
+            "started_at": now,
         }
         try:
             await self._col.insert_one(doc)
             return True
         except DuplicateKeyError:
-            return False
+            return await self.try_begin_processing(
+                subscriber_id=subscriber_id, digest_key=digest_key
+            )
+
+    async def mark_completed(
+        self,
+        *,
+        subscriber_id: str,
+        digest_key: str,
+        notification_count: int,
+    ) -> None:
+        now = datetime.now(UTC)
+        await self._col.update_one(
+            {"subscriber_id": subscriber_id, "digest_key": digest_key},
+            {
+                "$set": {
+                    "status": "completed",
+                    "completed_at": now,
+                    "notification_count": notification_count,
+                }
+            },
+        )
+
+    async def mark_failed(self, *, subscriber_id: str, digest_key: str) -> None:
+        now = datetime.now(UTC)
+        await self._col.update_one(
+            {"subscriber_id": subscriber_id, "digest_key": digest_key},
+            {"$set": {"status": "failed", "failed_at": now}},
+        )
 
     async def delete_for_subscribers(self, subscriber_ids: list[str]) -> int:
         if not subscriber_ids:

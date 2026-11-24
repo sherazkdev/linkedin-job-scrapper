@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import UTC, datetime
 from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response, status
@@ -165,7 +166,10 @@ async def update_search(
     updates = {k: v for k, v in body.model_dump().items() if v is not None}
     if "employment_type" in updates and updates["employment_type"] is not None:
         updates["employment_type"] = updates["employment_type"].value
-    doc = await repo.update_owned(subscriber_id=subscriber_id, search_id=search_id, updates=updates)
+    try:
+        doc = await repo.update_owned(subscriber_id=subscriber_id, search_id=search_id, updates=updates)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
     if doc is None:
         raise HTTPException(status_code=404, detail="Saved search not found")
     return _search_out(doc)
@@ -279,6 +283,20 @@ async def dismiss_notification(
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
+def _parse_as_of(settings: Settings, as_of: str | None) -> datetime | None:
+    if not as_of:
+        return None
+    if not settings.alerts_integration_test_mode:
+        raise HTTPException(status_code=403, detail="as_of only allowed in integration test mode")
+    try:
+        instant = datetime.fromisoformat(as_of.replace("Z", "+00:00"))
+        if instant.tzinfo is None:
+            instant = instant.replace(tzinfo=UTC)
+        return instant.astimezone(UTC)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail="Invalid as_of timestamp") from exc
+
+
 @router.post("/digest/preview")
 async def run_digest_preview(
     settings: Annotated[Settings, Depends(require_digest_enabled)],
@@ -288,6 +306,7 @@ async def run_digest_preview(
     digest_state: Annotated[DigestStateRepository, Depends(get_digest_repo)],
     digest_delivery: Annotated[DigestDeliveryRepository, Depends(get_digest_delivery_repo)],
     jobs: Annotated[JobRepository, Depends(get_job_repo)],
+    as_of: str | None = Query(default=None, description="ISO-8601 instant (integration test only)"),
 ) -> dict[str, Any]:
     """Preview digest contents without claiming delivery idempotency or enforcing clock time."""
     svc = DailyDigestService(
@@ -298,7 +317,9 @@ async def run_digest_preview(
         jobs=jobs,
         settings=settings,
     )
-    return await svc.run_for_subscriber(subscriber_id, preview=True)
+    return await svc.run_for_subscriber(
+        subscriber_id, preview=True, now=_parse_as_of(settings, as_of)
+    )
 
 
 @router.post("/digest/run")
@@ -310,6 +331,7 @@ async def run_digest_once(
     digest_state: Annotated[DigestStateRepository, Depends(get_digest_repo)],
     digest_delivery: Annotated[DigestDeliveryRepository, Depends(get_digest_delivery_repo)],
     jobs: Annotated[JobRepository, Depends(get_job_repo)],
+    as_of: str | None = Query(default=None, description="ISO-8601 instant (integration test only)"),
 ) -> dict[str, Any]:
     """Idempotent scheduled digest for current local day (no Beat). Requires ALERTS_DIGEST_ENABLED."""
     svc = DailyDigestService(
@@ -320,4 +342,6 @@ async def run_digest_once(
         jobs=jobs,
         settings=settings,
     )
-    return await svc.run_for_subscriber(subscriber_id, preview=False)
+    return await svc.run_for_subscriber(
+        subscriber_id, preview=False, now=_parse_as_of(settings, as_of)
+    )

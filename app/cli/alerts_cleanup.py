@@ -38,12 +38,16 @@ async def _purge_integration() -> dict[str, int]:
             {"subscriber_id": {"$in": ids}}
         )
         subs = await subs_col.delete_many({"purpose": TEST_SUBSCRIBER_TAG})
+        synth = await database.jobs.delete_many(
+            {"source": "integration_test", "integration_test": True}
+        )
         return {
             "subscribers": subs.deleted_count,
             "searches": searches.deleted_count,
             "notifications": notifs.deleted_count,
             "digest_state": digest.deleted_count,
             "digest_deliveries": deliveries.deleted_count,
+            "synthetic_jobs": synth.deleted_count,
         }
 
 

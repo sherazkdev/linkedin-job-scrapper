@@ -46,6 +46,7 @@ class AlertProcessor:
             created=outcome == JobUpsertOutcome.CREATED,
             updated=outcome == JobUpsertOutcome.UPDATED,
             reactivated=reactivated,
+            job=job_doc,
         )
         if event_key is None:
             return 0

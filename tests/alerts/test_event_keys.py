@@ -9,10 +9,14 @@ def test_event_key_created() -> None:
 
 
 def test_event_key_updated() -> None:
-    assert (
-        event_key_for_outcome(created=False, updated=True, reactivated=False)
-        == EVENT_JOB_UPDATED
+    key = event_key_for_outcome(
+        created=False,
+        updated=True,
+        reactivated=False,
+        job={"title": "Engineer", "company": "X"},
     )
+    assert key is not None
+    assert key.startswith(f"{EVENT_JOB_UPDATED}:")
 
 
 def test_event_key_reactivated() -> None:

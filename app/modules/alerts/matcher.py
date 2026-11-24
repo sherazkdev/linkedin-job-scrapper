@@ -72,17 +72,28 @@ def event_key_for_outcome(
     created: bool,
     updated: bool,
     reactivated: bool,
+    job: dict[str, Any] | None = None,
 ) -> str | None:
+    """
+    Event identity policy:
+    - CREATED → `new_job` (once per job per subscriber)
+    - UPDATED → `job_updated:<revision_fp>` (once per meaningful content revision)
+    - REACTIVATED → `reactivated` (once per job per subscriber; new revision may follow)
+    - UNCHANGED → no event
+    """
     from app.modules.alerts.constants import (
         EVENT_JOB_UPDATED,
         EVENT_NEW_JOB,
         EVENT_REACTIVATED,
     )
+    from app.modules.alerts.revision import alert_revision_fingerprint
 
     if created:
         return EVENT_NEW_JOB
     if reactivated:
         return EVENT_REACTIVATED
     if updated:
-        return EVENT_JOB_UPDATED
+        if job is None:
+            return EVENT_JOB_UPDATED
+        return f"{EVENT_JOB_UPDATED}:{alert_revision_fingerprint(job)}"
     return None

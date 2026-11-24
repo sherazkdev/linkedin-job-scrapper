@@ -54,7 +54,7 @@ Response:
 
 ### Daily digest (manual)
 
-- `POST /api/v1/alerts/digest/preview` — testing only (no delivery claim)
+- `POST /api/v1/alerts/digest/preview` — **read-only** inspection (no DB writes)
 - `POST /api/v1/alerts/digest/run` — requires `ALERTS_DIGEST_ENABLED=true` and local time due
 
 ## MongoDB collections
