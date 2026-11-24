@@ -47,6 +47,12 @@ export function SavedSearchesPage() {
   async function onCreate(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
+    try {
+      await ensureAlertSession();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Session error");
+      return;
+    }
     const fd = new FormData(e.currentTarget);
     const body = {
       q: String(fd.get("q") || "") || null,

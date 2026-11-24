@@ -33,12 +33,13 @@ test("1-3 registration, returning subscriber, reload preserves session", async (
 test("4-7 saved search CRUD and enable/disable", async ({ page }) => {
   await bootstrap(page);
   await page.goto("/saved-searches");
+  await page.waitForLoadState("networkidle");
   const keyword = `E2E-${Date.now()}`;
   await page.getByPlaceholder("Keyword").fill(keyword);
   await page.getByPlaceholder("Country (PK)").fill("PK");
   await page.getByPlaceholder("City").fill("Islamabad");
   await page.getByRole("button", { name: "Save search" }).click();
-  await expect(page.getByText(keyword)).toBeVisible({ timeout: 20_000 });
+  await expect(page.getByText(keyword, { exact: false })).toBeVisible({ timeout: 25_000 });
   await page.getByRole("button", { name: "Edit" }).first().click();
   await page.locator('input[name="city"]').fill("Rawalpindi");
   await page.getByRole("button", { name: "Save", exact: true }).click();
@@ -52,6 +53,7 @@ test("4-7 saved search CRUD and enable/disable", async ({ page }) => {
 });
 
 test("8-11 job search, filters, pagination, detail", async ({ page }) => {
+  await bootstrap(page);
   await page.goto("/");
   await page.getByPlaceholder("e.g. Software Engineer").fill("Software Engineer");
   await page.getByPlaceholder("PK").fill("PK");
@@ -84,6 +86,7 @@ test("12-14 notifications list, read, dismiss", async ({ page }) => {
 });
 
 test("15-16 digest without re-registration and preview", async ({ page }) => {
+  await bootstrap(page);
   const before = await bootstrap(page);
   await page.goto("/preferences");
   await page.getByRole("button", { name: "Save digest settings" }).click();

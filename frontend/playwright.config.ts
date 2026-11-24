@@ -13,9 +13,6 @@ export default defineConfig({
   use: {
     baseURL,
     trace: "on-first-retry",
-    extraHTTPHeaders: stagingE2E
-      ? { Origin: baseURL.replace(/\/$/, ""), "sec-fetch-site": "same-origin" }
-      : {},
   },
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
   webServer:
