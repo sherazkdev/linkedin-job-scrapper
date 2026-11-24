@@ -26,32 +26,27 @@ async def report(db_name: str) -> dict:
         )
         isb = await db.jobs.count_documents({"city": {"$regex": r"^Islamabad$", "$options": "i"}})
         rwp = await db.jobs.count_documents({"city": {"$regex": r"^Rawalpindi$", "$options": "i"}})
-        agg = db.jobs.aggregate(
-            [
-                {
-                    "$group": {
-                        "_id": {"$ifNull": ["$country_code", "$search_country_code"]},
-                        "total": {"$sum": 1},
-                        "with_city": {
-                            "$sum": {
-                                "$cond": [
-                                    {"$and": [{"$ne": ["$city", None]}, {"$ne": ["$city", ""]}]},
-                                    1,
-                                    0,
-                                ]
-                            }
-                        },
-                    }
-                },
-                {"$sort": {"total": -1}},
-                {"$limit": 25},
-            ]
-        )
-        if hasattr(agg, "__aiter__"):
-            by_country = [doc async for doc in agg]
-        else:
-            cursor = await agg  # type: ignore[misc]
-            by_country = await cursor.to_list(length=25)
+        pipeline = [
+            {
+                "$group": {
+                    "_id": {"$ifNull": ["$country_code", "$search_country_code"]},
+                    "total": {"$sum": 1},
+                    "with_city": {
+                        "$sum": {
+                            "$cond": [
+                                {"$and": [{"$ne": ["$city", None]}, {"$ne": ["$city", ""]}]},
+                                1,
+                                0,
+                            ]
+                        }
+                    },
+                }
+            },
+            {"$sort": {"total": -1}},
+            {"$limit": 25},
+        ]
+        cursor = await db.jobs.aggregate(pipeline)
+        by_country = await cursor.to_list(length=25)
         return {
             "database": db_name,
             "jobs_total": total,

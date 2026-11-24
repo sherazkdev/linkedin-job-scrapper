@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 ROOT="/var/www/linkedin-job-scrapper"
+cd "$ROOT" && git pull --ff-only origin main
 docker cp "$ROOT/app/cli/city_coverage_report.py" linkedin-scraper-api:/app/app/cli/city_coverage_report.py
 docker cp "$ROOT/app/cli/city_coverage_report.py" linkedin-scraper-api-pilot:/app/app/cli/city_coverage_report.py
 echo "== production =="
