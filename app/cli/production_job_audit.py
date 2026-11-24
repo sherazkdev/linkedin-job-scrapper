@@ -12,7 +12,7 @@ async def main() -> None:
     async with open_database("global_jobs") as prod:
         total = await prod.jobs.count_documents({})
         synth = await prod.jobs.count_documents({"source": "integration_test"})
-        cursor = await prod.jobs.find({}).sort("first_seen_at", -1).limit(15)
+        cursor = prod.jobs.find({}).sort("first_seen_at", -1).limit(15)
         newest = await cursor.to_list(length=15)
     async with open_database("global_jobs_pilot") as pilot:
         ptotal = await pilot.jobs.count_documents({})
