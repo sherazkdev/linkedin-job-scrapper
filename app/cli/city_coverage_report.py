@@ -26,7 +26,7 @@ async def report(db_name: str) -> dict:
         )
         isb = await db.jobs.count_documents({"city": {"$regex": r"^Islamabad$", "$options": "i"}})
         rwp = await db.jobs.count_documents({"city": {"$regex": r"^Rawalpindi$", "$options": "i"}})
-        cursor = db.jobs.aggregate(
+        agg = db.jobs.aggregate(
             [
                 {
                     "$group": {
@@ -47,7 +47,11 @@ async def report(db_name: str) -> dict:
                 {"$limit": 25},
             ]
         )
-        by_country = await cursor.to_list(length=25)
+        if hasattr(agg, "__aiter__"):
+            by_country = [doc async for doc in agg]
+        else:
+            cursor = await agg  # type: ignore[misc]
+            by_country = await cursor.to_list(length=25)
         return {
             "database": db_name,
             "jobs_total": total,

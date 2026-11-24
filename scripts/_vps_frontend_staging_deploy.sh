@@ -30,7 +30,7 @@ fi
 
 "${COMPOSE[@]}" up -d --no-deps frontend-staging
 
-sleep 2
+sleep 5
 RUN_SHA="$(docker exec linkedin-scraper-frontend-staging node -e "fetch('http://127.0.0.1:3000/api/health').then(r=>r.json()).then(j=>console.log(j.git_sha)).catch(()=>process.exit(1))")"
 if [ "$RUN_SHA" != "$FRONTEND_STAGING_GIT_SHA" ]; then
   echo "SHA_MISMATCH expected=${FRONTEND_STAGING_GIT_SHA} running=${RUN_SHA}" >&2
