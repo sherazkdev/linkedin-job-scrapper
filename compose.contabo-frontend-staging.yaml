@@ -12,17 +12,17 @@ services:
       args:
         PILOT_API_BASE_URL: http://api-pilot:8000
         PUBLIC_JOBS_API_BASE_URL: http://api-pilot:8000
-        APP_URL: ${FRONTEND_STAGING_APP_URL:-http://127.0.0.1:3010}
+        APP_URL: ${FRONTEND_STAGING_APP_URL:-http://127.0.0.1:13010}
     image: linkedin-scraper-frontend-staging
     container_name: linkedin-scraper-frontend-staging
     environment:
       NODE_ENV: production
       PILOT_API_BASE_URL: http://api-pilot:8000
       PUBLIC_JOBS_API_BASE_URL: http://api-pilot:8000
-      APP_URL: ${FRONTEND_STAGING_APP_URL:-http://127.0.0.1:3010}
+      APP_URL: ${FRONTEND_STAGING_APP_URL:-http://127.0.0.1:13010}
       COOKIE_SECURE: "false"
     ports:
-      - "127.0.0.1:3010:3000"
+      - "127.0.0.1:${FRONTEND_STAGING_PORT:-13010}:3000"
     depends_on:
       api-pilot:
         condition: service_healthy
