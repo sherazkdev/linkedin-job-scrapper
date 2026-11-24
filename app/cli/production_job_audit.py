@@ -42,14 +42,19 @@ async def main() -> None:
         cursor = prod.jobs.find({}).sort("first_seen_at", -1).limit(15)
         newest = await cursor.to_list(length=15)
         promo_cursor = (
-            prod[PROMOTION_AUDIT_COLLECTION]
-            .find({})
-            .sort("applied_at", -1)
-            .limit(5)
+            prod[PROMOTION_AUDIT_COLLECTION].find({}).sort("created_at", -1).limit(8)
         )
-        promo_batches = await promo_cursor.to_list(length=5)
+        promo_batches = await promo_cursor.to_list(length=8)
         run_cursor = prod[COLLECTION_RUNS].find({}).sort("started_at", -1).limit(5)
         collection_runs = await run_cursor.to_list(length=5)
+        latest_newest_batch = (
+            newest[0].get("promotion_batch_id") if newest else None
+        )
+        batch_detail = None
+        if latest_newest_batch:
+            batch_detail = await prod[PROMOTION_AUDIT_COLLECTION].find_one(
+                {"batch_id": latest_newest_batch}
+            )
     async with open_database("global_jobs_pilot") as pilot:
         ptotal = await pilot.jobs.count_documents({})
         psynth = await pilot.jobs.count_documents({"source": "integration_test"})
@@ -67,13 +72,24 @@ async def main() -> None:
         "production_recent_promotion_batches": [
             {
                 "batch_id": b.get("batch_id"),
-                "applied_at": b.get("applied_at"),
-                "created": b.get("created"),
-                "updated": b.get("updated"),
-                "skipped": b.get("skipped"),
+                "created_at": b.get("created_at"),
+                "created_count": b.get("created_count"),
+                "updated_count": b.get("updated_count"),
+                "errors_len": len(b.get("errors") or []),
             }
             for b in promo_batches
         ],
+        "production_newest_promotion_batch_detail": (
+            {
+                "batch_id": batch_detail.get("batch_id"),
+                "created_at": batch_detail.get("created_at"),
+                "created_count": batch_detail.get("created_count"),
+                "updated_count": batch_detail.get("updated_count"),
+                "errors_len": len(batch_detail.get("errors") or []),
+            }
+            if batch_detail
+            else None
+        ),
         "production_recent_collection_runs": [
             {
                 "country_code": r.get("country_code"),
