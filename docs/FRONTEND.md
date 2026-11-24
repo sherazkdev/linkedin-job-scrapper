@@ -4,7 +4,9 @@
 
 - `frontend/` — Next.js App Router, TypeScript, Tailwind
 - **BFF** under `app/api/*` proxies the pilot API; browser never sees bearer tokens
+- Idempotent `POST /api/alerts/session` (reuses valid HttpOnly cookie; register only when needed)
 - HttpOnly cookie `job_alerts_session` (path `/api/alerts`) stores the pilot bearer server-side
+- `DELETE /api/alerts/session` clears the alert session (sign out)
 - Public job search uses `PUBLIC_JOBS_API_BASE_URL` (pilot in dev)
 
 ## Routes

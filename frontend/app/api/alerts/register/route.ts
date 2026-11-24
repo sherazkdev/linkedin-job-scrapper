@@ -1,28 +1,26 @@
 import { NextResponse } from "next/server";
 
+import { bootstrapAlertSession } from "@/lib/server/alerts-session";
+import { forbiddenCsrf, handleBffError } from "@/lib/server/bff";
 import { assertSameOrigin } from "@/lib/server/csrf";
-import { pilotJson } from "@/lib/server/pilot-fetch";
-import { setAlertBearer } from "@/lib/server/session";
 
-type RegisterOut = { subscriber_id: string; bearer_token: string };
-
+/** Idempotent alias for POST /api/alerts/session (backward compatible path). */
 export async function POST() {
   try {
     await assertSameOrigin();
   } catch {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    return forbiddenCsrf();
   }
   try {
-    const out = await pilotJson<RegisterOut>("/api/v1/alerts/subscribers/register", {
-      method: "POST",
+    const state = await bootstrapAlertSession();
+    if (!state.active) {
+      return NextResponse.json({ error: "Session unavailable" }, { status: 503 });
+    }
+    return NextResponse.json({
+      subscriber_id: state.subscriber_id,
+      reused: !state.created,
     });
-    await setAlertBearer(out.bearer_token);
-    return NextResponse.json({ subscriber_id: out.subscriber_id });
-  } catch (e: unknown) {
-    const err = e as { status?: number; message?: string };
-    return NextResponse.json(
-      { error: err.message ?? "Registration failed" },
-      { status: err.status ?? 502 },
-    );
+  } catch (e) {
+    return handleBffError(e);
   }
 }

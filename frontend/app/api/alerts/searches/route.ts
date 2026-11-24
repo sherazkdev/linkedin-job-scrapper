@@ -1,18 +1,15 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 
 import { assertSameOrigin } from "@/lib/server/csrf";
-import { pilotFetch, PilotApiError } from "@/lib/server/pilot-fetch";
+import { forbiddenCsrf, handleBffError, proxyPilotResponse } from "@/lib/server/bff";
+import { pilotFetch } from "@/lib/server/pilot-fetch";
 
 export async function GET() {
   try {
     const res = await pilotFetch("/api/v1/alerts/searches", { auth: true });
-    const data = await res.json();
-    return NextResponse.json(data, { status: res.status });
+    return proxyPilotResponse(res);
   } catch (e) {
-    if (e instanceof PilotApiError) {
-      return NextResponse.json({ error: e.message }, { status: e.status });
-    }
-    return NextResponse.json({ error: "Upstream error" }, { status: 502 });
+    return handleBffError(e);
   }
 }
 
@@ -20,7 +17,7 @@ export async function POST(req: NextRequest) {
   try {
     await assertSameOrigin();
   } catch {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    return forbiddenCsrf();
   }
   try {
     const body = await req.json();
@@ -30,12 +27,8 @@ export async function POST(req: NextRequest) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
-    const data = await res.json();
-    return NextResponse.json(data, { status: res.status });
+    return proxyPilotResponse(res);
   } catch (e) {
-    if (e instanceof PilotApiError) {
-      return NextResponse.json({ error: e.message }, { status: e.status });
-    }
-    return NextResponse.json({ error: "Upstream error" }, { status: 502 });
+    return handleBffError(e);
   }
 }
