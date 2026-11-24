@@ -1,8 +1,6 @@
 # Private loopback staging UI → pilot API only (global_jobs_pilot).
 # Usage:
-#   docker compose -f compose.yaml -f compose.contabo-vps.yaml \
-#     -f compose.contabo-pilot-api.yaml -f compose.contabo-alerts-flags.yaml \
-#     -f compose.contabo-frontend-staging.yaml -p linkedin-scraper up -d frontend-staging
+#   FRONTEND_STAGING_GIT_SHA=$(git rev-parse HEAD) bash scripts/_vps_frontend_staging_deploy.sh
 
 services:
   frontend-staging:
@@ -10,13 +8,15 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
+        GIT_SHA: ${FRONTEND_STAGING_GIT_SHA:-unknown}
         PILOT_API_BASE_URL: http://api-pilot:8000
         PUBLIC_JOBS_API_BASE_URL: http://api-pilot:8000
         APP_URL: ${FRONTEND_STAGING_APP_URL:-http://127.0.0.1:13010}
-    image: linkedin-scraper-frontend-staging
+    image: linkedin-scraper-frontend-staging:${FRONTEND_STAGING_GIT_SHA:-latest}
     container_name: linkedin-scraper-frontend-staging
     environment:
       NODE_ENV: production
+      GIT_COMMIT_SHA: ${FRONTEND_STAGING_GIT_SHA:-unknown}
       PILOT_API_BASE_URL: http://api-pilot:8000
       PUBLIC_JOBS_API_BASE_URL: http://api-pilot:8000
       APP_URL: ${FRONTEND_STAGING_APP_URL:-http://127.0.0.1:13010}
