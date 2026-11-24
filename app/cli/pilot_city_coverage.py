@@ -38,7 +38,7 @@ async def report() -> dict:
                 "city": {"$regex": r"^(Islamabad|Rawalpindi)$", "$options": "i"},
             }
         )
-        by_country = await db.jobs.aggregate(
+        cursor = db.jobs.aggregate(
             [
                 {
                     "$group": {
@@ -63,7 +63,8 @@ async def report() -> dict:
                 {"$sort": {"total": -1}},
                 {"$limit": 30},
             ]
-        ).to_list(30)
+        )
+        by_country = await cursor.to_list(length=30)
         return {
             "database": settings.mongo_db_name,
             "jobs_total": total,

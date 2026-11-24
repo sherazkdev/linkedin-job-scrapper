@@ -20,12 +20,20 @@ COMPOSE=(docker compose -f compose.yaml -f compose.contabo-vps.yaml -f compose.c
 sleep 6
 docker exec linkedin-scraper-api printenv ALERTS_API_ENABLED
 docker exec linkedin-scraper-api-pilot printenv ALERTS_API_ENABLED MONGO_DB_NAME
-docker exec linkedin-scraper-mongodb mongosh -u "${MONGO_ROOT_USER:-mongo_user}" -p "${MONGO_ROOT_PASSWORD:-change_me_mongo_password}" --authenticationDatabase admin --quiet --eval '
-const prod=db.getSiblingDB("global_jobs").jobs.countDocuments({});
-const pilot=db.getSiblingDB("global_jobs_pilot").jobs.countDocuments({});
-printjson({production: prod, pilot: pilot});
-'
-docker exec linkedin-scraper-api curl -fsS http://127.0.0.1:8000/health/live
-docker exec linkedin-scraper-api-pilot curl -fsS http://127.0.0.1:8000/health/live
+docker exec linkedin-scraper-api python -c "
+import asyncio
+from app.core.config import get_settings
+from app.database.temp_database import open_database
+async def main():
+    s=get_settings()
+    async with open_database('global_jobs') as db:
+        prod=await db.jobs.count_documents({})
+    async with open_database('global_jobs_pilot') as db:
+        pilot=await db.jobs.count_documents({})
+    print({'production': prod, 'pilot': pilot})
+asyncio.run(main())
+"
+docker exec linkedin-scraper-api python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health/live')"
+docker exec linkedin-scraper-api-pilot python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health/live')"
 git stash list | head -3 || true
 echo "DEPLOY_DONE $HEAD_SHA"
