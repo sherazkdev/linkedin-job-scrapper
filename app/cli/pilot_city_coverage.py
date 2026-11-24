@@ -38,7 +38,7 @@ async def report() -> dict:
                 "city": {"$regex": r"^(Islamabad|Rawalpindi)$", "$options": "i"},
             }
         )
-        cursor = db.jobs.aggregate(
+        cursor = await db.jobs.aggregate(
             [
                 {
                     "$group": {
