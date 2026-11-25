@@ -28,7 +28,7 @@ else
   docker tag "linkedin-scraper-frontend-staging:${FRONTEND_STAGING_GIT_SHA}" linkedin-scraper-frontend-staging:latest
 fi
 
-"${COMPOSE[@]}" up -d --no-deps frontend-staging
+"${COMPOSE[@]}" up -d --force-recreate --no-deps frontend-staging
 
 sleep 5
 RUN_SHA="$(docker exec linkedin-scraper-frontend-staging node -e "fetch('http://127.0.0.1:3000/api/health').then(r=>r.json()).then(j=>console.log(j.git_sha)).catch(()=>process.exit(1))")"
